@@ -1,0 +1,9 @@
+# Binaries
+madonctl
+*.exe
+*.test
+
+*.swp
+
+.goxc*
+doc
