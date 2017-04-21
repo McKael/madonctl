@@ -7,20 +7,127 @@ Golang command line interface for the Mastodon API
 
 `madonctl` is a [Go](https://golang.org/) CLI tool to use the Mastondon REST API.
 
+It is built on top of [madon](https://github.com/McKael/madon), my Golang implementation of the API.
+
 ## Installation
 
-To install the application (you need to have Go):
+### From source
+
+To install the application from source (you need to have Go), just type:
 
     go get github.com/McKael/madonctl
 
-Some pre-built binaries are available on the home page (see below).
+and you should be able to run `madonctl`.
+
+### Download
+
+Check the [Release page](https://github.com/McKael/madonctl/releases) for some pre-built binaries.
+
+More pre-built binaries are available from the [Homepage](https://lilotux.net/~mikael/pub/madonctl/) (development version and builds for a few other platforms).
 
 ## Usage
 
-This section has not been written yet.
+### Configuration
 
-Please check the [Homepage](https://lilotux.net/~mikael/pub/madonctl/) for an
-introduction and a few examples.
+In order to use madonctl, you need to specify the instance name or URL, and
+usually provide an account login/password (or a token).
+
+These settings can be passed as command line arguments or environment variables,
+but the easiest way is to use a configuration file.
+
+Note that you can generate a configuration file for your settings with
+
+`madonctl config dump -i mastodon.social -L username@domain -P password`
+
+(You can redirect the output to a configuration file.)
+
+If you only provide the Mastodon instance, it will generate a configuration file with an application ID/secret for this instance and you will have to add the user credentials.
+
+### Usage
+
+The complete list of commands is available in the online help (`madonctl help`, `madonctl command --help`...)
+or in the [manpages](https://lilotux.net/~mikael/pub/madonctl/manual/html/).  The [Homepage](https://lilotux.net/~mikael/pub/madonctl/) also contains a plain list of commands.
+
+### Examples
+
+To post a simple "toot":
+``` sh
+% madonctl toot "Hello, World"
+```
+
+You can change the toot visibility, add a Content Warning (a.k.a. spoiler) or send a media file:
+``` sh
+% madonctl toot --visibility direct "@McKael Hello, you"
+% madonctl toot --visibility private --spoiler CW "The answer was 42"
+% madonctl post --file image.jpg Selfie # Send a media file
+```
+
+Some account-related commands:
+``` sh
+% madonctl accounts blocked                       # List blocked accounts
+% madonctl accounts muted                         # List muted accounts
+% madonctl accounts notifications --list --clear  # List and clear notifications
+```
+
+Add/remove a favourite, boost a status...
+``` sh
+% madonctl status --status-id 416671 favourite    # Fave a status
+% madonctl status --status-id 416671 boost        # Boost a status
+```
+
+Follow a remote account:
+``` sh
+% madonctl accounts follow --remote Gargron@mastodon.social
+```
+
+Use the streaming API and fetch timelines and notifications:
+``` sh
+% madonctl stream                   # Stream home timeline and notifications
+% madonctl stream local             # Stream local timeline
+% madonctl stream public            # Stream federated timeline
+```
+
+(Almost) All commands have a customisable outpput
+``` sh
+% madonctl accounts show            # Display an account
+% madonctl accounts show -o yaml    # Display an account, in yaml
+% madonctl accounts show -o json    # Display an account, in json
+% madonctl stream local -o json     # Stream local timeline and output to JSON
+```
+
+You can also use Go (Golang) templates:
+``` sh
+% madonctl accounts --account-id 1 followers --template '{{.acct}}{{"\n"}}'
+```
+
+There are many more commands, you can find them in the online help or the manpage.
+
+
+### Shell completion
+
+If you want shell completion, you can generate scripts with the following command: \
+`madonctl completion bash` (or zsh)
+
+Then, just source the script in your shell.
+
+For example, I have this line in my .zshrc:
+
+`source <(madonctl completion zsh)`
+
+### Commands output
+
+The output can be set to json, yaml or to a Go template for all commands.\
+If you are familiar with Kubernetes' kubectl, it is very similar.
+
+For example, you can display your user token with:\
+`madonctl config whoami --template '{{.access_token}}'`\
+or the application ID with:\
+`madonctl config dump --template '{{.ID}}'`
+
+All the users that have favorited a given status:\
+`madonctl status --status-id 101194 favourited-by --template '{{.username}}{{"\n"}}'`
+
+For more complex templates, one can use the `--template-file` option.
 
 ## References
 
