@@ -75,9 +75,26 @@ Add/remove a favourite, boost a status...
 % madonctl status --status-id 416671 boost        # Boost a status
 ```
 
+Search for an account (only accounts known to your instance):
+``` sh
+% madonctl accounts search gargron
+```
+
+Follow an account with known ID:
+``` sh
+% madonctl accounts follow --account-id 1234
+```
+
 Follow a remote account:
 ``` sh
 % madonctl accounts follow --remote Gargron@mastodon.social
+```
+
+Read timelines:
+``` sh
+% madonctl timeline                 # Display home timeline
+% madonctl timeline public          # Display federated timeline
+% madonctl timeline public --local  # Display public local timeline
 ```
 
 Use the streaming API and fetch timelines and notifications:
