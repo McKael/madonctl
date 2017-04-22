@@ -69,6 +69,14 @@ Some account-related commands:
 % madonctl accounts notifications --list --clear  # List and clear notifications
 ```
 
+Update your account information:
+``` sh
+% madonctl accounts update --display-name "John"  # Update display name
+% madonctl accounts update --note "Newcomer"      # Update user note (bio)
+% madonctl accounts update --note ""              # Clear note
+% madonctl accounts update --avatar me.png        # Update avatar
+```
+
 Add/remove a favourite, boost a status...
 ``` sh
 % madonctl status --status-id 416671 favourite    # Fave a status
