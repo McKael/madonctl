@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
+	flag "github.com/spf13/pflag"
 
 	"github.com/McKael/madon"
 )
@@ -26,7 +27,11 @@ var accountsOpts struct {
 	statusIDs                 string // For account reports
 	comment                   string // For account reports
 	show                      bool   // For account reports
+	displayName, note         string // For account update
+	avatar, header            string // For account update
 }
+
+var updateFlags *flag.FlagSet
 
 func init() {
 	RootCmd.AddCommand(accountsCmd)
@@ -56,6 +61,14 @@ func init() {
 	accountReportsSubcommand.Flags().StringVar(&accountsOpts.statusIDs, "status-ids", "", "Comma-separated list of status IDs")
 	accountReportsSubcommand.Flags().StringVar(&accountsOpts.comment, "comment", "", "Report comment")
 	accountReportsSubcommand.Flags().BoolVar(&accountsOpts.list, "list", false, "List current user reports")
+
+	accountUpdateSubcommand.Flags().StringVar(&accountsOpts.displayName, "display-name", "", "User display name")
+	accountUpdateSubcommand.Flags().StringVar(&accountsOpts.note, "note", "", "User note (a.k.a. bio)")
+	accountUpdateSubcommand.Flags().StringVar(&accountsOpts.avatar, "avatar", "", "User avatar image")
+	accountUpdateSubcommand.Flags().StringVar(&accountsOpts.header, "header", "", "User header image")
+
+	// This one will be used to check if the options were explicitely set or not
+	updateFlags = accountUpdateSubcommand.Flags()
 }
 
 // accountsCmd represents the accounts command
@@ -135,6 +148,7 @@ username@domain format and not yet in the database.`,
 	accountMuteSubcommand,
 	accountRelationshipsSubcommand,
 	accountReportsSubcommand,
+	accountUpdateSubcommand,
 }
 
 var accountStatusesSubcommand = &cobra.Command{
@@ -199,12 +213,31 @@ var accountReportsSubcommand = &cobra.Command{
 	},
 }
 
+var accountUpdateSubcommand = &cobra.Command{
+	Use:   "update",
+	Short: "Update connected user account",
+	Long: `Update connected user account
+
+All flags are optional (set to an empty string if you want to delete a field).
+The flags --avatar and --header can be paths to image files or base64-encoded
+images (see Mastodon API specifications for the details).
+
+Please note the avatar and header images cannot be removed, they can only be
+replaced.`,
+	Example: `  madonctl accounts update --display-name "Mr President"
+  madonctl accounts update --note "I like madonctl"
+  madonctl accounts update --avatar happyface.png`,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return accountSubcommandsRunE(cmd.Name(), args)
+	},
+}
+
 // accountSubcommandsRunE is a generic function for status subcommands
 func accountSubcommandsRunE(subcmd string, args []string) error {
 	opt := accountsOpts
 
 	switch subcmd {
-	case "show", "search":
+	case "show", "search", "update":
 		// These subcommands do not require an account ID
 	case "favourites", "blocks", "mutes":
 		// Those subcommands can not use an account ID
@@ -371,6 +404,33 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 		var report *madon.Report
 		report, err = gClient.ReportUser(opt.accountID, ids, opt.comment)
 		obj = report
+	case "update":
+		var dn, note, avatar, header *string
+		change := false
+		if updateFlags.Lookup("display-name").Changed {
+			dn = &opt.displayName
+			change = true
+		}
+		if updateFlags.Lookup("note").Changed {
+			note = &opt.note
+			change = true
+		}
+		if updateFlags.Lookup("avatar").Changed {
+			avatar = &opt.avatar
+			change = true
+		}
+		if updateFlags.Lookup("header").Changed {
+			header = &opt.header
+			change = true
+		}
+
+		if !change { // We want at least one update
+			return errors.New("missing parameters")
+		}
+
+		var account *madon.Account
+		account, err = gClient.UpdateAccount(dn, note, avatar, header)
+		obj = account
 	default:
 		return errors.New("accountSubcommand: internal error")
 	}
