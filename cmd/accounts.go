@@ -168,14 +168,14 @@ var accountFollowRequestsSubcommand = &cobra.Command{
   madonctl accounts follow-requests --account-id Y --reject`,
 	Short: "List, accept or deny a follow request",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return accountSubcommandsRunE("follow-requests", args)
+		return accountSubcommandsRunE(cmd.Name(), args)
 	},
 }
 var accountFollowSubcommand = &cobra.Command{
 	Use:   "follow",
 	Short: "Follow or unfollow the account",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return accountSubcommandsRunE("follow", args)
+		return accountSubcommandsRunE(cmd.Name(), args)
 	},
 }
 
@@ -183,7 +183,7 @@ var accountBlockSubcommand = &cobra.Command{
 	Use:   "block",
 	Short: "Block or unblock the account",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return accountSubcommandsRunE("block", args)
+		return accountSubcommandsRunE(cmd.Name(), args)
 	},
 }
 
@@ -191,7 +191,7 @@ var accountMuteSubcommand = &cobra.Command{
 	Use:   "mute",
 	Short: "Mute or unmute the account",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return accountSubcommandsRunE("mute", args)
+		return accountSubcommandsRunE(cmd.Name(), args)
 	},
 }
 
@@ -199,7 +199,7 @@ var accountRelationshipsSubcommand = &cobra.Command{
 	Use:   "relationships --account-ids ACC1,ACC2...",
 	Short: "List relationships with the accounts",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return accountSubcommandsRunE("relationships", args)
+		return accountSubcommandsRunE(cmd.Name(), args)
 	},
 }
 
@@ -209,7 +209,7 @@ var accountReportsSubcommand = &cobra.Command{
 	Example: `  madonctl accounts reports --list
   madonctl accounts reports --account-id ACCOUNT --status-ids ID... --comment TEXT`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return accountSubcommandsRunE("reports", args)
+		return accountSubcommandsRunE(cmd.Name(), args)
 	},
 }
 
