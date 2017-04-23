@@ -13,7 +13,7 @@ It is built on top of [madon](https://github.com/McKael/madon), my Golang implem
 
 ### From source
 
-To install the application from source (you need to have Go), just type:
+To install the application from source (you need to have Go >= 1.5), just type:
 
     go get github.com/McKael/madonctl
 
