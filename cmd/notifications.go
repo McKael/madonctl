@@ -9,6 +9,8 @@ import (
 	"errors"
 
 	"github.com/spf13/cobra"
+
+	"github.com/McKael/madon"
 )
 
 var notificationsOpts struct {
@@ -51,7 +53,12 @@ func notificationRunE(cmd *cobra.Command, args []string) error {
 	var err error
 
 	if opt.list {
-		obj, err = gClient.GetNotifications()
+		var notifications []madon.Notification
+		notifications, err = gClient.GetNotifications()
+		if accountsOpts.limit > 0 {
+			notifications = notifications[:accountsOpts.limit]
+		}
+		obj = notifications
 	} else if opt.notifID > 0 {
 		obj, err = gClient.GetNotification(opt.notifID)
 	}

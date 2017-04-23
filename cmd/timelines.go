@@ -11,6 +11,7 @@ import (
 
 var timelineOpts struct {
 	local bool
+	limit uint
 }
 
 // timelineCmd represents the timelines command
@@ -33,6 +34,7 @@ func init() {
 	RootCmd.AddCommand(timelineCmd)
 
 	timelineCmd.Flags().BoolVar(&timelineOpts.local, "local", false, "Posts from the local instance")
+	timelineCmd.Flags().UintVarP(&timelineOpts.limit, "limit", "l", 0, "Limit number of results")
 }
 
 func timelineRunE(cmd *cobra.Command, args []string) error {
@@ -52,6 +54,10 @@ func timelineRunE(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		errPrint("Error: %s", err.Error())
 		return nil
+	}
+
+	if opt.limit > 0 {
+		sl = sl[:opt.limit]
 	}
 
 	p, err := getPrinter()

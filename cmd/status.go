@@ -26,8 +26,8 @@ var statusOpts struct {
 	filePath    string
 	mediaIDs    string
 
-	// TODO
-	limit int
+	// Used for several subcommands to limit the number of results
+	limit uint
 }
 
 func init() {
@@ -38,7 +38,7 @@ func init() {
 
 	// Global flags
 	statusCmd.PersistentFlags().IntVarP(&statusOpts.statusID, "status-id", "s", 0, "Status ID number")
-	//statusCmd.PersistentFlags().IntVarP(&statusOpts.limit, "limit", "l", 0, "Limit number of results")
+	statusCmd.PersistentFlags().UintVarP(&statusOpts.limit, "limit", "l", 0, "Limit number of results")
 
 	statusCmd.MarkPersistentFlagRequired("status-id")
 
@@ -175,10 +175,16 @@ func statusSubcommandRunE(subcmd string, args []string) error {
 	case "reblogged-by":
 		var accountList []madon.Account
 		accountList, err = gClient.GetStatusRebloggedBy(opt.statusID)
+		if opt.limit > 0 {
+			accountList = accountList[:opt.limit]
+		}
 		obj = accountList
 	case "favourited-by":
 		var accountList []madon.Account
 		accountList, err = gClient.GetStatusFavouritedBy(opt.statusID)
+		if opt.limit > 0 {
+			accountList = accountList[:opt.limit]
+		}
 		obj = accountList
 	case "delete":
 		err = gClient.DeleteStatus(opt.statusID)

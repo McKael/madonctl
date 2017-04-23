@@ -14,6 +14,7 @@ import (
 
 var searchOpts struct {
 	resolve bool
+	//limit   uint
 }
 
 // searchCmd represents the search command
@@ -28,6 +29,7 @@ func init() {
 	RootCmd.AddCommand(searchCmd)
 
 	searchCmd.Flags().BoolVar(&searchOpts.resolve, "resolve", false, "Resolve non-local accounts")
+	//searchCmd.Flags().UintVarP(&searchOpts.limit, "limit", "l", 0, "Limit number of results")
 }
 
 func searchRunE(cmd *cobra.Command, args []string) error {
