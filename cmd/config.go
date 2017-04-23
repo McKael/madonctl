@@ -6,6 +6,8 @@
 package cmd
 
 import (
+	"os"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
@@ -63,9 +65,12 @@ func configDump() error {
 	if err := madonInitClient(); err != nil {
 		return err
 	}
-	// Try to sign in, but don't mind if it fails
-	if err := madonLogin(); err != nil {
-		errPrint("Info: could not log in: %s", err)
+	// Try to sign in if a login was provided
+	if viper.GetString("token") != "" || viper.GetString("login") != "" {
+		if err := madonLogin(); err != nil {
+			errPrint("Error: could not log in: %s", err)
+			os.Exit(-1)
+		}
 	}
 
 	var p printer.ResourcePrinter
