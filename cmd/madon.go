@@ -94,6 +94,9 @@ func madonLogin() error {
 	if err == nil {
 		return nil
 	}
+	if !verbose && err.Error() == "cannot unmarshal server response: invalid character '<' looking for beginning of value" {
+		return fmt.Errorf("login failed (server did not return a JSON response - check your credentials)")
+	}
 	return fmt.Errorf("login failed: %s", err.Error())
 }
 
