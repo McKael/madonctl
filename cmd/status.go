@@ -7,6 +7,7 @@ package cmd
 
 import (
 	"errors"
+	"io/ioutil"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -19,12 +20,13 @@ var statusOpts struct {
 	unset    bool
 
 	// The following fields are used for the post/toot command
-	visibility  string
-	sensitive   bool
-	spoiler     string
-	inReplyToID int
-	filePath    string
-	mediaIDs    string
+	visibility    string
+	sensitive     bool
+	spoiler       string
+	inReplyToID   int
+	mediaIDs      string
+	mediaFilePath string
+	textFilePath  string
 
 	// Used for several subcommands to limit the number of results
 	limit uint
@@ -49,7 +51,8 @@ func init() {
 	statusPostSubcommand.Flags().StringVar(&statusOpts.visibility, "visibility", "", "Visibility (direct|private|unlisted|public)")
 	statusPostSubcommand.Flags().StringVar(&statusOpts.spoiler, "spoiler", "", "Spoiler warning (CW)")
 	statusPostSubcommand.Flags().StringVar(&statusOpts.mediaIDs, "media-ids", "", "Comma-separated list of media IDs")
-	statusPostSubcommand.Flags().StringVarP(&statusOpts.filePath, "file", "f", "", "File name")
+	statusPostSubcommand.Flags().StringVarP(&statusOpts.mediaFilePath, "file", "f", "", "Media file name")
+	statusPostSubcommand.Flags().StringVar(&statusOpts.textFilePath, "text-file", "", "Text file name (message content)")
 	statusPostSubcommand.Flags().IntVarP(&statusOpts.inReplyToID, "in-reply-to", "r", 0, "Status ID to reply to")
 }
 
@@ -147,7 +150,8 @@ var statusPostSubcommand = &cobra.Command{
 	Short:   "Post a message (same as 'madonctl toot')",
 	Example: `  madonctl status post --spoiler Warning "Hello, World"
   madonctl status toot --sensitive --file image.jpg Image
-  madonctl status post --media-ids ID1,ID2,ID3 Image`,
+  madonctl status post --media-ids ID1,ID2,ID3 Image
+  madonctl status toot --text-file message.txt`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return statusSubcommandRunE(cmd.Name(), args)
 	},
@@ -202,7 +206,15 @@ func statusSubcommandRunE(subcmd string, args []string) error {
 		}
 	case "post": // toot
 		var s *madon.Status
-		s, err = toot(strings.Join(args, " "))
+		text := strings.Join(args, " ")
+		if opt.textFilePath != "" {
+			var b []byte
+			if b, err = ioutil.ReadFile(opt.textFilePath); err != nil {
+				break
+			}
+			text = string(b)
+		}
+		s, err = toot(text)
 		obj = s
 	default:
 		return errors.New("statusSubcommand: internal error")

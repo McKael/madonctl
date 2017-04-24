@@ -22,7 +22,8 @@ func init() {
 	tootAliasCmd.Flags().StringVar(&statusOpts.visibility, "visibility", "", "Visibility (direct|private|unlisted|public)")
 	tootAliasCmd.Flags().StringVar(&statusOpts.spoiler, "spoiler", "", "Spoiler warning (CW)")
 	tootAliasCmd.Flags().StringVar(&statusOpts.mediaIDs, "media-ids", "", "Comma-separated list of media IDs")
-	tootAliasCmd.Flags().StringVarP(&statusOpts.filePath, "file", "f", "", "Media attachment file name")
+	tootAliasCmd.Flags().StringVarP(&statusOpts.mediaFilePath, "file", "f", "", "Media attachment file name")
+	tootAliasCmd.Flags().StringVar(&statusOpts.textFilePath, "text-file", "", "Text file name (message content)")
 	tootAliasCmd.Flags().IntVarP(&statusOpts.inReplyToID, "in-reply-to", "r", 0, "Status ID to reply to")
 }
 
@@ -33,7 +34,8 @@ var tootAliasCmd = &cobra.Command{
 	Example: `  madonctl toot message
   madonctl toot --spoiler Warning "Hello, World"
   madonctl status post --media-ids ID1,ID2 "Here are the photos"
-  madonctl post --sensitive --file image.jpg Image`,
+  madonctl post --sensitive --file image.jpg Image
+  madonctl post --text-file message.txt`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if err := madonInit(true); err != nil {
 			return err
@@ -61,12 +63,12 @@ func toot(tootText string) (*madon.Status, error) {
 		return nil, errors.New("cannot parse media IDs")
 	}
 
-	if opt.filePath != "" {
+	if opt.mediaFilePath != "" {
 		if len(ids) > 3 {
 			return nil, errors.New("too many media attachments")
 		}
 
-		fileMediaID, err := uploadFile(opt.filePath)
+		fileMediaID, err := uploadFile(opt.mediaFilePath)
 		if err != nil {
 			return nil, errors.New("cannot attach media file: " + err.Error())
 		}
