@@ -7,6 +7,7 @@ package cmd
 
 import (
 	"errors"
+	"os"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -17,6 +18,7 @@ import (
 
 var accountsOpts struct {
 	accountID                 int
+	accountUID                string
 	unset                     bool   // TODO remove eventually?
 	limit                     uint   // Limit the number of results
 	onlyMedia, excludeReplies bool   // For acccount statuses
@@ -41,6 +43,7 @@ func init() {
 
 	// Global flags
 	accountsCmd.PersistentFlags().IntVarP(&accountsOpts.accountID, "account-id", "a", 0, "Account ID number")
+	accountsCmd.PersistentFlags().StringVarP(&accountsOpts.accountUID, "user-id", "u", "", "Account user ID")
 	accountsCmd.PersistentFlags().UintVarP(&accountsOpts.limit, "limit", "l", 0, "Limit number of results")
 
 	// Subcommand flags
@@ -235,6 +238,36 @@ replaced.`,
 // accountSubcommandsRunE is a generic function for status subcommands
 func accountSubcommandsRunE(subcmd string, args []string) error {
 	opt := accountsOpts
+
+	if opt.accountUID != "" {
+		if opt.accountID > 0 {
+			return errors.New("cannot use both account ID and UID")
+		}
+		// Remove leading '@'
+		opt.accountUID = strings.TrimLeft(opt.accountUID, "@")
+		// Sign in early to look the user id up
+		if err := madonInit(true); err != nil {
+			return err
+		}
+		accList, err := gClient.SearchAccounts(opt.accountUID, 2)
+		if err != nil || len(accList) < 1 {
+			errPrint("Cannot find user '%s': %v", opt.accountUID, err)
+			os.Exit(1)
+		}
+		for _, u := range accList {
+			if u.Acct == opt.accountUID {
+				opt.accountID = u.ID
+				break
+			}
+		}
+		if opt.accountID < 1 {
+			errPrint("Cannot find user '%s'", opt.accountUID)
+			os.Exit(1)
+		}
+		if verbose {
+			errPrint("User '%s' is account ID %d", opt.accountUID, opt.accountID)
+		}
+	}
 
 	switch subcmd {
 	case "show", "search", "update":
