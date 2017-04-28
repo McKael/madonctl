@@ -12,7 +12,7 @@ import (
 )
 
 // VERSION of the madonctl application
-var VERSION = "0.2.0"
+var VERSION = "0.3.0"
 
 var versionCmd = &cobra.Command{
 	Use:   "version",
