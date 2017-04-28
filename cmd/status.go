@@ -30,6 +30,7 @@ var statusOpts struct {
 
 	// Used for several subcommands to limit the number of results
 	limit uint
+	//sinceID, maxID uint
 }
 
 func init() {
@@ -41,6 +42,8 @@ func init() {
 	// Global flags
 	statusCmd.PersistentFlags().IntVarP(&statusOpts.statusID, "status-id", "s", 0, "Status ID number")
 	statusCmd.PersistentFlags().UintVarP(&statusOpts.limit, "limit", "l", 0, "Limit number of results")
+	//statusCmd.PersistentFlags().UintVar(&statusOpts.sinceID, "since-id", 0, "Request IDs greater than a value")
+	//statusCmd.PersistentFlags().UintVar(&statusOpts.maxID, "max-id", 0, "Request IDs less (or equal) than a value")
 
 	statusCmd.MarkPersistentFlagRequired("status-id")
 
@@ -164,12 +167,21 @@ func statusSubcommandRunE(subcmd string, args []string) error {
 	var err error
 
 	var limOpts *madon.LimitParams
+	if opt.limit > 0 /* || opt.sinceID > 0 || opt.maxID > 0 */ {
+		limOpts = new(madon.LimitParams)
+	}
+
 	if opt.limit > 0 {
-		if limOpts == nil {
-			limOpts = new(madon.LimitParams)
-		}
 		limOpts.Limit = int(opt.limit)
 	}
+	/*
+		if opt.maxID > 0 {
+			limOpts.MaxID = int(opt.maxID)
+		}
+		if opt.sinceID > 0 {
+			limOpts.SinceID = int(opt.sinceID)
+		}
+	*/
 
 	switch subcmd {
 	case "show":

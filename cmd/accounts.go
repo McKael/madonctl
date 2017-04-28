@@ -20,7 +20,7 @@ var accountsOpts struct {
 	accountID                 int
 	accountUID                string
 	unset                     bool   // TODO remove eventually?
-	limit                     uint   // Limit the number of results
+	limit, sinceID, maxID     uint   // Limit the results
 	onlyMedia, excludeReplies bool   // For acccount statuses
 	remoteUID                 string // For account follow
 	acceptFR, rejectFR        bool   // For account follow_requests
@@ -45,6 +45,8 @@ func init() {
 	accountsCmd.PersistentFlags().IntVarP(&accountsOpts.accountID, "account-id", "a", 0, "Account ID number")
 	accountsCmd.PersistentFlags().StringVarP(&accountsOpts.accountUID, "user-id", "u", "", "Account user ID")
 	accountsCmd.PersistentFlags().UintVarP(&accountsOpts.limit, "limit", "l", 0, "Limit number of results")
+	accountsCmd.PersistentFlags().UintVar(&accountsOpts.sinceID, "since-id", 0, "Request IDs greater than a value")
+	accountsCmd.PersistentFlags().UintVar(&accountsOpts.maxID, "max-id", 0, "Request IDs less (or equal) than a value")
 
 	// Subcommand flags
 	accountStatusesSubcommand.Flags().BoolVar(&accountsOpts.onlyMedia, "only-media", false, "Only statuses with media attachments")
@@ -238,7 +240,6 @@ replaced.`,
 // accountSubcommandsRunE is a generic function for status subcommands
 func accountSubcommandsRunE(subcmd string, args []string) error {
 	opt := accountsOpts
-	var limOpts *madon.LimitParams
 
 	if opt.accountUID != "" {
 		if opt.accountID > 0 {
@@ -326,11 +327,19 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 		}
 	}
 
+	var limOpts *madon.LimitParams
+	if opt.limit > 0 || opt.sinceID > 0 || opt.maxID > 0 {
+		limOpts = new(madon.LimitParams)
+	}
+
 	if opt.limit > 0 {
-		if limOpts == nil {
-			limOpts = new(madon.LimitParams)
-		}
 		limOpts.Limit = int(opt.limit)
+	}
+	if opt.maxID > 0 {
+		limOpts.MaxID = int(opt.maxID)
+	}
+	if opt.sinceID > 0 {
+		limOpts.SinceID = int(opt.sinceID)
 	}
 
 	// All account subcommands need to have signed in
