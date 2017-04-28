@@ -19,6 +19,12 @@ To install the application from source (you need to have Go >= 1.5), just type:
 
 and you should be able to run `madonctl`.
 
+For upgrades, you can use `go get -u github.com/McKael/madonctl` to upgrade
+the dependencies (like [madon](https://github.com/McKael/madon)) at the same
+time.
+
+Travis automated testing is run for Go versions 1.7 and 1.8.
+
 ### Download
 
 Check the [Release page](https://github.com/McKael/madonctl/releases) for some pre-built binaries.
