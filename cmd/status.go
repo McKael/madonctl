@@ -163,6 +163,14 @@ func statusSubcommandRunE(subcmd string, args []string) error {
 	var obj interface{}
 	var err error
 
+	var limOpts *madon.LimitParams
+	if opt.limit > 0 {
+		if limOpts == nil {
+			limOpts = new(madon.LimitParams)
+		}
+		limOpts.Limit = int(opt.limit)
+	}
+
 	switch subcmd {
 	case "show":
 		var status *madon.Status
@@ -178,15 +186,15 @@ func statusSubcommandRunE(subcmd string, args []string) error {
 		obj = context
 	case "reblogged-by":
 		var accountList []madon.Account
-		accountList, err = gClient.GetStatusRebloggedBy(opt.statusID)
-		if opt.limit > 0 {
+		accountList, err = gClient.GetStatusRebloggedBy(opt.statusID, limOpts)
+		if opt.limit > 0 && len(accountList) > int(opt.limit) {
 			accountList = accountList[:opt.limit]
 		}
 		obj = accountList
 	case "favourited-by":
 		var accountList []madon.Account
-		accountList, err = gClient.GetStatusFavouritedBy(opt.statusID)
-		if opt.limit > 0 {
+		accountList, err = gClient.GetStatusFavouritedBy(opt.statusID, limOpts)
+		if opt.limit > 0 && len(accountList) > int(opt.limit) {
 			accountList = accountList[:opt.limit]
 		}
 		obj = accountList

@@ -7,6 +7,8 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
+
+	"github.com/McKael/madon"
 )
 
 var timelineOpts struct {
@@ -39,6 +41,12 @@ func init() {
 
 func timelineRunE(cmd *cobra.Command, args []string) error {
 	opt := timelineOpts
+	var limOpts *madon.LimitParams
+
+	if opt.limit > 0 {
+		limOpts = new(madon.LimitParams)
+		limOpts.Limit = int(opt.limit)
+	}
 
 	tl := "home"
 	if len(args) > 0 {
@@ -50,13 +58,13 @@ func timelineRunE(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	sl, err := gClient.GetTimelines(tl, opt.local)
+	sl, err := gClient.GetTimelines(tl, opt.local, limOpts)
 	if err != nil {
 		errPrint("Error: %s", err.Error())
 		return nil
 	}
 
-	if opt.limit > 0 {
+	if opt.limit > 0 && len(sl) > int(opt.limit) {
 		sl = sl[:opt.limit]
 	}
 

@@ -42,6 +42,7 @@ func init() {
 
 func notificationRunE(cmd *cobra.Command, args []string) error {
 	opt := notificationsOpts
+	var limOpts *madon.LimitParams
 
 	if !opt.list && !opt.clear && opt.notifID < 1 {
 		return errors.New("missing parameters")
@@ -51,13 +52,18 @@ func notificationRunE(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
+	if accountsOpts.limit > 0 {
+		limOpts = new(madon.LimitParams)
+		limOpts.Limit = int(accountsOpts.limit)
+	}
+
 	var obj interface{}
 	var err error
 
 	if opt.list {
 		var notifications []madon.Notification
-		notifications, err = gClient.GetNotifications()
-		if accountsOpts.limit > 0 {
+		notifications, err = gClient.GetNotifications(limOpts)
+		if accountsOpts.limit > 0 && len(notifications) > int(accountsOpts.limit) {
 			notifications = notifications[:accountsOpts.limit]
 		}
 		obj = notifications

@@ -238,6 +238,7 @@ replaced.`,
 // accountSubcommandsRunE is a generic function for status subcommands
 func accountSubcommandsRunE(subcmd string, args []string) error {
 	opt := accountsOpts
+	var limOpts *madon.LimitParams
 
 	if opt.accountUID != "" {
 		if opt.accountID > 0 {
@@ -249,7 +250,7 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 		if err := madonInit(true); err != nil {
 			return err
 		}
-		accList, err := gClient.SearchAccounts(opt.accountUID, 2)
+		accList, err := gClient.SearchAccounts(opt.accountUID, &madon.LimitParams{Limit: 2})
 		if err != nil || len(accList) < 1 {
 			errPrint("Cannot find user '%s': %v", opt.accountUID, err)
 			os.Exit(1)
@@ -325,6 +326,13 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 		}
 	}
 
+	if opt.limit > 0 {
+		if limOpts == nil {
+			limOpts = new(madon.LimitParams)
+		}
+		limOpts.Limit = int(opt.limit)
+	}
+
 	// All account subcommands need to have signed in
 	if err := madonInit(true); err != nil {
 		return err
@@ -344,26 +352,26 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 		obj = account
 	case "search":
 		var accountList []madon.Account
-		accountList, err = gClient.SearchAccounts(strings.Join(args, " "), int(opt.limit))
+		accountList, err = gClient.SearchAccounts(strings.Join(args, " "), limOpts)
 		obj = accountList
 	case "followers":
 		var accountList []madon.Account
-		accountList, err = gClient.GetAccountFollowers(opt.accountID)
-		if opt.limit > 0 {
+		accountList, err = gClient.GetAccountFollowers(opt.accountID, limOpts)
+		if opt.limit > 0 && len(accountList) > int(opt.limit) {
 			accountList = accountList[:opt.limit]
 		}
 		obj = accountList
 	case "following":
 		var accountList []madon.Account
-		accountList, err = gClient.GetAccountFollowing(opt.accountID)
-		if opt.limit > 0 {
+		accountList, err = gClient.GetAccountFollowing(opt.accountID, limOpts)
+		if opt.limit > 0 && len(accountList) > int(opt.limit) {
 			accountList = accountList[:opt.limit]
 		}
 		obj = accountList
 	case "statuses":
 		var statusList []madon.Status
-		statusList, err = gClient.GetAccountStatuses(opt.accountID, opt.onlyMedia, opt.excludeReplies)
-		if opt.limit > 0 {
+		statusList, err = gClient.GetAccountStatuses(opt.accountID, opt.onlyMedia, opt.excludeReplies, limOpts)
+		if opt.limit > 0 && len(statusList) > int(opt.limit) {
 			statusList = statusList[:opt.limit]
 		}
 		obj = statusList
@@ -382,8 +390,8 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 	case "follow-requests":
 		if opt.list {
 			var followRequests []madon.Account
-			followRequests, err = gClient.GetAccountFollowRequests()
-			if opt.limit > 0 {
+			followRequests, err = gClient.GetAccountFollowRequests(limOpts)
+			if opt.limit > 0 && len(followRequests) > int(opt.limit) {
 				followRequests = followRequests[:opt.limit]
 			}
 			obj = followRequests
@@ -404,22 +412,22 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 		}
 	case "favourites":
 		var statusList []madon.Status
-		statusList, err = gClient.GetFavourites()
-		if opt.limit > 0 {
+		statusList, err = gClient.GetFavourites(limOpts)
+		if opt.limit > 0 && len(statusList) > int(opt.limit) {
 			statusList = statusList[:opt.limit]
 		}
 		obj = statusList
 	case "blocks":
 		var accountList []madon.Account
-		accountList, err = gClient.GetBlockedAccounts()
-		if opt.limit > 0 {
+		accountList, err = gClient.GetBlockedAccounts(limOpts)
+		if opt.limit > 0 && len(accountList) > int(opt.limit) {
 			accountList = accountList[:opt.limit]
 		}
 		obj = accountList
 	case "mutes":
 		var accountList []madon.Account
-		accountList, err = gClient.GetMutedAccounts()
-		if opt.limit > 0 {
+		accountList, err = gClient.GetMutedAccounts(limOpts)
+		if opt.limit > 0 && len(accountList) > int(opt.limit) {
 			accountList = accountList[:opt.limit]
 		}
 		obj = accountList
@@ -441,8 +449,8 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 	case "reports":
 		if opt.list {
 			var reports []madon.Report
-			reports, err = gClient.GetReports()
-			if opt.limit > 0 {
+			reports, err = gClient.GetReports(limOpts)
+			if opt.limit > 0 && len(reports) > int(opt.limit) {
 				reports = reports[:opt.limit]
 			}
 			obj = reports
