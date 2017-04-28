@@ -62,6 +62,11 @@ You can change the toot visibility, add a Content Warning (a.k.a. spoiler) or se
 % madonctl post --file image.jpg Selfie # Send a media file
 ```
 
+Send (text) file content as new message:
+```
+% madonctl toot --text-file message.txt
+```
+
 Some account-related commands:
 ``` sh
 % madonctl accounts blocked                       # List blocked accounts

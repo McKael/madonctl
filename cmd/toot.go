@@ -35,7 +35,7 @@ var tootAliasCmd = &cobra.Command{
   madonctl toot --spoiler Warning "Hello, World"
   madonctl status post --media-ids ID1,ID2 "Here are the photos"
   madonctl post --sensitive --file image.jpg Image
-  madonctl post --text-file message.txt`,
+  madonctl toot --text-file message.txt`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if err := madonInit(true); err != nil {
 			return err
