@@ -14,8 +14,8 @@ import (
 )
 
 var notificationsOpts struct {
-	list, clear bool
-	notifID     int
+	list, clear, dismiss bool
+	notifID              int
 }
 
 // notificationsCmd represents the notifications subcommand
@@ -25,6 +25,7 @@ var notificationsCmd = &cobra.Command{
 	Short:   "Manage notifications",
 	Example: `  madonctl accounts notifications --list
   madonctl accounts notifications --list --clear
+  madonctl accounts notifications --dismiss --notification-id N
   madonctl accounts notifications --notification-id N`,
 	//Long:    `TBW...`,
 	RunE: notificationRunE,
@@ -35,6 +36,7 @@ func init() {
 
 	notificationsCmd.Flags().BoolVar(&notificationsOpts.list, "list", false, "List all current notifications")
 	notificationsCmd.Flags().BoolVar(&notificationsOpts.clear, "clear", false, "Clear all current notifications")
+	notificationsCmd.Flags().BoolVar(&notificationsOpts.dismiss, "dismiss", false, "Delete a notification")
 	notificationsCmd.Flags().IntVar(&notificationsOpts.notifID, "notification-id", 0, "Get a notification")
 }
 
@@ -60,7 +62,11 @@ func notificationRunE(cmd *cobra.Command, args []string) error {
 		}
 		obj = notifications
 	} else if opt.notifID > 0 {
-		obj, err = gClient.GetNotification(opt.notifID)
+		if opt.dismiss {
+			err = gClient.DismissNotification(opt.notifID)
+		} else {
+			obj, err = gClient.GetNotification(opt.notifID)
+		}
 	}
 
 	if err == nil && opt.clear {

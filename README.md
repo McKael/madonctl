@@ -72,6 +72,8 @@ Some account-related commands:
 % madonctl accounts blocked                       # List blocked accounts
 % madonctl accounts muted                         # List muted accounts
 % madonctl accounts notifications --list --clear  # List and clear notifications
+% madonctl accounts notifications --notification-id 1234 # Display notification
+% madonctl accounts notifications --dismiss --notification-id 1234 # Mastodon 1.3+
 ```
 
 Update your account information:
