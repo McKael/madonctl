@@ -187,6 +187,7 @@ func (p *PlainPrinter) plainPrintInstance(i *madon.Instance, w io.Writer, indent
 	indentedPrint(w, indent, false, true, "Description", "%s", html2string(i.Description))
 	indentedPrint(w, indent, false, true, "URL", "%s", i.URI)
 	indentedPrint(w, indent, false, true, "Email", "%s", i.Email)
+	indentedPrint(w, indent, false, true, "Version", "%s", i.Version)
 	return nil
 }
 
