@@ -116,6 +116,8 @@ Read timelines:
 % madonctl timeline                 # Display home timeline
 % madonctl timeline public          # Display federated timeline
 % madonctl timeline public --local  # Display public local timeline
+
+% madonctl timeline --limit 3       # Display 3 latest home timeline messages
 ```
 
 Use the streaming API and fetch timelines and notifications:
@@ -165,7 +167,8 @@ or the application ID with:\
 All the users that have favorited a given status:\
 `madonctl status --status-id 101194 favourited-by --template '{{.username}}{{"\n"}}'`
 
-For more complex templates, one can use the `--template-file` option.
+For more complex templates, one can use the `--template-file` option.\
+See the [templates](templates) folder.
 
 ## References
 
