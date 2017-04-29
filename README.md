@@ -77,6 +77,7 @@ Some account-related commands:
 ``` sh
 % madonctl accounts blocked                       # List blocked accounts
 % madonctl accounts muted                         # List muted accounts
+% madonctl accounts notifications --list --all    # List really all notifications
 % madonctl accounts notifications --list --clear  # List and clear notifications
 % madonctl accounts notifications --notification-id 1234 # Display notification
 % madonctl accounts notifications --dismiss --notification-id 1234 # Mastodon 1.3+
@@ -88,6 +89,25 @@ Update your account information:
 % madonctl accounts update --note "Newcomer"      # Update user note (bio)
 % madonctl accounts update --note ""              # Clear note
 % madonctl accounts update --avatar me.png        # Update avatar
+```
+
+See your own posts:
+``` sh
+% madonctl accounts statuses                      # See last posts
+% madonctl accounts statuses --all                # See all statuses
+% madonctl accounts --user-id Gargron@mastodon.social -l5 # Last 5 statuses
+```
+
+You can specify the (instance-specific) account ID number (--account-id) or
+the user ID (--user-id).  In the later case, madonctl will search for the
+user so it must match exactly the ID known to your instance (without the
+@domain suffix if the user is on the same instance).
+
+Display accounts you're following or your followers:
+``` sh
+% madonctl accounts following                     # See last following
+% madonctl accounts following --all               # See all followed accounts
+% madonctl accounts followers --limit 30          # Last 30 followers
 ```
 
 Add/remove a favourite, boost a status...
