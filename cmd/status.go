@@ -31,6 +31,7 @@ var statusOpts struct {
 	// Used for several subcommands to limit the number of results
 	limit uint
 	//sinceID, maxID uint
+	all bool
 }
 
 func init() {
@@ -44,6 +45,7 @@ func init() {
 	statusCmd.PersistentFlags().UintVarP(&statusOpts.limit, "limit", "l", 0, "Limit number of results")
 	//statusCmd.PersistentFlags().UintVar(&statusOpts.sinceID, "since-id", 0, "Request IDs greater than a value")
 	//statusCmd.PersistentFlags().UintVar(&statusOpts.maxID, "max-id", 0, "Request IDs less (or equal) than a value")
+	statusCmd.PersistentFlags().BoolVar(&statusOpts.all, "all", false, "Fetch all results (for reblogged-by/favourited-by)")
 
 	statusCmd.MarkPersistentFlagRequired("status-id")
 
@@ -167,8 +169,9 @@ func statusSubcommandRunE(subcmd string, args []string) error {
 	var err error
 
 	var limOpts *madon.LimitParams
-	if opt.limit > 0 /* || opt.sinceID > 0 || opt.maxID > 0 */ {
+	if opt.all || opt.limit > 0 /* || opt.sinceID > 0 || opt.maxID > 0 */ {
 		limOpts = new(madon.LimitParams)
+		limOpts.All = opt.all
 	}
 
 	if opt.limit > 0 {

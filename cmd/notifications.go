@@ -52,8 +52,9 @@ func notificationRunE(cmd *cobra.Command, args []string) error {
 	}
 
 	var limOpts *madon.LimitParams
-	if accountsOpts.limit > 0 || accountsOpts.sinceID > 0 || accountsOpts.maxID > 0 {
+	if accountsOpts.all || accountsOpts.limit > 0 || accountsOpts.sinceID > 0 || accountsOpts.maxID > 0 {
 		limOpts = new(madon.LimitParams)
+		limOpts.All = accountsOpts.all
 	}
 
 	if accountsOpts.limit > 0 {

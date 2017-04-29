@@ -21,6 +21,7 @@ var accountsOpts struct {
 	accountUID                string
 	unset                     bool   // TODO remove eventually?
 	limit, sinceID, maxID     uint   // Limit the results
+	all                       bool   // Try to fetch all results
 	onlyMedia, excludeReplies bool   // For acccount statuses
 	remoteUID                 string // For account follow
 	acceptFR, rejectFR        bool   // For account follow_requests
@@ -47,6 +48,7 @@ func init() {
 	accountsCmd.PersistentFlags().UintVarP(&accountsOpts.limit, "limit", "l", 0, "Limit number of results")
 	accountsCmd.PersistentFlags().UintVar(&accountsOpts.sinceID, "since-id", 0, "Request IDs greater than a value")
 	accountsCmd.PersistentFlags().UintVar(&accountsOpts.maxID, "max-id", 0, "Request IDs less (or equal) than a value")
+	accountsCmd.PersistentFlags().BoolVar(&accountsOpts.all, "all", false, "Fetch all results")
 
 	// Subcommand flags
 	accountStatusesSubcommand.Flags().BoolVar(&accountsOpts.onlyMedia, "only-media", false, "Only statuses with media attachments")
@@ -344,8 +346,9 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 	}
 
 	var limOpts *madon.LimitParams
-	if opt.limit > 0 || opt.sinceID > 0 || opt.maxID > 0 {
+	if opt.all || opt.limit > 0 || opt.sinceID > 0 || opt.maxID > 0 {
 		limOpts = new(madon.LimitParams)
+		limOpts.All = opt.all
 	}
 
 	if opt.limit > 0 {
