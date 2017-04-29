@@ -320,6 +320,19 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 		if opt.accountID < 1 || len(opt.statusIDs) == 0 || opt.comment == "" {
 			return errors.New("missing parameter")
 		}
+	case "followers", "following", "statuses":
+		// If the user's account ID is missing, get it
+		if opt.accountID < 1 {
+			// Sign in now to look the user id up
+			if err := madonInit(true); err != nil {
+				return err
+			}
+			account, err := gClient.GetCurrentAccount()
+			if err != nil {
+				return err
+			}
+			opt.accountID = account.ID
+		}
 	default:
 		// The other subcommands here require an account ID
 		if opt.accountID < 1 {
