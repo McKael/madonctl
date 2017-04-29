@@ -83,6 +83,11 @@ Some account-related commands:
 % madonctl accounts notifications --dismiss --notification-id 1234 # Mastodon 1.3+
 ```
 
+Note: By default, madonctl will send a single query.  If you want all available
+results you should use the `--all` flag.  If you use a `--limit` value,
+madonctl might send several queries until the number of results reaches this
+value.
+
 Update your account information:
 ``` sh
 % madonctl accounts update --display-name "John"  # Update display name
