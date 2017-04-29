@@ -332,6 +332,9 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 				return err
 			}
 			opt.accountID = account.ID
+			if verbose {
+				errPrint("User account ID: %d", opt.accountID)
+			}
 		}
 	default:
 		// The other subcommands here require an account ID
