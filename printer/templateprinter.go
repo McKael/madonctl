@@ -28,7 +28,10 @@ type TemplatePrinter struct {
 // For TemplatePrinter, the option parameter contains the template string.
 func NewPrinterTemplate(option string) (*TemplatePrinter, error) {
 	tmpl := option
-	t, err := template.New("output").Funcs(template.FuncMap{"fromhtml": html2string}).Parse(tmpl)
+	t, err := template.New("output").Funcs(template.FuncMap{
+		"fromhtml": html2string,
+		"fromunix": unix2string,
+	}).Parse(tmpl)
 	if err != nil {
 		return nil, err
 	}

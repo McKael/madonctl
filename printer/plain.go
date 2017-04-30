@@ -127,6 +127,19 @@ func html2string(h string) string {
 	return h // Failed: return initial string
 }
 
+// unix2string convert a UNIX timestamp to a string
+func unix2string(ts interface{}) string {
+	switch t := ts.(type) {
+	case int64:
+		return time.Unix(t, 0).String()
+	case int:
+		return time.Unix(int64(t), 0).String()
+	case float64:
+		return time.Unix(int64(t), 0).String()
+	}
+	return fmt.Sprintf("%v", ts)
+}
+
 func indentedPrint(w io.Writer, indent string, title, skipIfEmpty bool, label string, format string, args ...interface{}) {
 	prefix := indent
 	if title {
@@ -272,7 +285,7 @@ func (p *PlainPrinter) plainPrintUserToken(s *madon.UserToken, w io.Writer, inde
 	indentedPrint(w, indent, true, false, "User token", "%s", s.AccessToken)
 	indentedPrint(w, indent, false, true, "Type", "%s", s.TokenType)
 	if s.CreatedAt != 0 {
-		indentedPrint(w, indent, false, true, "Timestamp", "%v", time.Unix(int64(s.CreatedAt), 0))
+		indentedPrint(w, indent, false, true, "Timestamp", "%v", unix2string(s.CreatedAt))
 	}
 	indentedPrint(w, indent, false, true, "Scope", "%s", s.Scope)
 	return nil
@@ -287,6 +300,6 @@ func (p *PlainPrinter) plainPrintInstanceStatistics(is *gomif.InstanceStatus, w 
 	indentedPrint(w, indent, false, false, "Statuses", "%d", is.Statuses)
 	indentedPrint(w, indent, false, false, "Open Registrations", "%v", is.OpenRegistrations)
 	indentedPrint(w, indent, false, false, "Up", "%v", is.Up)
-	indentedPrint(w, indent, false, false, "Date", "%s", time.Unix(is.Date, 0))
+	indentedPrint(w, indent, false, false, "Date", "%s", unix2string(is.Date))
 	return nil
 }
