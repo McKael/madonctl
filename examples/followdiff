@@ -1,0 +1,68 @@
+#! /bin/bash
+# (Using bash or zsh for the <() process substitution feature...)
+#
+# Sample script using madonctl (0.4+), use --help for usage.
+# This script uses the 'combine' utility (from the moreutils package in
+# Debian).
+#
+# MiKael, 2017-04
+
+set -e
+
+usage() {
+    echo "Usage: $0 following_only|followers_only|both"
+}
+
+# Check madonctl is in the PATH
+command -v madonctl >/dev/null 2>&1 || {
+    echo "Error: madonctl not found">&2
+    exit 1
+}
+# Check combine command (from the moreutils package)
+command -v combine >/dev/null 2>&1  || {
+    echo "Error: combine not found">&2
+    exit 1
+}
+
+# Get our account ID (not needed anymore as of 0.4.0)
+# me="$(madonctl account show --template '{{.id}}')"
+
+# $1 = following/followers
+getAccountFollow() {
+    TEMPL='{{.id}}{{"\n"}}'
+    madonctl accounts --all "$1" --template "$TEMPL"
+}
+
+displayAccount() {
+    id=$1
+    madonctl account show --account-id "$id" \
+        --template '{{printf "%s\t%s\n" .acct .display_name}}'
+}
+
+combineOutput() {
+    case $1 in
+        (both)
+            combine <(getAccountFollow following) and <(getAccountFollow followers)
+            ;;
+        (following_only)
+            combine <(getAccountFollow following) not <(getAccountFollow followers)
+            ;;
+        (followers_only)
+            combine <(getAccountFollow followers) not <(getAccountFollow following)
+            ;;
+    esac
+}
+
+case $1 in
+    (both|following_only|followers_only)
+        combineOutput "$1" | while read acccountID; do
+            displayAccount "$acccountID"
+        done
+        ;;
+    (help|--help|-h)
+        usage
+        ;;
+    (*)
+        usage>&2
+        exit 1
+esac
