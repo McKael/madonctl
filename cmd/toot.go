@@ -25,6 +25,12 @@ func init() {
 	tootAliasCmd.Flags().StringVarP(&statusOpts.mediaFilePath, "file", "f", "", "Media attachment file name")
 	tootAliasCmd.Flags().StringVar(&statusOpts.textFilePath, "text-file", "", "Text file name (message content)")
 	tootAliasCmd.Flags().IntVarP(&statusOpts.inReplyToID, "in-reply-to", "r", 0, "Status ID to reply to")
+
+	// Flag completion
+	annotation := make(map[string][]string)
+	annotation[cobra.BashCompCustom] = []string{"__madonctl_visibility"}
+
+	tootAliasCmd.Flags().Lookup("visibility").Annotations = annotation
 }
 
 var tootAliasCmd = &cobra.Command{

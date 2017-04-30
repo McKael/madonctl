@@ -30,6 +30,16 @@ var verbose bool
 var outputFormat string
 var outputTemplate, outputTemplateFile string
 
+// Shell completion functions
+const shellComplFunc = `
+__madonctl_visibility() {
+	COMPREPLY=( direct private unlisted public )
+}
+__madonctl_output() {
+	COMPREPLY=( plain json yaml template )
+}
+`
+
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
 	Use:               AppName,
@@ -84,6 +94,7 @@ file.
   madonctl accounts --account-id 1 followers --template '{{.acct}}{{"\n"}}'
   madonctl config whoami
   madonctl timeline :mastodon`,
+	BashCompletionFunction: shellComplFunc,
 }
 
 // Execute adds all child commands to the root command sets flags appropriately.
@@ -121,6 +132,12 @@ func init() {
 	viper.BindPFlag("login", RootCmd.PersistentFlags().Lookup("login"))
 	viper.BindPFlag("password", RootCmd.PersistentFlags().Lookup("password"))
 	viper.BindPFlag("token", RootCmd.PersistentFlags().Lookup("token"))
+
+	// Flag completion
+	annotation := make(map[string][]string)
+	annotation[cobra.BashCompCustom] = []string{"__madonctl_output"}
+
+	RootCmd.PersistentFlags().Lookup("output").Annotations = annotation
 }
 
 func checkOutputFormat(cmd *cobra.Command, args []string) error {

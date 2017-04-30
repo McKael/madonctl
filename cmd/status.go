@@ -59,6 +59,12 @@ func init() {
 	statusPostSubcommand.Flags().StringVarP(&statusOpts.mediaFilePath, "file", "f", "", "Media file name")
 	statusPostSubcommand.Flags().StringVar(&statusOpts.textFilePath, "text-file", "", "Text file name (message content)")
 	statusPostSubcommand.Flags().IntVarP(&statusOpts.inReplyToID, "in-reply-to", "r", 0, "Status ID to reply to")
+
+	// Flag completion
+	annotation := make(map[string][]string)
+	annotation[cobra.BashCompCustom] = []string{"__madonctl_visibility"}
+
+	statusPostSubcommand.Flags().Lookup("visibility").Annotations = annotation
 }
 
 // statusCmd represents the status command
