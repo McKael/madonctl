@@ -34,12 +34,6 @@ func NewPrinterPlain(option string) (*PlainPrinter, error) {
 	return &PlainPrinter{Indent: indentInc}, nil
 }
 
-// InstanceStatistics embeds a gomif.InstanceStatus with an ID in a new type
-type InstanceStatistics struct {
-	InstanceName string `json:"instance_name"`
-	gomif.InstanceStatus
-}
-
 // PrintObj sends the object as text to the writer
 // If the writer w is nil, standard output will be used.
 // For PlainPrinter, the option parameter contains the initial indent.
@@ -51,7 +45,8 @@ func (p *PlainPrinter) PrintObj(obj interface{}, w io.Writer, initialIndent stri
 	case []madon.Account, []madon.Attachment, []madon.Card, []madon.Context,
 		[]madon.Instance, []madon.Mention, []madon.Notification,
 		[]madon.Relationship, []madon.Report, []madon.Results,
-		[]madon.Status, []madon.StreamEvent, []madon.Tag:
+		[]madon.Status, []madon.StreamEvent, []madon.Tag,
+		[]*gomif.InstanceStatus:
 		return p.plainForeach(o, w, initialIndent)
 	case *madon.Account:
 		return p.plainPrintAccount(o, w, initialIndent)
@@ -97,9 +92,9 @@ func (p *PlainPrinter) PrintObj(obj interface{}, w io.Writer, initialIndent stri
 		return p.plainPrintUserToken(o, w, initialIndent)
 	case madon.UserToken:
 		return p.plainPrintUserToken(&o, w, initialIndent)
-	case *InstanceStatistics:
+	case *gomif.InstanceStatus:
 		return p.plainPrintInstanceStatistics(o, w, initialIndent)
-	case InstanceStatistics:
+	case gomif.InstanceStatus:
 		return p.plainPrintInstanceStatistics(&o, w, initialIndent)
 	}
 	// TODO: Mention
@@ -283,7 +278,10 @@ func (p *PlainPrinter) plainPrintUserToken(s *madon.UserToken, w io.Writer, inde
 	return nil
 }
 
-func (p *PlainPrinter) plainPrintInstanceStatistics(is *InstanceStatistics, w io.Writer, indent string) error {
+func (p *PlainPrinter) plainPrintInstanceStatistics(is *gomif.InstanceStatus, w io.Writer, indent string) error {
+	if is == nil {
+		return nil
+	}
 	indentedPrint(w, indent, true, false, "Instance", "%s", is.InstanceName)
 	indentedPrint(w, indent, false, false, "Users", "%d", is.Users)
 	indentedPrint(w, indent, false, false, "Statuses", "%d", is.Statuses)
