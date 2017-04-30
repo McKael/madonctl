@@ -13,7 +13,7 @@ It is built on top of [madon](https://github.com/McKael/madon), my Golang implem
 
 ### From source
 
-To install the application from source (you need to have Go >= 1.5), just type:
+To install the application from source (you need to have Go >= 1.7), just type:
 
     go get github.com/McKael/madonctl
 
@@ -163,6 +163,11 @@ Use the streaming API and fetch timelines and notifications:
 You can also use Go (Golang) templates:
 ``` sh
 % madonctl accounts --account-id 1 followers --template '{{.acct}}{{"\n"}}'
+```
+
+Number of users on current instance (madonctl 1.5+) (statistics from instances.mastodon.xyz API):
+```
+madonctl instance --stats --template '{{printf "%v\n" .users}}'
 ```
 
 There are many more commands, you can find them in the online help or the manpage.

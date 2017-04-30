@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/jaytaylor/html2text"
+	"github.com/m0t0k1ch1/gomif"
 
 	"github.com/McKael/madon"
 )
@@ -31,6 +32,12 @@ func NewPrinterPlain(option string) (*PlainPrinter, error) {
 		indentInc = option
 	}
 	return &PlainPrinter{Indent: indentInc}, nil
+}
+
+// InstanceStatistics embeds a gomif.InstanceStatus with an ID in a new type
+type InstanceStatistics struct {
+	InstanceName string `json:"instance_name"`
+	gomif.InstanceStatus
 }
 
 // PrintObj sends the object as text to the writer
@@ -90,6 +97,10 @@ func (p *PlainPrinter) PrintObj(obj interface{}, w io.Writer, initialIndent stri
 		return p.plainPrintUserToken(o, w, initialIndent)
 	case madon.UserToken:
 		return p.plainPrintUserToken(&o, w, initialIndent)
+	case *InstanceStatistics:
+		return p.plainPrintInstanceStatistics(o, w, initialIndent)
+	case InstanceStatistics:
+		return p.plainPrintInstanceStatistics(&o, w, initialIndent)
 	}
 	// TODO: Mention
 	// TODO: StreamEvent
@@ -269,5 +280,15 @@ func (p *PlainPrinter) plainPrintUserToken(s *madon.UserToken, w io.Writer, inde
 		indentedPrint(w, indent, false, true, "Timestamp", "%v", time.Unix(int64(s.CreatedAt), 0))
 	}
 	indentedPrint(w, indent, false, true, "Scope", "%s", s.Scope)
+	return nil
+}
+
+func (p *PlainPrinter) plainPrintInstanceStatistics(is *InstanceStatistics, w io.Writer, indent string) error {
+	indentedPrint(w, indent, true, false, "Instance", "%s", is.InstanceName)
+	indentedPrint(w, indent, false, false, "Users", "%d", is.Users)
+	indentedPrint(w, indent, false, false, "Statuses", "%d", is.Statuses)
+	indentedPrint(w, indent, false, false, "Open Registrations", "%v", is.OpenRegistrations)
+	indentedPrint(w, indent, false, false, "Up", "%v", is.Up)
+	indentedPrint(w, indent, false, false, "Date", "%s", time.Unix(is.Date, 0))
 	return nil
 }

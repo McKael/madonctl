@@ -16,3 +16,4 @@ install:
 - go get github.com/McKael/madon
 - go get github.com/ghodss/yaml
 - go get github.com/jaytaylor/html2text
+- go get github.com/m0t0k1ch1/gomif
