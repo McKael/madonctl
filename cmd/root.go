@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"os"
 
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
@@ -146,7 +147,7 @@ func checkOutputFormat(cmd *cobra.Command, args []string) error {
 	case "", "plain", "json", "yaml", "template":
 		return nil // Accepted
 	}
-	return fmt.Errorf("output format '%s' not supported", of)
+	return errors.Errorf("output format '%s' not supported", of)
 }
 
 // initConfig reads in config file and ENV variables if set.

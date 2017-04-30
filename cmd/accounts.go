@@ -6,10 +6,10 @@
 package cmd
 
 import (
-	"errors"
 	"os"
 	"strings"
 
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
 

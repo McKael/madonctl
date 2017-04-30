@@ -6,8 +6,7 @@
 package cmd
 
 import (
-	"errors"
-
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 
 	"github.com/McKael/madon"
@@ -76,7 +75,7 @@ func toot(tootText string) (*madon.Status, error) {
 
 		fileMediaID, err := uploadFile(opt.mediaFilePath)
 		if err != nil {
-			return nil, errors.New("cannot attach media file: " + err.Error())
+			return nil, errors.Wrap(err, "cannot attach media file")
 		}
 		if fileMediaID > 0 {
 			ids = append(ids, fileMediaID)

@@ -7,11 +7,11 @@ package cmd
 
 import (
 	"context"
-	"errors"
 	"os"
 	"strings"
 
 	"github.com/m0t0k1ch1/gomif"
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
 

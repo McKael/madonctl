@@ -6,12 +6,11 @@
 package cmd
 
 import (
-	"errors"
-	"fmt"
 	"strconv"
 	"strings"
 
 	"github.com/McKael/madon"
+	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 )
 
@@ -52,7 +51,7 @@ func madonInitClient() error {
 		}
 		// Check instance
 		if _, err := gClient.GetCurrentInstance(); err != nil {
-			return fmt.Errorf("could not use provided app secrets")
+			return errors.New("could not use provided app secrets")
 		}
 		if verbose {
 			errPrint("Using provided app secrets")
@@ -66,7 +65,7 @@ func madonInitClient() error {
 
 	gClient, err = madon.NewApp(AppName, scopes, madon.NoRedirect, instanceURL)
 	if err != nil {
-		return fmt.Errorf("app registration failed: %s", err.Error())
+		return errors.Wrap(err, "app registration failed")
 	}
 
 	errPrint("Registred new application.")
@@ -95,9 +94,9 @@ func madonLogin() error {
 		return nil
 	}
 	if !verbose && err.Error() == "cannot unmarshal server response: invalid character '<' looking for beginning of value" {
-		return fmt.Errorf("login failed (server did not return a JSON response - check your credentials)")
+		return errors.New("login failed (server did not return a JSON response - check your credentials)")
 	}
-	return fmt.Errorf("login failed: %s", err.Error())
+	return errors.Wrap(err, "login failed")
 }
 
 // splitIDs splits a list of IDs into an int64 array
