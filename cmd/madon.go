@@ -43,6 +43,10 @@ func madonInitClient() error {
 		return errors.New("no instance provided")
 	}
 
+	if verbose {
+		errPrint("Instance: '%s'", instanceURL)
+	}
+
 	if appID != "" && appSecret != "" {
 		// We already have an app key/secret pair
 		gClient, err = madon.RestoreApp(AppName, instanceURL, appID, appSecret, nil)
@@ -51,10 +55,10 @@ func madonInitClient() error {
 		}
 		// Check instance
 		if _, err := gClient.GetCurrentInstance(); err != nil {
-			return errors.New("could not use provided app secrets")
+			return errors.New("could not connect to server with provided app ID/secret")
 		}
 		if verbose {
-			errPrint("Using provided app secrets")
+			errPrint("Using provided app ID/secret")
 		}
 		return nil
 	}
