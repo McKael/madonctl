@@ -15,7 +15,7 @@ import (
 
 var notificationsOpts struct {
 	list, clear, dismiss bool
-	notifID              int
+	notifID              int64
 }
 
 // notificationsCmd represents the notifications subcommand
@@ -37,7 +37,7 @@ func init() {
 	notificationsCmd.Flags().BoolVar(&notificationsOpts.list, "list", false, "List all current notifications")
 	notificationsCmd.Flags().BoolVar(&notificationsOpts.clear, "clear", false, "Clear all current notifications")
 	notificationsCmd.Flags().BoolVar(&notificationsOpts.dismiss, "dismiss", false, "Delete a notification")
-	notificationsCmd.Flags().IntVar(&notificationsOpts.notifID, "notification-id", 0, "Get a notification")
+	notificationsCmd.Flags().Int64Var(&notificationsOpts.notifID, "notification-id", 0, "Get a notification")
 }
 
 func notificationRunE(cmd *cobra.Command, args []string) error {
@@ -61,10 +61,10 @@ func notificationRunE(cmd *cobra.Command, args []string) error {
 		limOpts.Limit = int(accountsOpts.limit)
 	}
 	if accountsOpts.maxID > 0 {
-		limOpts.MaxID = int(accountsOpts.maxID)
+		limOpts.MaxID = int64(accountsOpts.maxID)
 	}
 	if accountsOpts.sinceID > 0 {
-		limOpts.SinceID = int(accountsOpts.sinceID)
+		limOpts.SinceID = int64(accountsOpts.sinceID)
 	}
 
 	var obj interface{}

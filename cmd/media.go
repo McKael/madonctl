@@ -56,7 +56,7 @@ func mediaRunE(cmd *cobra.Command, args []string) error {
 }
 
 // uploadFile uploads a media file and returns the attachment ID
-func uploadFile(filePath string) (int, error) {
+func uploadFile(filePath string) (int64, error) {
 	attachment, err := gClient.UploadMedia(filePath)
 	if err != nil {
 		return 0, err

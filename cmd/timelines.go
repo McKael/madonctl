@@ -12,8 +12,9 @@ import (
 )
 
 var timelineOpts struct {
-	local                 bool
-	limit, sinceID, maxID uint
+	local          bool
+	limit          uint
+	sinceID, maxID int64
 }
 
 // timelineCmd represents the timelines command
@@ -37,8 +38,8 @@ func init() {
 
 	timelineCmd.Flags().BoolVar(&timelineOpts.local, "local", false, "Posts from the local instance")
 	timelineCmd.Flags().UintVarP(&timelineOpts.limit, "limit", "l", 0, "Limit number of results")
-	timelineCmd.PersistentFlags().UintVar(&timelineOpts.sinceID, "since-id", 0, "Request IDs greater than a value")
-	timelineCmd.PersistentFlags().UintVar(&timelineOpts.maxID, "max-id", 0, "Request IDs less (or equal) than a value")
+	timelineCmd.PersistentFlags().Int64Var(&timelineOpts.sinceID, "since-id", 0, "Request IDs greater than a value")
+	timelineCmd.PersistentFlags().Int64Var(&timelineOpts.maxID, "max-id", 0, "Request IDs less (or equal) than a value")
 }
 
 func timelineRunE(cmd *cobra.Command, args []string) error {
@@ -53,10 +54,10 @@ func timelineRunE(cmd *cobra.Command, args []string) error {
 		limOpts.Limit = int(opt.limit)
 	}
 	if opt.maxID > 0 {
-		limOpts.MaxID = int(opt.maxID)
+		limOpts.MaxID = opt.maxID
 	}
 	if opt.sinceID > 0 {
-		limOpts.SinceID = int(opt.sinceID)
+		limOpts.SinceID = opt.sinceID
 	}
 
 	tl := "home"

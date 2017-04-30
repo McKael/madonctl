@@ -100,15 +100,15 @@ func madonLogin() error {
 	return fmt.Errorf("login failed: %s", err.Error())
 }
 
-// splitIDs splits a list of IDs into an int array
-func splitIDs(ids string) (list []int, err error) {
-	var i int
+// splitIDs splits a list of IDs into an int64 array
+func splitIDs(ids string) (list []int64, err error) {
+	var i int64
 	if ids == "" {
 		return
 	}
 	l := strings.Split(ids, ",")
 	for _, s := range l {
-		i, err = strconv.Atoi(s)
+		i, err = strconv.ParseInt(s, 10, 64)
 		if err != nil {
 			return
 		}

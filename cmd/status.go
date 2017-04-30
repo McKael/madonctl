@@ -16,21 +16,21 @@ import (
 )
 
 var statusOpts struct {
-	statusID int
+	statusID int64
 	unset    bool
 
 	// The following fields are used for the post/toot command
 	visibility    string
 	sensitive     bool
 	spoiler       string
-	inReplyToID   int
+	inReplyToID   int64
 	mediaIDs      string
 	mediaFilePath string
 	textFilePath  string
 
 	// Used for several subcommands to limit the number of results
 	limit uint
-	//sinceID, maxID uint
+	//sinceID, maxID int64
 	all bool
 }
 
@@ -41,10 +41,10 @@ func init() {
 	statusCmd.AddCommand(statusSubcommands...)
 
 	// Global flags
-	statusCmd.PersistentFlags().IntVarP(&statusOpts.statusID, "status-id", "s", 0, "Status ID number")
+	statusCmd.PersistentFlags().Int64VarP(&statusOpts.statusID, "status-id", "s", 0, "Status ID number")
 	statusCmd.PersistentFlags().UintVarP(&statusOpts.limit, "limit", "l", 0, "Limit number of results")
-	//statusCmd.PersistentFlags().UintVar(&statusOpts.sinceID, "since-id", 0, "Request IDs greater than a value")
-	//statusCmd.PersistentFlags().UintVar(&statusOpts.maxID, "max-id", 0, "Request IDs less (or equal) than a value")
+	//statusCmd.PersistentFlags().Int64Var(&statusOpts.sinceID, "since-id", 0, "Request IDs greater than a value")
+	//statusCmd.PersistentFlags().Int64Var(&statusOpts.maxID, "max-id", 0, "Request IDs less (or equal) than a value")
 	statusCmd.PersistentFlags().BoolVar(&statusOpts.all, "all", false, "Fetch all results (for reblogged-by/favourited-by)")
 
 	statusCmd.MarkPersistentFlagRequired("status-id")
@@ -58,7 +58,7 @@ func init() {
 	statusPostSubcommand.Flags().StringVar(&statusOpts.mediaIDs, "media-ids", "", "Comma-separated list of media IDs")
 	statusPostSubcommand.Flags().StringVarP(&statusOpts.mediaFilePath, "file", "f", "", "Media file name")
 	statusPostSubcommand.Flags().StringVar(&statusOpts.textFilePath, "text-file", "", "Text file name (message content)")
-	statusPostSubcommand.Flags().IntVarP(&statusOpts.inReplyToID, "in-reply-to", "r", 0, "Status ID to reply to")
+	statusPostSubcommand.Flags().Int64VarP(&statusOpts.inReplyToID, "in-reply-to", "r", 0, "Status ID to reply to")
 
 	// Flag completion
 	annotation := make(map[string][]string)
@@ -185,10 +185,10 @@ func statusSubcommandRunE(subcmd string, args []string) error {
 	}
 	/*
 		if opt.maxID > 0 {
-			limOpts.MaxID = int(opt.maxID)
+			limOpts.MaxID = int64(opt.maxID)
 		}
 		if opt.sinceID > 0 {
-			limOpts.SinceID = int(opt.sinceID)
+			limOpts.SinceID = int64(opt.sinceID)
 		}
 	*/
 

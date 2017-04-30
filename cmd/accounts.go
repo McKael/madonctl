@@ -17,10 +17,11 @@ import (
 )
 
 var accountsOpts struct {
-	accountID                 int
+	accountID                 int64
 	accountUID                string
 	unset                     bool   // TODO remove eventually?
-	limit, sinceID, maxID     uint   // Limit the results
+	limit                     uint   // Limit the results
+	sinceID, maxID            int64  // Query boundaries
 	all                       bool   // Try to fetch all results
 	onlyMedia, excludeReplies bool   // For acccount statuses
 	remoteUID                 string // For account follow
@@ -43,11 +44,11 @@ func init() {
 	accountsCmd.AddCommand(accountSubcommands...)
 
 	// Global flags
-	accountsCmd.PersistentFlags().IntVarP(&accountsOpts.accountID, "account-id", "a", 0, "Account ID number")
+	accountsCmd.PersistentFlags().Int64VarP(&accountsOpts.accountID, "account-id", "a", 0, "Account ID number")
 	accountsCmd.PersistentFlags().StringVarP(&accountsOpts.accountUID, "user-id", "u", "", "Account user ID")
 	accountsCmd.PersistentFlags().UintVarP(&accountsOpts.limit, "limit", "l", 0, "Limit number of results")
-	accountsCmd.PersistentFlags().UintVar(&accountsOpts.sinceID, "since-id", 0, "Request IDs greater than a value")
-	accountsCmd.PersistentFlags().UintVar(&accountsOpts.maxID, "max-id", 0, "Request IDs less (or equal) than a value")
+	accountsCmd.PersistentFlags().Int64Var(&accountsOpts.sinceID, "since-id", 0, "Request IDs greater than a value")
+	accountsCmd.PersistentFlags().Int64Var(&accountsOpts.maxID, "max-id", 0, "Request IDs less (or equal) than a value")
 	accountsCmd.PersistentFlags().BoolVar(&accountsOpts.all, "all", false, "Fetch all results")
 
 	// Subcommand flags
@@ -355,10 +356,10 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 		limOpts.Limit = int(opt.limit)
 	}
 	if opt.maxID > 0 {
-		limOpts.MaxID = int(opt.maxID)
+		limOpts.MaxID = opt.maxID
 	}
 	if opt.sinceID > 0 {
-		limOpts.SinceID = int(opt.sinceID)
+		limOpts.SinceID = opt.sinceID
 	}
 
 	// All account subcommands need to have signed in
@@ -460,13 +461,13 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 		}
 		obj = accountList
 	case "relationships":
-		var ids []int
+		var ids []int64
 		ids, err = splitIDs(opt.accountIDs)
 		if err != nil {
 			return errors.New("cannot parse account IDs")
 		}
 		if opt.accountID > 0 { // Allow --account-id
-			ids = []int{opt.accountID}
+			ids = []int64{opt.accountID}
 		}
 		if len(ids) < 1 {
 			return errors.New("missing account IDs")
@@ -485,7 +486,7 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 			break
 		}
 		// Send a report
-		var ids []int
+		var ids []int64
 		ids, err = splitIDs(opt.statusIDs)
 		if err != nil {
 			return errors.New("cannot parse status IDs")
