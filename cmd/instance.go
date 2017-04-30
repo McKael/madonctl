@@ -32,7 +32,7 @@ This command display the instance information returned by the server.
 With '--stats', the instances.mastodon.xyz API is queried and instance
 statistics will be returned (the instance server can be specified).
 To get a range of statistics, both '--start' and '--end' should be provided
-with EPOCH timestamps (e.g. "date +%s").
+with UNIX timestamps (e.g. "date +%s").
 `,
 	RunE: instanceRunE,
 	Example: `  madonctl instance
