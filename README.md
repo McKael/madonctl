@@ -25,6 +25,11 @@ time.
 
 Travis automated testing is run for Go versions 1.7 and 1.8.
 
+For *upgrades*, you should use the `-u` option to ensure the dependencies are
+updated as well:
+
+    go get -u github.com/McKael/madonctl
+
 ### Download
 
 Check the [Release page](https://github.com/McKael/madonctl/releases) for some pre-built binaries.
