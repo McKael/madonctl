@@ -7,6 +7,7 @@ package cmd
 
 import (
 	"io"
+	"os"
 
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -84,7 +85,7 @@ func streamRunE(cmd *cobra.Command, args []string) error {
 	err := gClient.StreamListener(streamName, tag, evChan, stop, done)
 	if err != nil {
 		errPrint("Error: %s", err.Error())
-		return nil
+		os.Exit(1)
 	}
 
 	p, err := getPrinter()

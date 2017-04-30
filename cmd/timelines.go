@@ -6,6 +6,8 @@
 package cmd
 
 import (
+	"os"
+
 	"github.com/spf13/cobra"
 
 	"github.com/McKael/madon"
@@ -73,7 +75,7 @@ func timelineRunE(cmd *cobra.Command, args []string) error {
 	sl, err := gClient.GetTimelines(tl, opt.local, limOpts)
 	if err != nil {
 		errPrint("Error: %s", err.Error())
-		return nil
+		os.Exit(1)
 	}
 
 	if opt.limit > 0 && len(sl) > int(opt.limit) {

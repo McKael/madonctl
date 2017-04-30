@@ -6,6 +6,8 @@
 package cmd
 
 import (
+	"os"
+
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
@@ -44,7 +46,7 @@ func mediaRunE(cmd *cobra.Command, args []string) error {
 	attachment, err := gClient.UploadMedia(opt.filePath)
 	if err != nil {
 		errPrint("Error: %s", err.Error())
-		return nil
+		os.Exit(1)
 	}
 
 	p, err := getPrinter()

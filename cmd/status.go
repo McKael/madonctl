@@ -7,6 +7,7 @@ package cmd
 
 import (
 	"io/ioutil"
+	"os"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -251,7 +252,7 @@ func statusSubcommandRunE(subcmd string, args []string) error {
 
 	if err != nil {
 		errPrint("Error: %s", err.Error())
-		return nil
+		os.Exit(1)
 	}
 	if obj == nil {
 		return nil

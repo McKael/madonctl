@@ -65,7 +65,7 @@ func instanceRunE(cmd *cobra.Command, args []string) error {
 	i, err := gClient.GetCurrentInstance()
 	if err != nil {
 		errPrint("Error: %s", err.Error())
-		return nil
+		os.Exit(1)
 	}
 
 	p, err := getPrinter()

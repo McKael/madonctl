@@ -6,6 +6,8 @@
 package cmd
 
 import (
+	"os"
+
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 
@@ -90,7 +92,7 @@ func notificationRunE(cmd *cobra.Command, args []string) error {
 
 	if err != nil {
 		errPrint("Error: %s", err.Error())
-		return nil
+		os.Exit(1)
 	}
 	if obj == nil {
 		return nil

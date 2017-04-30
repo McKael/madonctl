@@ -6,6 +6,7 @@
 package cmd
 
 import (
+	"os"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -46,7 +47,7 @@ func searchRunE(cmd *cobra.Command, args []string) error {
 	results, err := gClient.Search(strings.Join(args, " "), opt.resolve)
 	if err != nil {
 		errPrint("Error: %s", err.Error())
-		return nil
+		os.Exit(1)
 	}
 
 	p, err := getPrinter()

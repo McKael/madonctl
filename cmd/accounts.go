@@ -530,7 +530,7 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 
 	if err != nil {
 		errPrint("Error: %s", err.Error())
-		return nil
+		os.Exit(1)
 	}
 	if obj == nil {
 		return nil
