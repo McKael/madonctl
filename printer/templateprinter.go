@@ -13,6 +13,8 @@ import (
 	"reflect"
 	"text/template"
 
+	"github.com/m0t0k1ch1/gomif"
+
 	"github.com/McKael/madon"
 )
 
@@ -51,7 +53,8 @@ func (p *TemplatePrinter) PrintObj(obj interface{}, w io.Writer, tmpl string) er
 	case []madon.Account, []madon.Application, []madon.Attachment, []madon.Card,
 		[]madon.Client, []madon.Context, []madon.Instance, []madon.Mention,
 		[]madon.Notification, []madon.Relationship, []madon.Report,
-		[]madon.Results, []madon.Status, []madon.StreamEvent, []madon.Tag:
+		[]madon.Results, []madon.Status, []madon.StreamEvent, []madon.Tag,
+		[]*gomif.InstanceStatus:
 		return p.templateForeach(ot, w)
 	}
 
