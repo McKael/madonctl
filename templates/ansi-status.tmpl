@@ -1,5 +1,5 @@
-- Status ID: {{"\x1b[31m"}}{{.id}}{{"\x1b[0m"}}  {{"\x1b[35m"}}@{{.account.acct}}{{"\x1b[0m"}}
-  Name: {{"\x1b[1m"}}{{.account.display_name}}{{"\x1b[0m"}}
+- Status ID: {{color "red"}}{{.id}}{{color "reset"}}  {{color "magenta"}}@{{.account.acct}}{{color "reset"}}
+  Name: {{color ",,bold"}}{{.account.display_name}}{{color "reset"}}
   Date: {{.created_at}}
   URL: {{.url}}
 {{- if gt .in_reply_to_id 0.0}}
@@ -7,11 +7,11 @@
 {{- with .spoiler_text}}
   Spoiler: {{.}}{{end}}
 {{- if .reblog }}{{with .reblog}}
-  {{"\x1b[1m"}}Reblogged from: {{"\x1b[34;1m"}}@{{.account.acct}}{{"\x1b[0m"}}
+  {{color ",,bold"}}Reblogged from: {{color "magenta"}}@{{.account.acct}}{{color "reset"}}
     ID: {{.id}}
-    Name: {{"\x1b[1m"}}{{.account.display_name}}{{"\x1b[0m"}}
+    Name: {{color ",,bold"}}{{.account.display_name}}{{color "reset"}}
     Date: {{.created_at}}
-    Message: {{"\x1b[34m"}}{{.content | fromhtml}}{{"\x1b[0m"}}
+    Message: {{color "blue"}}{{.content | fromhtml}}{{color "reset"}}
 {{end}}{{else}}
-  Message: {{"\x1b[34m"}}{{.content | fromhtml}}{{"\x1b[0m"}}
+  Message: {{color "blue"}}{{.content | fromhtml}}{{color "reset"}}
 {{end -}}

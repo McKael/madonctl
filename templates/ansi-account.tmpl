@@ -1,12 +1,12 @@
-- Account ID: {{"\x1b[31m"}}{{.id}}{{"\x1b[0m"}}  {{"\x1b[35m"}}@{{.username}}{{"\x1b[0m"}}
-  UID: {{"\x1b[31m"}}{{.acct}}{{"\x1b[0m"}}
-  Display name: {{"\x1b[1m"}}{{.display_name}}{{"\x1b[0m"}}
+- Account ID: {{color "red"}}{{.id}}{{color "reset"}}  {{color "magenta"}}@{{.username}}{{color "reset"}}
+  UID: {{color "red"}}{{.acct}}{{color "reset"}}
+  Display name: {{color "white,,bold"}}{{.display_name}}{{color "reset"}}
   Date: {{.created_at}}
-  URL: {{"\x1b[36m"}}{{.url}}{{"\x1b[0m"}}
+  URL: {{color "cyan"}}{{.url}}{{color "reset"}}
   Statuses: {{.statuses_count}}
   Followers: {{.followers_count}}
   Following: {{.following_count}}
-{{- with .note}}
-  Note: {{. | fromhtml}}{{end}}
+{{- with .note}}{{if ne . "<p></p>"}}
+  Note: {{. | fromhtml}}{{end}}{{end}}
 {{- if eq .locked true}}
   Locked: true{{end}}
