@@ -67,7 +67,7 @@ func madonInitClient() error {
 		errPrint("Warning: provided app id/secrets incomplete -- registering again")
 	}
 
-	gClient, err = madon.NewApp(AppName, scopes, madon.NoRedirect, instanceURL)
+	gClient, err = madon.NewApp(AppName, AppWebsite, scopes, madon.NoRedirect, instanceURL)
 	if err != nil {
 		return errors.Wrap(err, "app registration failed")
 	}

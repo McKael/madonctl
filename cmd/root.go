@@ -20,13 +20,21 @@ import (
 
 // AppName is the CLI application name
 const AppName = "madonctl"
+
+// AppWebsite is the application website URL
+const AppWebsite = "https://github.com/McKael/madonctl"
+
+// defaultConfigFile is the path to the default configuration file
 const defaultConfigFile = "$HOME/.config/" + AppName + "/" + AppName + ".yaml"
 
+// Madon API client
+var gClient *madon.Client
+
+// Options
 var cfgFile string
 var safeMode bool
 var instanceURL, appID, appSecret string
 var login, password, token string
-var gClient *madon.Client
 var verbose bool
 var outputFormat string
 var outputTemplate, outputTemplateFile string
