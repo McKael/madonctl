@@ -16,6 +16,7 @@ import (
 	"github.com/m0t0k1ch1/gomif"
 
 	"github.com/McKael/madon"
+	"github.com/McKael/madonctl/printer/colors"
 )
 
 // TemplatePrinter represents a Template printer
@@ -31,6 +32,7 @@ func NewPrinterTemplate(option string) (*TemplatePrinter, error) {
 	t, err := template.New("output").Funcs(template.FuncMap{
 		"fromhtml": html2string,
 		"fromunix": unix2string,
+		"color":    colors.ANSICodeString,
 	}).Parse(tmpl)
 	if err != nil {
 		return nil, err
