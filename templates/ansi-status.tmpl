@@ -1,4 +1,4 @@
-- Status ID: {{color "red"}}{{.id}}{{color "reset"}}  {{color "magenta"}}@{{.account.acct}}{{color "reset"}}
+- Status ID: {{color "red"}}{{.id|printf "%.0f"}}{{color "reset"}}  {{color "magenta"}}@{{.account.acct}}{{color "reset"}}
   Name: {{color ",,bold"}}{{.account.display_name}}{{color "reset"}}
   Date: {{.created_at}}
   URL: {{.url}}
@@ -8,10 +8,22 @@
   Spoiler: {{.}}{{end}}
 {{- if .reblog }}{{with .reblog}}
   {{color ",,bold"}}Reblogged from: {{color "magenta"}}@{{.account.acct}}{{color "reset"}}
-    ID: {{.id}}
+    ID: {{.id|printf "%.0f"}}
     Name: {{color ",,bold"}}{{.account.display_name}}{{color "reset"}}
     Date: {{.created_at}}
     Message: {{color "blue"}}{{.content | fromhtml}}{{color "reset"}}
+{{- range .media_attachments}}
+    - Attachment ID: {{.id|printf "%.0f"}}
+{{- if .text_url}}
+      Text URL: {{.text_url}}{{else if .url}}
+      URL: {{.url}}{{else if .remote_url}}
+      Remote URL: {{.remote_url}}{{end}}{{end}}
 {{end}}{{else}}
   Message: {{color "blue"}}{{.content | fromhtml}}{{color "reset"}}
+{{- range .media_attachments}}
+  - Attachment ID: {{.id|printf "%.0f"}}
+{{- if .text_url}}
+    Text URL: {{.text_url}}{{else if .url}}
+    URL: {{.url}}{{else if .remote_url}}
+    Remote URL: {{.remote_url}}{{end}}{{end}}
 {{end -}}
