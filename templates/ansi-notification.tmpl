@@ -4,7 +4,7 @@
 {{- with .url}}
       URL: {{.url}}{{end}}
 {{- with .account}}
-  - Account: ({{.id|printf "%.0f"}}) @{{.acct}} - {{.display_name}}{{end}}
+  - Account: ({{.id|printf "%.0f"}}) {{color "magenta"}}@{{.acct}}{{color "reset"}}{{if .display_name}} - {{color "white,,bold"}}{{.display_name}}{{color "reset"}}{{end}}{{end}}
 {{- with .status}}
   - Status ID: {{color "red"}}{{.id|printf "%.0f"}}{{color "reset"}}  {{color "magenta"}}@{{.account.acct}}{{color "reset"}}
     Name: {{color ",,bold"}}{{.account.display_name}}{{color "reset"}}
