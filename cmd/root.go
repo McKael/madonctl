@@ -30,6 +30,7 @@ var gClient *madon.Client
 var verbose bool
 var outputFormat string
 var outputTemplate, outputTemplateFile string
+var colorMode string
 
 // Shell completion functions
 const shellComplFunc = `
@@ -38,6 +39,9 @@ __madonctl_visibility() {
 }
 __madonctl_output() {
 	COMPREPLY=( plain json yaml template )
+}
+__madonctl_color() {
+	COMPREPLY=( auto on off )
 }
 `
 
@@ -124,6 +128,8 @@ func init() {
 		"Go template (for output=template)")
 	RootCmd.PersistentFlags().StringVar(&outputTemplateFile, "template-file", "",
 		"Go template file (for output=template)")
+	RootCmd.PersistentFlags().StringVar(&colorMode, "color", "",
+		"Color mode (auto|on|off; for output=template)")
 
 	// Configuration file bindings
 	viper.BindPFlag("output", RootCmd.PersistentFlags().Lookup("output"))
@@ -133,12 +139,16 @@ func init() {
 	viper.BindPFlag("login", RootCmd.PersistentFlags().Lookup("login"))
 	viper.BindPFlag("password", RootCmd.PersistentFlags().Lookup("password"))
 	viper.BindPFlag("token", RootCmd.PersistentFlags().Lookup("token"))
+	viper.BindPFlag("color", RootCmd.PersistentFlags().Lookup("color"))
 
 	// Flag completion
-	annotation := make(map[string][]string)
-	annotation[cobra.BashCompCustom] = []string{"__madonctl_output"}
+	annotationOutput := make(map[string][]string)
+	annotationOutput[cobra.BashCompCustom] = []string{"__madonctl_output"}
+	annotationColor := make(map[string][]string)
+	annotationColor[cobra.BashCompCustom] = []string{"__madonctl_color"}
 
-	RootCmd.PersistentFlags().Lookup("output").Annotations = annotation
+	RootCmd.PersistentFlags().Lookup("output").Annotations = annotationOutput
+	RootCmd.PersistentFlags().Lookup("color").Annotations = annotationColor
 }
 
 func checkOutputFormat(cmd *cobra.Command, args []string) error {
@@ -189,6 +199,14 @@ func getOutputFormat() string {
 func getPrinter() (printer.ResourcePrinter, error) {
 	var opt string
 	of := getOutputFormat()
+
+	// Initialize color mode
+	switch viper.GetString("color") {
+	case "on", "yes", "force":
+		printer.ColorMode = 1
+	case "off", "no":
+		printer.ColorMode = 2
+	}
 
 	if of == "template" {
 		opt = outputTemplate
