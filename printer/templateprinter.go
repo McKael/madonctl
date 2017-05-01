@@ -14,10 +14,14 @@ import (
 	"text/template"
 
 	"github.com/m0t0k1ch1/gomif"
+	"github.com/mattn/go-isatty"
 
 	"github.com/McKael/madon"
 	"github.com/McKael/madonctl/printer/colors"
 )
+
+// DisableColors can be set to true to disable the color template function
+var DisableColors bool
 
 // TemplatePrinter represents a Template printer
 type TemplatePrinter struct {
@@ -32,11 +36,17 @@ func NewPrinterTemplate(option string) (*TemplatePrinter, error) {
 	t, err := template.New("output").Funcs(template.FuncMap{
 		"fromhtml": html2string,
 		"fromunix": unix2string,
-		"color":    colors.ANSICodeString,
+		"color":    ansiColor,
 	}).Parse(tmpl)
 	if err != nil {
 		return nil, err
 	}
+
+	// Check if stdout is a TTY
+	if !isatty.IsTerminal(os.Stdout.Fd()) {
+		DisableColors = true
+	}
+
 	return &TemplatePrinter{
 		rawTemplate: tmpl,
 		template:    t,
@@ -117,4 +127,11 @@ func (p *TemplatePrinter) templateForeach(ol interface{}, w io.Writer) error {
 		}
 	}
 	return nil
+}
+
+func ansiColor(desc string) (string, error) {
+	if DisableColors {
+		return "", nil
+	}
+	return colors.ANSICodeString(desc)
 }
