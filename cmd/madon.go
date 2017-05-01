@@ -55,7 +55,7 @@ func madonInitClient() error {
 		}
 		// Check instance
 		if _, err := gClient.GetCurrentInstance(); err != nil {
-			return errors.New("could not connect to server with provided app ID/secret")
+			return errors.Wrap(err, "could not connect to server with provided app ID/secret")
 		}
 		if verbose {
 			errPrint("Using provided app ID/secret")
