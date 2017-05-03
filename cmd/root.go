@@ -183,7 +183,13 @@ func initConfig() {
 	viper.AutomaticEnv()
 
 	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); viper.GetBool("verbose") && err == nil {
+	err := viper.ReadInConfig()
+	if err != nil {
+		if cfgFile != "" {
+			errPrint("Error: cannot read configuration file '%s'", cfgFile)
+			os.Exit(-1)
+		}
+	} else if viper.GetBool("verbose") {
 		errPrint("Using config file: %s", viper.ConfigFileUsed())
 	}
 }
