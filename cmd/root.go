@@ -186,7 +186,7 @@ func initConfig() {
 	err := viper.ReadInConfig()
 	if err != nil {
 		if cfgFile != "" {
-			errPrint("Error: cannot read configuration file '%s'", cfgFile)
+			errPrint("Error: cannot read configuration file '%s': %v", cfgFile, err)
 			os.Exit(-1)
 		}
 	} else if viper.GetBool("verbose") {
