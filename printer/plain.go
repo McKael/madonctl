@@ -189,14 +189,14 @@ func (p *PlainPrinter) plainPrintCard(c *madon.Card, w io.Writer, indent string)
 }
 
 func (p *PlainPrinter) plainPrintContext(c *madon.Context, w io.Writer, indent string) error {
-	indentedPrint(w, indent, true, false, "Context", "%d relative(s)", len(c.Ancestors)+len(c.Descendents))
+	indentedPrint(w, indent, true, false, "Context", "%d relative(s)", len(c.Ancestors)+len(c.Descendants))
 	if len(c.Ancestors) > 0 {
 		indentedPrint(w, indent, false, false, "Ancestors", "")
 		p.PrintObj(c.Ancestors, w, indent+p.Indent)
 	}
-	if len(c.Descendents) > 0 {
-		indentedPrint(w, indent, false, false, "Descendents", "")
-		p.PrintObj(c.Descendents, w, indent+p.Indent)
+	if len(c.Descendants) > 0 {
+		indentedPrint(w, indent, false, false, "Descendants", "")
+		p.PrintObj(c.Descendants, w, indent+p.Indent)
 	}
 	return nil
 }
