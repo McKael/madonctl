@@ -28,6 +28,7 @@ var statusOpts struct {
 	mediaIDs      string
 	mediaFilePath string
 	textFilePath  string
+	stdin         bool
 
 	// Used for several subcommands to limit the number of results
 	limit uint
@@ -60,6 +61,7 @@ func init() {
 	statusPostSubcommand.Flags().StringVarP(&statusOpts.mediaFilePath, "file", "f", "", "Media file name")
 	statusPostSubcommand.Flags().StringVar(&statusOpts.textFilePath, "text-file", "", "Text file name (message content)")
 	statusPostSubcommand.Flags().Int64VarP(&statusOpts.inReplyToID, "in-reply-to", "r", 0, "Status ID to reply to")
+	statusPostSubcommand.Flags().BoolVar(&statusOpts.stdin, "stdin", false, "Read message content from standard input")
 
 	// Flag completion
 	annotation := make(map[string][]string)
@@ -163,7 +165,8 @@ var statusPostSubcommand = &cobra.Command{
 	Example: `  madonctl status post --spoiler Warning "Hello, World"
   madonctl status toot --sensitive --file image.jpg Image
   madonctl status post --media-ids ID1,ID2,ID3 Image
-  madonctl status toot --text-file message.txt`,
+  madonctl status toot --text-file message.txt
+  echo "Hello from #madonctl" | madonctl status toot --stdin`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return statusSubcommandRunE(cmd.Name(), args)
 	},
@@ -240,6 +243,12 @@ func statusSubcommandRunE(subcmd string, args []string) error {
 		if opt.textFilePath != "" {
 			var b []byte
 			if b, err = ioutil.ReadFile(opt.textFilePath); err != nil {
+				break
+			}
+			text = string(b)
+		} else if opt.stdin {
+			var b []byte
+			if b, err = ioutil.ReadAll(os.Stdin); err != nil {
 				break
 			}
 			text = string(b)

@@ -24,6 +24,7 @@ func init() {
 	tootAliasCmd.Flags().StringVarP(&statusOpts.mediaFilePath, "file", "f", "", "Media attachment file name")
 	tootAliasCmd.Flags().StringVar(&statusOpts.textFilePath, "text-file", "", "Text file name (message content)")
 	tootAliasCmd.Flags().Int64VarP(&statusOpts.inReplyToID, "in-reply-to", "r", 0, "Status ID to reply to")
+	tootAliasCmd.Flags().BoolVar(&statusOpts.stdin, "stdin", false, "Read message content from standard input")
 
 	// Flag completion
 	annotation := make(map[string][]string)
@@ -40,7 +41,8 @@ var tootAliasCmd = &cobra.Command{
   madonctl toot --spoiler Warning "Hello, World"
   madonctl status post --media-ids ID1,ID2 "Here are the photos"
   madonctl post --sensitive --file image.jpg Image
-  madonctl toot --text-file message.txt`,
+  madonctl toot --text-file message.txt
+  echo "Hello from #madonctl" | madonctl toot --visibility unlisted --stdin`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if err := madonInit(true); err != nil {
 			return err
