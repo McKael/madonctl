@@ -1,19 +1,19 @@
-- Status ID: {{color "red"}}{{.id|printf "%.0f"}}{{color "reset"}}  {{color "magenta"}}@{{.account.acct}}{{color "reset"}}
+- Status ID: {{color "red"}}{{printf "%.0f" .id}}{{color "reset"}}  {{color "magenta"}}@{{.account.acct}}{{color "reset"}}
   Name: {{color ",,bold"}}{{.account.display_name}}{{color "reset"}}
   Date: {{.created_at}}
   URL: {{.url}}
 {{- if gt .in_reply_to_id 0.0}}
-  Replying to: {{.in_reply_to_id}}{{end}}
+  Replying to: {{printf "%.0f" .in_reply_to_id}}{{end}}
 {{- with .spoiler_text}}
   Spoiler: {{.}}{{end}}
 {{- if .reblog }}{{with .reblog}}
   {{color ",,bold"}}Reblogged from: {{color "magenta"}}@{{.account.acct}}{{color "reset"}}
-    ID: {{.id|printf "%.0f"}}
+    ID: {{printf "%.0f" .id}}
     Name: {{color ",,bold"}}{{.account.display_name}}{{color "reset"}}
     Date: {{.created_at}}
     Message: {{color "blue"}}{{.content | fromhtml}}{{color "reset"}}
 {{- range .media_attachments}}
-    - Attachment ID: {{.id|printf "%.0f"}}
+    - Attachment ID: {{printf "%.0f" .id}}
 {{- if .text_url}}
       Text URL: {{.text_url}}{{else if .url}}
       URL: {{.url}}{{else if .remote_url}}
@@ -21,7 +21,7 @@
 {{end}}{{else}}
   Message: {{color "blue"}}{{.content | fromhtml}}{{color "reset"}}
 {{- range .media_attachments}}
-  - Attachment ID: {{.id|printf "%.0f"}}
+  - Attachment ID: {{printf "%.0f" .id}}
 {{- if .text_url}}
     Text URL: {{.text_url}}{{else if .url}}
     URL: {{.url}}{{else if .remote_url}}
