@@ -8,6 +8,7 @@ package cmd
 import (
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 
 	"github.com/McKael/madon"
 )
@@ -42,7 +43,10 @@ var tootAliasCmd = &cobra.Command{
   madonctl status post --media-ids ID1,ID2 "Here are the photos"
   madonctl post --sensitive --file image.jpg Image
   madonctl toot --text-file message.txt
-  echo "Hello from #madonctl" | madonctl toot --visibility unlisted --stdin`,
+  echo "Hello from #madonctl" | madonctl toot --visibility unlisted --stdin
+
+The default visibility can be set in the configuration file with the option
+'default_visibility' (or with an environmnent variable).`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if err := madonInit(true); err != nil {
 			return err
@@ -54,11 +58,18 @@ var tootAliasCmd = &cobra.Command{
 func toot(tootText string) (*madon.Status, error) {
 	opt := statusOpts
 
+	// Get default visibility from configuration
+	if opt.visibility == "" {
+		if v := viper.GetString("default_visibility"); v != "" {
+			opt.visibility = v
+		}
+	}
+
 	switch opt.visibility {
 	case "", "direct", "private", "unlisted", "public":
 		// OK
 	default:
-		return nil, errors.New("invalid visibility argument value")
+		return nil, errors.Errorf("invalid visibility argument value '%s'", opt.visibility)
 	}
 
 	if opt.inReplyToID < 0 {

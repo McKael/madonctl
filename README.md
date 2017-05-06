@@ -48,6 +48,8 @@ Note that you can generate a configuration file for your settings with
 
 If you only provide the Mastodon instance, it will generate a configuration file with an application ID/secret for this instance and you will have to add the user credentials.
 
+Note that every variable from the configration file can also be set with an environment variable (e.g. `export MADONCTL_INSTANCE='https://mamot.fr'`).
+
 ### Usage
 
 The complete list of commands is available in the online help (`madonctl help`, `madonctl command --help`...)
@@ -66,6 +68,9 @@ You can change the toot visibility, add a Content Warning (a.k.a. spoiler) or se
 % madonctl toot --visibility private --spoiler CW "The answer was 42"
 % madonctl post --file image.jpg Selfie # Send a media file
 ```
+Note: The default toot visibility can be set in the configuration file with
+the `default_visibility` setting or with the environment variable (example
+`export MADONCTL_DEFAULT_VISIBILITY=unlisted`).
 
 Send (text) file content as new message:
 ```

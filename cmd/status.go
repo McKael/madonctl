@@ -166,7 +166,10 @@ var statusPostSubcommand = &cobra.Command{
   madonctl status toot --sensitive --file image.jpg Image
   madonctl status post --media-ids ID1,ID2,ID3 Image
   madonctl status toot --text-file message.txt
-  echo "Hello from #madonctl" | madonctl status toot --stdin`,
+  echo "Hello from #madonctl" | madonctl status toot --stdin
+
+The default visibility can be set in the configuration file with the option
+'default_visibility' (or with an environmnent variable).`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return statusSubcommandRunE(cmd.Name(), args)
 	},
