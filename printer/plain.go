@@ -270,6 +270,10 @@ func (p *PlainPrinter) plainPrintStatus(s *madon.Status, w io.Writer, indent str
 		return p.plainPrintStatus(s.Reblog, w, indent+p.Indent)
 	}
 
+	if s.Sensitive {
+		indentedPrint(w, indent, false, false, "Sensitive (NSFW)", "%v", s.Sensitive)
+	}
+
 	indentedPrint(w, indent, false, false, "Contents", "%s", html2string(s.Content))
 	if s.InReplyToID > 0 {
 		indentedPrint(w, indent, false, false, "In-Reply-To", "%d", s.InReplyToID)
