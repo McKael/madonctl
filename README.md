@@ -156,6 +156,16 @@ Use the streaming API and fetch timelines and notifications:
 % madonctl stream public            # Stream federated timeline
 ```
 
+You can also use hashtag streams:
+``` sh
+% madonctl stream :mastodon         # Stream for hastag 'mastodon'
+% madonctl stream :madonctl,golang  # Stream for several hashtags
+```
+
+Please note that madonctl will use one socket per stream, so the number of
+concurrent hashtags is currently limited to 4 for "politeness".
+
+
 (Almost) All commands have a customisable outpput
 ``` sh
 % madonctl accounts show            # Display an account
