@@ -2,15 +2,17 @@
   Name: {{color ",,bold"}}{{.account.display_name}}{{color "reset"}}
   Date: {{.created_at}}
   URL: {{.url}}
-{{- if gt .in_reply_to_id 0.0}}
-  Replying to: {{printf "%.0f" .in_reply_to_id}}{{end}}
-{{- with .spoiler_text}}
-  Spoiler: {{.}}{{end}}
 {{- if .reblog }}{{with .reblog}}
   {{color ",,bold"}}Reblogged from: {{color "magenta"}}@{{.account.acct}}{{color "reset"}}
     ID: {{printf "%.0f" .id}}
     Name: {{color ",,bold"}}{{.account.display_name}}{{color "reset"}}
     Date: {{.created_at}}
+{{- if gt .in_reply_to_id 0.0}}
+    Replying to: {{printf "%.0f" .in_reply_to_id}}{{end}}
+{{- if .sensitive}}
+  Sensitive: true{{end}}
+{{- with .spoiler_text}}
+    Spoiler: {{.}}{{end}}
     Message: {{color "blue"}}{{.content | fromhtml}}{{color "reset"}}
 {{- range .media_attachments}}
     - Attachment ID: {{printf "%.0f" .id}}
@@ -19,6 +21,12 @@
       URL: {{.url}}{{else if .remote_url}}
       Remote URL: {{.remote_url}}{{end}}{{end}}
 {{end}}{{else}}
+{{- if gt .in_reply_to_id 0.0}}
+  Replying to: {{printf "%.0f" .in_reply_to_id}}{{end}}
+{{- if .sensitive}}
+  Sensitive: true{{end}}
+{{- with .spoiler_text}}
+  Spoiler: {{.}}{{end}}
   Message: {{color "blue"}}{{.content | fromhtml}}{{color "reset"}}
 {{- range .media_attachments}}
   - Attachment ID: {{printf "%.0f" .id}}
