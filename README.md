@@ -72,6 +72,11 @@ Send (text) file content as new message:
 % madonctl toot --text-file message.txt
 ```
 
+... or read message from standard input:
+```
+% echo "Hello from #madonctl" | madonctl toot --stdin
+```
+
 Some account-related commands:
 ``` sh
 % madonctl accounts blocked                       # List blocked accounts
