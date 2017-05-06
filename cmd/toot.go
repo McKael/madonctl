@@ -82,5 +82,9 @@ func toot(tootText string) (*madon.Status, error) {
 		}
 	}
 
+	if tootText == "" && len(ids) == 0 && opt.spoiler == "" {
+		return nil, errors.New("toot is empty")
+	}
+
 	return gClient.PostStatus(tootText, opt.inReplyToID, ids, opt.sensitive, opt.spoiler, opt.visibility)
 }
