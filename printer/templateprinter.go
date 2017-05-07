@@ -20,9 +20,6 @@ import (
 	"github.com/McKael/madonctl/printer/colors"
 )
 
-// ColorMode defines the color behaviour: 0=auto, 1=forced, 2=disabled
-var ColorMode int
-
 // disableColors can be set to true to disable the color template function
 var disableColors bool
 
@@ -34,6 +31,8 @@ type TemplatePrinter struct {
 
 // NewPrinterTemplate returns a Template ResourcePrinter
 // For TemplatePrinter, the options parameter contains the template string.
+// The "color_mode" option defines the color behaviour: it can be
+// "auto" (default), "on" (forced), "off" (disabled).
 func NewPrinterTemplate(options Options) (*TemplatePrinter, error) {
 	tmpl := options["template"]
 	if tmpl == "" {
@@ -50,7 +49,8 @@ func NewPrinterTemplate(options Options) (*TemplatePrinter, error) {
 
 	// Update disableColors.
 	// In auto-mode, check if stdout is a TTY.
-	if ColorMode == 2 || (ColorMode == 0 && !isatty.IsTerminal(os.Stdout.Fd())) {
+	colorMode := options["color_mode"]
+	if colorMode == "off" || (colorMode != "on" && !isatty.IsTerminal(os.Stdout.Fd())) {
 		disableColors = true
 	}
 

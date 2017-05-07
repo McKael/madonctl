@@ -55,9 +55,11 @@ func getPrinter() (printer.ResourcePrinter, error) {
 	// Initialize color mode
 	switch viper.GetString("color") {
 	case "on", "yes", "force":
-		printer.ColorMode = 1
+		opt["color_mode"] = "on"
 	case "off", "no":
-		printer.ColorMode = 2
+		opt["color_mode"] = "off"
+	default:
+		opt["color_mode"] = "auto"
 	}
 
 	if of == "theme" {

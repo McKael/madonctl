@@ -25,12 +25,15 @@ const themeDirName = "themes"
 type ThemePrinter struct {
 	name        string
 	templateDir string
+	colorMode   string
 }
 
 // NewPrinterTheme returns a Theme ResourcePrinter
 // For ThemePrinter, the options parameter contains the name of the theme
 // and the template base directory (themes are assumed to be in the "themes"
 // subdirectory).
+// The "color_mode" option defines the color behaviour: it can be
+// "auto" (default), "on" (forced), "off" (disabled).
 func NewPrinterTheme(options Options) (*ThemePrinter, error) {
 	name, ok := options["name"]
 	if !ok || name == "" {
@@ -43,6 +46,7 @@ func NewPrinterTheme(options Options) (*ThemePrinter, error) {
 	return &ThemePrinter{
 		name:        name,
 		templateDir: options["template_directory"],
+		colorMode:   options["color_mode"],
 	}, nil
 }
 
@@ -107,7 +111,11 @@ func (p *ThemePrinter) PrintObj(obj interface{}, w io.Writer, tmpl string) error
 			if err != nil {
 				return errors.Wrap(err, "cannot read template")
 			}
-			np, err := NewPrinter("template", Options{"template": string(t)})
+			o := Options{
+				"template":   string(t),
+				"color_mode": p.colorMode,
+			}
+			np, err := NewPrinter("template", o)
 			if err != nil {
 				return errors.Wrap(err, "cannot create template printer")
 			}
