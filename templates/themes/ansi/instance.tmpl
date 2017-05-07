@@ -2,4 +2,4 @@
   URI:      {{color "magenta"}}{{.uri}}{{color "reset"}}
   Email:    {{.email}}
   Version:  {{.version}}
-  Description: {{color "blue"}}{{.description | fromhtml}}{{color "reset"}}
+  Description: {{color "blue"}}{{.description | fromhtml | wrap "     " 80 | trim}}{{color "reset"}}

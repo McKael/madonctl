@@ -10,7 +10,7 @@
     Followers: {{.followers_count}}
     Following: {{.following_count}}
   {{- with .note}}{{if ne . "<p></p>"}}
-    Note: {{. | fromhtml}}{{end}}{{end}}
+    Note: {{color "yellow"}}{{. | fromhtml | wrap "     " 80 | trim}}{{color "reset"}}{{end}}{{end}}
   {{- if eq .locked true}}
     Locked: true{{end}}{{end}}{{/* of range */}}
 {{end}}{{/* of accounts */}}
@@ -24,7 +24,7 @@
     Sensitive: true{{end}}
 {{- with .spoiler_text}}
     Spoiler: {{.}}{{end}}
-    Message: {{color "blue"}}{{.content | fromhtml}}{{color "reset"}}
+    Message: {{color "blue"}}{{.content | fromhtml | wrap "     " 80 | trim}}{{color "reset"}}
 {{- range .media_attachments}}
     - Attachment ID: {{printf "%.0f" .id}}
 {{- if .text_url}}

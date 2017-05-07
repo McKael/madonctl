@@ -13,7 +13,7 @@
   Sensitive: true{{end}}
 {{- with .spoiler_text}}
     Spoiler: {{.}}{{end}}
-    Message: {{color "blue"}}{{.content | fromhtml}}{{color "reset"}}
+    Message: {{color "blue"}}{{.content | fromhtml | wrap "     " 80 | trim}}{{color "reset"}}
 {{- range .media_attachments}}
     - Attachment ID: {{printf "%.0f" .id}}
 {{- if .text_url}}
@@ -27,7 +27,7 @@
   Sensitive: true{{end}}
 {{- with .spoiler_text}}
   Spoiler: {{.}}{{end}}
-  Message: {{color "blue"}}{{.content | fromhtml}}{{color "reset"}}
+  Message: {{color "blue"}}{{.content | fromhtml | wrap "     " 80 | trim}}{{color "reset"}}
 {{- range .media_attachments}}
   - Attachment ID: {{printf "%.0f" .id}}
 {{- if .text_url}}
