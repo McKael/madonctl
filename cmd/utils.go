@@ -22,7 +22,7 @@ import (
 func checkOutputFormat(cmd *cobra.Command, args []string) error {
 	of := viper.GetString("output")
 	switch of {
-	case "", "plain", "json", "yaml", "template":
+	case "", "plain", "json", "yaml", "template", "theme":
 		return nil // Accepted
 	}
 	return errors.Errorf("output format '%s' not supported", of)
@@ -35,10 +35,14 @@ func getOutputFormat() string {
 		of = "plain"
 	}
 	// Override format if a template is provided
-	if of == "plain" && (outputTemplate != "" || outputTemplateFile != "") {
+	if of == "plain" {
 		// If the format is plain and there is a template option,
-		// set the format to "template".
-		of = "template"
+		// set the format to "template".  Same for "theme".
+		if outputTemplate != "" || outputTemplateFile != "" {
+			of = "template"
+		} else if outputTheme != "" {
+			of = "theme"
+		}
 	}
 	return of
 }
@@ -56,7 +60,10 @@ func getPrinter() (printer.ResourcePrinter, error) {
 		printer.ColorMode = 2
 	}
 
-	if of == "template" {
+	if of == "theme" {
+		opt["name"] = outputTheme
+		opt["template_directory"] = viper.GetString("template_directory")
+	} else if of == "template" {
 		opt["template"] = outputTemplate
 		if outputTemplateFile != "" {
 			tmpl, err := readTemplate(outputTemplateFile, viper.GetString("template_directory"))

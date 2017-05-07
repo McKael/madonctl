@@ -31,6 +31,8 @@ func NewPrinter(output string, options Options) (ResourcePrinter, error) {
 		return NewPrinterYAML(options)
 	case "template":
 		return NewPrinterTemplate(options)
+	case "theme":
+		return NewPrinterTheme(options)
 	}
 	return nil, fmt.Errorf("unhandled output format")
 }

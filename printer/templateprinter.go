@@ -36,6 +36,9 @@ type TemplatePrinter struct {
 // For TemplatePrinter, the options parameter contains the template string.
 func NewPrinterTemplate(options Options) (*TemplatePrinter, error) {
 	tmpl := options["template"]
+	if tmpl == "" {
+		return nil, fmt.Errorf("empty template")
+	}
 	t, err := template.New("output").Funcs(template.FuncMap{
 		"fromhtml": html2string,
 		"fromunix": unix2string,

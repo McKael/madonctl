@@ -33,7 +33,7 @@ var instanceURL, appID, appSecret string
 var login, password, token string
 var verbose bool
 var outputFormat string
-var outputTemplate, outputTemplateFile string
+var outputTemplate, outputTemplateFile, outputTheme string
 var colorMode string
 
 // Shell completion functions
@@ -42,7 +42,7 @@ __madonctl_visibility() {
 	COMPREPLY=( direct private unlisted public )
 }
 __madonctl_output() {
-	COMPREPLY=( plain json yaml template )
+	COMPREPLY=( plain json yaml template theme )
 }
 __madonctl_color() {
 	COMPREPLY=( auto on off )
@@ -127,11 +127,13 @@ func init() {
 	RootCmd.PersistentFlags().StringVarP(&password, "password", "P", "", "Instance user password")
 	RootCmd.PersistentFlags().StringVarP(&token, "token", "t", "", "User token")
 	RootCmd.PersistentFlags().StringVarP(&outputFormat, "output", "o", "plain",
-		"Output format (plain|json|yaml|template)")
+		"Output format (plain|json|yaml|template|theme)")
 	RootCmd.PersistentFlags().StringVar(&outputTemplate, "template", "",
 		"Go template (for output=template)")
 	RootCmd.PersistentFlags().StringVar(&outputTemplateFile, "template-file", "",
 		"Go template file (for output=template)")
+	RootCmd.PersistentFlags().StringVar(&outputTheme, "theme", "",
+		"Theme name (for output=theme)")
 	RootCmd.PersistentFlags().StringVar(&colorMode, "color", "",
 		"Color mode (auto|on|off; for output=template)")
 
