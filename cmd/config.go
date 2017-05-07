@@ -42,6 +42,14 @@ var configSubcommands = []*cobra.Command{
 			return configDisplayToken()
 		},
 	},
+	&cobra.Command{
+		Use: "themes",
+		//Aliases: []string{},
+		Short: "Display available themes",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return configDisplayThemes()
+		},
+	},
 }
 
 const configurationTemplate = `---
@@ -68,7 +76,7 @@ func configDump() error {
 	// Try to sign in if a login was provided
 	if viper.GetString("token") != "" || viper.GetString("login") != "" {
 		if err := madonLogin(); err != nil {
-			errPrint("Error: could not log in: %s", err)
+			errPrint("Error: could not log in: %v", err)
 			os.Exit(-1)
 		}
 	}
@@ -89,7 +97,7 @@ func configDump() error {
 		p, err = getPrinter()
 	}
 	if err != nil {
-		errPrint("Error: %s", err.Error())
+		errPrint("Error: %v", err)
 		os.Exit(1)
 	}
 	return p.PrintObj(gClient, nil, "")
@@ -107,8 +115,32 @@ func configDisplayToken() error {
 
 	p, err := getPrinter()
 	if err != nil {
-		errPrint("Error: %s", err.Error())
+		errPrint("Error: %v", err)
 		os.Exit(1)
 	}
 	return p.PrintObj(gClient.UserToken, nil, "")
+}
+
+// configDisplayThemes lists the available themes
+// It is intended for shell completion.
+func configDisplayThemes() error {
+	var p printer.ResourcePrinter
+
+	themes, err := getThemes()
+	if err != nil {
+		errPrint("Error: %v", err)
+		os.Exit(1)
+	}
+
+	if getOutputFormat() == "plain" {
+		pOptions := printer.Options{"template": `{{printf "%s\n" .}}`}
+		p, err = printer.NewPrinterTemplate(pOptions)
+	} else {
+		p, err = getPrinter()
+	}
+	if err != nil {
+		errPrint("Error: %v", err)
+		os.Exit(1)
+	}
+	return p.PrintObj(themes, nil, "")
 }

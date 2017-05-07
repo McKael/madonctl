@@ -95,6 +95,24 @@ func readTemplate(name, templateDir string) ([]byte, error) {
 	return ioutil.ReadFile(name)
 }
 
+func getThemes() ([]string, error) {
+	templDir := viper.GetString("template_directory")
+	if templDir == "" {
+		return nil, errors.New("template_directory not defined")
+	}
+	files, err := ioutil.ReadDir(filepath.Join(templDir, "themes"))
+	if err != nil {
+		return nil, errors.Wrap(err, "cannot read theme directory")
+	}
+	var tl []string
+	for _, f := range files {
+		if f.IsDir() {
+			tl = append(tl, f.Name())
+		}
+	}
+	return tl, nil
+}
+
 func fileExists(filename string) bool {
 	if _, err := os.Stat(filename); err != nil {
 		return false

@@ -47,6 +47,13 @@ __madonctl_output() {
 __madonctl_color() {
 	COMPREPLY=( auto on off )
 }
+__madonctl_theme() {
+	local madonctl_output out
+	# This doesn't handle spaces or special chars...
+	if out=$(madonctl config themes 2>/dev/null); then
+		COMPREPLY=( $( compgen -W "${out[*]}" -- "$cur" ) )
+	fi
+}
 `
 
 // RootCmd represents the base command when called without any subcommands
@@ -152,9 +159,12 @@ func init() {
 	annotationOutput[cobra.BashCompCustom] = []string{"__madonctl_output"}
 	annotationColor := make(map[string][]string)
 	annotationColor[cobra.BashCompCustom] = []string{"__madonctl_color"}
+	annotationTheme := make(map[string][]string)
+	annotationTheme[cobra.BashCompCustom] = []string{"__madonctl_theme"}
 
 	RootCmd.PersistentFlags().Lookup("output").Annotations = annotationOutput
 	RootCmd.PersistentFlags().Lookup("color").Annotations = annotationColor
+	RootCmd.PersistentFlags().Lookup("theme").Annotations = annotationTheme
 }
 
 // initConfig reads in config file and ENV variables if set.
