@@ -171,7 +171,7 @@ Please note that madonctl will use one socket per stream, so the number of
 concurrent hashtags is currently limited to 4 for "politeness".
 
 
-(Almost) All commands have a customisable outpput
+(Almost) All commands have a customisable output:
 ``` sh
 % madonctl accounts show            # Display an account
 % madonctl accounts show -o yaml    # Display an account, in yaml

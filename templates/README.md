@@ -13,10 +13,9 @@ If set, template files are looked up relatively from this repository first
 (unless they are absolute paths or start with "./" or "../").
 
 The themes are located in the `themes` directory, inside the base template
-directory.
+directory (e.g. `$template_directory/themes/ansi/`).
 A theme is a collection of templates grouped in a theme directory (the name of
-the directory is the name of the theme).\
-E.g. `$template_directory/themes/ansi/`
+the directory is the name of the theme).
 
 ## Themes
 
@@ -45,16 +44,18 @@ Here's a list of available commands (please check the Go template documentation 
 - fromhtml HTMLTEXT
 - wrap TEXT
 - trim TEXT
-- color COLORSPEC
+- color COLORSPEC\
   COLORSPEC is a string with the following format: `[FGCOLOR][,BGCOLOR[,STYLE]]` or `reset`.
 
-  Examples:
+Examples:
 
-    {{color "red"}}red text{{color "reset"}}
-    {{color ",red"}}red background{{color "reset"}}
-    {{color "white,,bold"}}bright white text{{color "reset"}}
+```
+  {{color "red"}}red text{{color "reset"}}
+  {{color ",red"}}red background{{color "reset"}}
+  {{color "white,,bold"}}bright white text{{color "reset"}}
 
-    Message: {{color "blue"}}{{.content | fromhtml | wrap "    " 80 | trim}}{{color "reset"}}
+  Message: {{color "blue"}}{{.content | fromhtml | wrap "    " 80 | trim}}{{color "reset"}}
+```
 
 Note that the _wrap_ implementation might change in the future; currently it is
 paragraph-based, not line-based, and the result can be surprising after
