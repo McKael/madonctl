@@ -150,7 +150,8 @@ func streamRunE(cmd *cobra.Command, args []string) error {
 		close(stop)
 		<-done
 		close(evChan)
-		return err
+		errPrint("Error: %s", err.Error())
+		os.Exit(1)
 	}
 
 LISTEN:

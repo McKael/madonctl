@@ -6,6 +6,8 @@
 package cmd
 
 import (
+	"os"
+
 	"github.com/spf13/cobra"
 
 	"github.com/McKael/madon"
@@ -43,7 +45,8 @@ var versionCmd = &cobra.Command{
 			p, err = getPrinter()
 		}
 		if err != nil {
-			return err
+			errPrint("Error: %s", err.Error())
+			os.Exit(1)
 		}
 		return p.PrintObj(v, nil, "")
 	},

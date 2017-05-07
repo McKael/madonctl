@@ -88,7 +88,8 @@ func configDump() error {
 		p, err = getPrinter()
 	}
 	if err != nil {
-		return err
+		errPrint("Error: %s", err.Error())
+		os.Exit(1)
 	}
 	return p.PrintObj(gClient, nil, "")
 }
@@ -105,7 +106,8 @@ func configDisplayToken() error {
 
 	p, err := getPrinter()
 	if err != nil {
-		return err
+		errPrint("Error: %s", err.Error())
+		os.Exit(1)
 	}
 	return p.PrintObj(gClient.UserToken, nil, "")
 }
