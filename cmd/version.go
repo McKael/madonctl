@@ -40,7 +40,8 @@ var versionCmd = &cobra.Command{
 		var p printer.ResourcePrinter
 		var err error
 		if getOutputFormat() == "plain" {
-			p, err = printer.NewPrinterTemplate(versionTemplate)
+			pOptions := printer.Options{"template": versionTemplate}
+			p, err = printer.NewPrinterTemplate(pOptions)
 		} else {
 			p, err = getPrinter()
 		}

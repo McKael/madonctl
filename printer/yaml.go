@@ -18,7 +18,7 @@ type YAMLPrinter struct {
 }
 
 // NewPrinterYAML returns a YAML ResourcePrinter
-func NewPrinterYAML(option string) (*YAMLPrinter, error) {
+func NewPrinterYAML(options Options) (*YAMLPrinter, error) {
 	return &YAMLPrinter{}, nil
 }
 

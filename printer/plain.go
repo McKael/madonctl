@@ -26,10 +26,10 @@ type PlainPrinter struct {
 
 // NewPrinterPlain returns a plaintext ResourcePrinter
 // For PlainPrinter, the option parameter contains the indent prefix.
-func NewPrinterPlain(option string) (*PlainPrinter, error) {
+func NewPrinterPlain(options Options) (*PlainPrinter, error) {
 	indentInc := "  "
-	if option != "" {
-		indentInc = option
+	if i, ok := options["indent"]; ok {
+		indentInc = i
 	}
 	return &PlainPrinter{Indent: indentInc}, nil
 }

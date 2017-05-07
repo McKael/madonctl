@@ -83,7 +83,8 @@ func configDump() error {
 		}
 		errPrint("You can copy the following lines into a configuration file.")
 		errPrint("E.g. %s -i INSTANCE -L USERNAME -P PASS config dump > %s\n", AppName, cfile)
-		p, err = printer.NewPrinterTemplate(configurationTemplate)
+		pOptions := printer.Options{"template": configurationTemplate}
+		p, err = printer.NewPrinterTemplate(pOptions)
 	} else {
 		p, err = getPrinter()
 	}

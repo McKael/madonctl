@@ -45,7 +45,7 @@ func getOutputFormat() string {
 
 // getPrinter returns a resource printer for the requested output format.
 func getPrinter() (printer.ResourcePrinter, error) {
-	var opt string
+	opt := make(printer.Options)
 	of := getOutputFormat()
 
 	// Initialize color mode
@@ -57,13 +57,13 @@ func getPrinter() (printer.ResourcePrinter, error) {
 	}
 
 	if of == "template" {
-		opt = outputTemplate
+		opt["template"] = outputTemplate
 		if outputTemplateFile != "" {
 			tmpl, err := readTemplate(outputTemplateFile, viper.GetString("template_directory"))
 			if err != nil {
 				return nil, err
 			}
-			opt = string(tmpl)
+			opt["template"] = string(tmpl)
 		}
 	}
 	return printer.NewPrinter(of, opt)

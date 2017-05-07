@@ -16,7 +16,7 @@ type JSONPrinter struct {
 }
 
 // NewPrinterJSON returns a JSON ResourcePrinter
-func NewPrinterJSON(option string) (*JSONPrinter, error) {
+func NewPrinterJSON(options Options) (*JSONPrinter, error) {
 	return &JSONPrinter{}, nil
 }
 

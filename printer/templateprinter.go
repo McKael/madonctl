@@ -33,9 +33,9 @@ type TemplatePrinter struct {
 }
 
 // NewPrinterTemplate returns a Template ResourcePrinter
-// For TemplatePrinter, the option parameter contains the template string.
-func NewPrinterTemplate(option string) (*TemplatePrinter, error) {
-	tmpl := option
+// For TemplatePrinter, the options parameter contains the template string.
+func NewPrinterTemplate(options Options) (*TemplatePrinter, error) {
+	tmpl := options["template"]
 	t, err := template.New("output").Funcs(template.FuncMap{
 		"fromhtml": html2string,
 		"fromunix": unix2string,
