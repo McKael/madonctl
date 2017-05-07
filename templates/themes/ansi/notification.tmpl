@@ -21,14 +21,14 @@
       Sensitive: true{{end}}
 {{- with .spoiler_text}}
       Spoiler: {{.}}{{end}}
-      Message: {{color "blue"}}{{.content | fromhtml}}{{color "reset"}}{{end}}{{else}}
+      Message: {{color "blue"}}{{.content | fromhtml | wrap "     " 80 | trim}}{{color "reset"}}{{end}}{{else}}
 {{- if gt .in_reply_to_id 0.0}}
     Replying to: {{.in_reply_to_id}}{{end}}
 {{- if .sensitive}}
   Sensitive: true{{end}}
 {{- with .spoiler_text}}
     Spoiler: {{.}}{{end}}
-    Message: {{color "blue"}}{{.content | fromhtml}}{{color "reset"}}
+    Message: {{color "blue"}}{{.content | fromhtml | wrap "     " 80 | trim}}{{color "reset"}}
 {{- range .media_attachments}}
     - Attachment ID: {{printf "%.0f" .id}}
 {{- if .text_url}}
