@@ -9,6 +9,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -57,7 +59,7 @@ func getPrinter() (printer.ResourcePrinter, error) {
 	if of == "template" {
 		opt = outputTemplate
 		if outputTemplateFile != "" {
-			tmpl, err := ioutil.ReadFile(outputTemplateFile)
+			tmpl, err := readTemplate(outputTemplateFile, viper.GetString("template_directory"))
 			if err != nil {
 				return nil, err
 			}
@@ -65,6 +67,30 @@ func getPrinter() (printer.ResourcePrinter, error) {
 		}
 	}
 	return printer.NewPrinter(of, opt)
+}
+
+func readTemplate(name, templateDir string) ([]byte, error) {
+	if strings.HasPrefix(name, "/") || strings.HasPrefix(name, "./") || strings.HasPrefix(name, "../") {
+		return ioutil.ReadFile(name)
+	}
+
+	if templateDir != "" {
+		// If the template file can be found in the template directory,
+		// use this file.
+		fullName := filepath.Join(templateDir, name)
+		if fileExists(fullName) {
+			name = fullName
+		}
+	}
+
+	return ioutil.ReadFile(name)
+}
+
+func fileExists(filename string) bool {
+	if _, err := os.Stat(filename); err != nil {
+		return false
+	}
+	return true
 }
 
 func errPrint(format string, a ...interface{}) (n int, err error) {
