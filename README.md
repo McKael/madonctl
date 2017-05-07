@@ -184,9 +184,14 @@ You can also use Go (Golang) templates:
 % madonctl accounts --account-id 1 followers --template '{{.acct}}{{"\n"}}'
 ```
 
-Number of users on current instance (madonctl 1.5+) (statistics from instances.mastodon.xyz API):
+Number of users on current instance (madonctl 0.5+) (statistics from instances.mastodon.xyz API):
 ```
 madonctl instance --stats --template '{{printf "%v\n" .users}}'
+```
+
+You can write and use [themes](templates) as well (madonctl 0.6+):
+```
+madonctl --theme=ansi timeline
 ```
 
 There are many more commands, you can find them in the online help or the manpage.
