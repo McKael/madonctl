@@ -92,7 +92,7 @@ func (p *ThemePrinter) PrintObj(obj interface{}, w io.Writer, tmpl string) error
 		objType = "tag"
 
 	case []*gomif.InstanceStatus, *gomif.InstanceStatus:
-		objType = "instancestatus"
+		objType = "instancestats"
 	}
 
 	var rp *ResourcePrinter
