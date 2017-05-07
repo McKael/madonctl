@@ -76,7 +76,7 @@ func (p *TemplatePrinter) PrintObj(obj interface{}, w io.Writer, tmpl string) er
 		[]madon.Client, []madon.Context, []madon.Instance, []madon.Mention,
 		[]madon.Notification, []madon.Relationship, []madon.Report,
 		[]madon.Results, []madon.Status, []madon.StreamEvent, []madon.Tag,
-		[]*gomif.InstanceStatus:
+		[]*gomif.InstanceStatus, []string:
 		return p.templateForeach(ot, w)
 	}
 
@@ -84,6 +84,14 @@ func (p *TemplatePrinter) PrintObj(obj interface{}, w io.Writer, tmpl string) er
 }
 
 func (p *TemplatePrinter) templatePrintSingleObj(obj interface{}, w io.Writer) error {
+	if s, ok := obj.(string); ok {
+		// obj is a simple string
+		if err := p.safeExecute(w, s); err != nil {
+			return fmt.Errorf("error executing template %q: %v", p.rawTemplate, err)
+		}
+		return nil
+	}
+
 	// This code comes from Kubernetes.
 	data, err := json.Marshal(obj)
 	if err != nil {
