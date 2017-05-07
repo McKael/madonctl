@@ -6,11 +6,14 @@
 package printer
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"go/doc"
 	"io"
 	"os"
 	"reflect"
+	"strings"
 	"text/template"
 
 	"github.com/m0t0k1ch1/gomif"
@@ -42,6 +45,8 @@ func NewPrinterTemplate(options Options) (*TemplatePrinter, error) {
 		"fromhtml": html2string,
 		"fromunix": unix2string,
 		"color":    ansiColor,
+		"trim":     strings.TrimSpace,
+		"wrap":     wrap,
 	}).Parse(tmpl)
 	if err != nil {
 		return nil, err
@@ -149,4 +154,18 @@ func ansiColor(desc string) (string, error) {
 		return "", nil
 	}
 	return colors.ANSICodeString(desc)
+}
+
+// Wrap text with indent prefix
+// Currently paragraph-based (cf. doc.ToText), which is not very good for
+// our use case since CRs are ignored.
+func wrap(indent string, lineLength int, text string) string {
+	var buf bytes.Buffer
+
+	width := lineLength - len(indent)
+	if width < 10 {
+		width = 10
+	}
+	doc.ToText(&buf, text, indent, indent+"  ", width)
+	return buf.String()
 }
