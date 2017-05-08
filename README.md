@@ -40,7 +40,7 @@ usually provide an account login/password (or a token).
 These settings can be passed as command line arguments or environment variables,
 but the easiest way is to use a configuration file.
 
-Note that you can *generate a configuration file* for your settings with
+Note that you can **generate a configuration file** for your settings with
 
 `madonctl config dump -i mastodon.social -L username@domain -P password`
 
@@ -82,7 +82,7 @@ Send (text) file content as new message:
 % echo "Hello from #madonctl" | madonctl toot --stdin
 ```
 
-Some *account-related commands*:
+Some **account-related commands**:
 ``` sh
 % madonctl accounts blocked                       # List blocked accounts
 % madonctl accounts muted                         # List muted accounts
@@ -97,7 +97,7 @@ results you should use the `--all` flag.  If you use a `--limit` value,
 madonctl might send several queries until the number of results reaches this
 value.
 
-Update your account information:
+**Update** your account information:
 ``` sh
 % madonctl accounts update --display-name "John"  # Update display name
 % madonctl accounts update --note "Newcomer"      # Update user note (bio)
@@ -118,7 +118,7 @@ Display accounts you're following or your followers:
 % madonctl accounts followers --limit 30          # Last 30 followers
 ```
 
-Add/remove a *favourite*, *boost* a status...
+Add/remove a **favourite**, **boost** a status...
 ``` sh
 % madonctl status --status-id 416671 favourite    # Fave a status
 % madonctl status --status-id 416671 boost        # Boost a status
@@ -129,7 +129,7 @@ Search for an account (only accounts known to your instance):
 % madonctl accounts search gargron
 ```
 
-*Follow* an account with known ID:
+**Follow** an account with known ID:
 ``` sh
 % madonctl accounts follow --account-id 1234
 ```
@@ -139,7 +139,7 @@ Follow a remote account:
 % madonctl accounts follow --remote Gargron@mastodon.social
 ```
 
-*Search* for accounts, statuses or hashtags:
+**Search** for accounts, statuses or hashtags:
 ``` sh
 % madonctl search gargron
 % madonctl search mastodon
@@ -156,7 +156,7 @@ the --user-id flag can also contain an HTTP account URL.
 % madonctl accounts --user-id https://mastodon.social/@Gargron -l5 # Same
 ```
 
-Read *timelines*:
+Read **timelines**:
 ``` sh
 % madonctl timeline                 # Display home timeline
 % madonctl timeline public          # Display federated timeline
@@ -165,14 +165,14 @@ Read *timelines*:
 % madonctl timeline --limit 3       # Display 3 latest home timeline messages
 ```
 
-Use the *streaming API* and fetch timelines and notifications:
+Use the **streaming API** and fetch timelines and notifications:
 ``` sh
 % madonctl stream                   # Stream home timeline and notifications
 % madonctl stream local             # Stream local timeline
 % madonctl stream public            # Stream federated timeline
 ```
 
-You can also use *hashtag streams*:
+You can also use **hashtag streams**:
 ``` sh
 % madonctl stream :mastodon         # Stream for hastag 'mastodon'
 % madonctl stream :madonctl,golang  # Stream for several hashtags
@@ -182,7 +182,7 @@ Please note that madonctl will use one socket per stream, so the number of
 concurrent hashtags is currently limited to 4 for "politeness".
 
 
-(Almost) All commands have a *customisable output*:
+(Almost) All commands have a **customisable output**:
 ``` sh
 % madonctl accounts show            # Display an account
 % madonctl accounts show -o yaml    # Display an account, in yaml
@@ -190,7 +190,7 @@ concurrent hashtags is currently limited to 4 for "politeness".
 % madonctl stream local -o json     # Stream local timeline and output to JSON
 ```
 
-You can also use Go (Golang) *templates*:
+You can also use Go (Golang) **templates**:
 ``` sh
 % madonctl accounts --account-id 1 followers --template '{{.acct}}{{"\n"}}'
 ```
@@ -210,7 +210,7 @@ There are many more commands, you can find them in the online help or the manpag
 
 ### Shell completion
 
-If you want *shell completion*, you can generate scripts with the following command: \
+If you want **shell completion**, you can generate scripts with the following command: \
 `madonctl completion bash` (or zsh)
 
 Then, just source the script in your shell.
@@ -221,7 +221,7 @@ For example, I have this line in my .zshrc:
 
 ### Commands output
 
-The output can be set to *json*, *yaml* or to a *Go template* for all commands.\
+The output can be set to **json**, **yaml** or to a **Go template** for all commands.\
 If you are familiar with Kubernetes' kubectl, it is very similar.
 
 For example, you can display your user token with:\
@@ -232,7 +232,7 @@ or the application ID with:\
 All the users that have favorited a given status:\
 `madonctl status --status-id 101194 favourited-by --template '{{.username}}{{"\n"}}'`
 
-Sets of templates can be grouped as *themes*.
+Sets of templates can be grouped as **themes**.
 
 For more complex templates, one can use the `--template-file` option.\
 See the [themes & templates](templates) folder.
