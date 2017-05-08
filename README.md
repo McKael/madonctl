@@ -115,7 +115,8 @@ See your own posts:
 You can specify the (instance-specific) account ID number (--account-id) or
 the user ID (--user-id).  In the later case, madonctl will search for the
 user so it must match exactly the ID known to your instance (without the
-@domain suffix if the user is on the same instance).
+@domain suffix if the user is on the same instance).  With madonctl v0.6.1+,
+the --user-id flag can also contain an HTTP account URL.
 
 Display accounts you're following or your followers:
 ``` sh
@@ -184,7 +185,7 @@ You can also use Go (Golang) templates:
 % madonctl accounts --account-id 1 followers --template '{{.acct}}{{"\n"}}'
 ```
 
-Number of users on current instance (madonctl 0.5+) (statistics from instances.mastodon.xyz API):
+Number of users on current instance (statistics from instances.mastodon.xyz API):
 ```
 madonctl instance --stats --template '{{printf "%v\n" .users}}'
 ```

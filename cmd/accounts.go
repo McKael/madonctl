@@ -248,29 +248,19 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 		if opt.accountID > 0 {
 			return errors.New("cannot use both account ID and UID")
 		}
-		// Remove leading '@'
-		opt.accountUID = strings.TrimLeft(opt.accountUID, "@")
 		// Sign in early to look the user id up
-		if err := madonInit(true); err != nil {
+		var err error
+		if err = madonInit(true); err != nil {
 			return err
 		}
-		accList, err := gClient.SearchAccounts(opt.accountUID, &madon.LimitParams{Limit: 2})
-		if err != nil || len(accList) < 1 {
-			errPrint("Cannot find user '%s': %v", opt.accountUID, err)
-			os.Exit(1)
-		}
-		for _, u := range accList {
-			if u.Acct == opt.accountUID {
-				opt.accountID = u.ID
-				break
+		opt.accountID, err = accountLookupUser(opt.accountUID)
+		if err != nil || opt.accountID < 1 {
+			if err != nil {
+				errPrint("Cannot find user '%s': %v", opt.accountUID, err)
+			} else {
+				errPrint("Cannot find user '%s'", opt.accountUID)
 			}
-		}
-		if opt.accountID < 1 {
-			errPrint("Cannot find user '%s'", opt.accountUID)
 			os.Exit(1)
-		}
-		if verbose {
-			errPrint("User '%s' is account ID %d", opt.accountUID, opt.accountID)
 		}
 	}
 
@@ -542,4 +532,48 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 		os.Exit(1)
 	}
 	return p.PrintObj(obj, nil, "")
+}
+
+// accountLookupUser tries to find a (single) user matching 'user'
+// If the user is an HTTP URL, it will use the search API, else
+// it will use the accounts/search API.
+func accountLookupUser(user string) (int64, error) {
+	var accID int64
+
+	if strings.HasPrefix(user, "https://") || strings.HasPrefix(user, "http://") {
+		res, err := gClient.Search(user, true)
+		if err != nil {
+			return 0, err
+		}
+		if res != nil {
+			if len(res.Accounts) > 1 {
+				return 0, errors.New("several results")
+			}
+			if len(res.Accounts) == 1 {
+				accID = res.Accounts[0].ID
+			}
+		}
+	} else {
+		// Remove leading '@'
+		user = strings.TrimLeft(user, "@")
+
+		accList, err := gClient.SearchAccounts(user, &madon.LimitParams{Limit: 2})
+		if err != nil {
+			return 0, err
+		}
+		for _, u := range accList {
+			if u.Acct == user {
+				accID = u.ID
+				break
+			}
+		}
+	}
+
+	if accID < 1 {
+		return 0, errors.New("user not found")
+	}
+	if verbose {
+		errPrint("User '%s' is account ID %d", user, user)
+	}
+	return accID, nil
 }
