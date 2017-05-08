@@ -115,6 +115,7 @@ func streamRunE(cmd *cobra.Command, args []string) error {
 				errPrint("Launching listener for tag '%s'", t)
 			}
 			tagEvCh[i] = make(chan madon.StreamEvent)
+			tagDoneCh[i] = make(chan bool)
 			e := gClient.StreamListener(streamName, t, tagEvCh[i], stop, tagDoneCh[i])
 			if e != nil {
 				if i > 0 { // Close previous connections
@@ -157,8 +158,8 @@ func streamRunE(cmd *cobra.Command, args []string) error {
 LISTEN:
 	for {
 		select {
-		case _, ok := <-done:
-			if !ok { // done is closed, end of streaming
+		case v, ok := <-done:
+			if !ok || v == true { // done is closed, end of streaming
 				break LISTEN
 			}
 		case ev := <-evChan:
