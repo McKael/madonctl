@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 
@@ -89,10 +90,10 @@ func getPrinter() (mcResourcePrinter, error) {
 	var mcrp mcPrinter
 	p, err := printer.NewPrinter(of, opt)
 	if err != nil {
-		return mcrp, err
+		return &mcrp, err
 	}
 	mcrp.ResourcePrinter = p
-	return mcrp, nil
+	return &mcrp, nil
 }
 
 func readTemplate(name, templateDir string) ([]byte, error) {
@@ -141,10 +142,34 @@ func errPrint(format string, a ...interface{}) (n int, err error) {
 	return fmt.Fprintf(os.Stderr, format+"\n", a...)
 }
 
-func (mcp mcPrinter) printObj(obj interface{}) error {
-	return mcp.PrintObj(obj, nil, "")
+func (mcp *mcPrinter) printObj(obj interface{}) error {
+	if mcp.command == "" {
+		return mcp.PrintObj(obj, nil, "")
+	}
+
+	cmd := exec.Command(mcp.command)
+	stdin, err := cmd.StdinPipe()
+	if err != nil {
+		return err
+	}
+	err = mcp.PrintObj(obj, stdin, "")
+	stdin.Close()
+
+	if err != nil {
+		return err
+	}
+
+	out, err := cmd.CombinedOutput()
+	if len(out) > 0 {
+		errPrint("Command output: %s", string(out))
+	}
+	if err != nil {
+		return errors.Wrap(err, "external command failed")
+	}
+
+	return nil
 }
 
-func (mcp mcPrinter) setCommand(cmd string) {
+func (mcp *mcPrinter) setCommand(cmd string) {
 	mcp.command = cmd
 }
