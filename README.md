@@ -53,7 +53,8 @@ Note that every variable from the configration file can also be set with an envi
 ### Usage
 
 The complete list of commands is available in the online help (`madonctl help`, `madonctl command --help`...)
-or in the [manpages](https://lilotux.net/~mikael/pub/madonctl/manual/html/).  The [Homepage](https://lilotux.net/~mikael/pub/madonctl/) also contains a plain list of commands.
+or in the [manpages](https://lilotux.net/~mikael/pub/madonctl/manual/html/).\
+The [Homepage](https://lilotux.net/~mikael/pub/madonctl/) also contains a plain list of commands.
 
 ### Examples
 
@@ -62,7 +63,8 @@ To post a simple "toot":
 % madonctl toot "Hello, World"
 ```
 
-You can change the toot visibility, add a Content Warning (a.k.a. spoiler) or send a media file:
+You can change the toot visibility, add a Content Warning (a.k.a. spoiler)
+or send a media file:
 ``` sh
 % madonctl toot --visibility direct "@McKael Hello, you"
 % madonctl toot --visibility private --spoiler CW "The answer was 42"
@@ -105,13 +107,13 @@ value.
 % madonctl accounts update --avatar me.png        # Update avatar
 ```
 
-See your own posts:
+See your own **posts**:
 ``` sh
 % madonctl accounts statuses                      # See last posts
 % madonctl accounts statuses --all                # See all statuses
 ```
 
-Display accounts you're following or your followers:
+Display accounts you're **following** or your **followers**:
 ``` sh
 % madonctl accounts following                     # See last following
 % madonctl accounts following --all               # See all followed accounts
@@ -182,7 +184,7 @@ Please note that madonctl will use one socket per stream, so the number of
 concurrent hashtags is currently limited to 4 for "politeness".
 
 
-(Almost) All commands have a **customisable output**:
+(Almost) All commands have a **customizable output**:
 ``` sh
 % madonctl accounts show            # Display an account
 % madonctl accounts show -o yaml    # Display an account, in yaml
