@@ -16,11 +16,9 @@ import (
 	"github.com/McKael/madon"
 )
 
-/*
 var streamOpts struct {
-	local bool
+	command string
 }
-*/
 
 // Maximum number of websockets (1 hashtag <=> 1 ws)
 const maximumHashtagStreamWS = 4
@@ -52,7 +50,7 @@ Note: madonctl will use 1 websocket per hashtag stream.
 func init() {
 	RootCmd.AddCommand(streamCmd)
 
-	//streamCmd.Flags().BoolVar(&streamOpts.local, "local", false, "Events from the local instance")
+	streamCmd.Flags().StringVar(&streamOpts.command, "command", "", "Execute external command")
 }
 
 func streamRunE(cmd *cobra.Command, args []string) error {
@@ -155,6 +153,9 @@ func streamRunE(cmd *cobra.Command, args []string) error {
 		os.Exit(1)
 	}
 
+	// Set up external command
+	p.setCommand(streamOpts.command)
+
 LISTEN:
 	for {
 		select {
@@ -176,11 +177,15 @@ LISTEN:
 				errPrint("Event: [%s]", ev.Event)
 			case "update":
 				s := ev.Data.(madon.Status)
-				p.printObj(&s)
+				if err = p.printObj(&s); err != nil {
+					break LISTEN
+				}
 				continue
 			case "notification":
 				n := ev.Data.(madon.Notification)
-				p.printObj(&n)
+				if p.printObj(&n); err != nil {
+					break LISTEN
+				}
 				continue
 			case "delete":
 				// TODO PrintObj ?
@@ -192,5 +197,9 @@ LISTEN:
 	}
 	close(stop)
 	close(evChan)
+	if err != nil {
+		errPrint("Error: %s", err.Error())
+		os.Exit(1)
+	}
 	return nil
 }
