@@ -275,5 +275,5 @@ func statusSubcommandRunE(subcmd string, args []string) error {
 		errPrint("Error: %s", err.Error())
 		os.Exit(1)
 	}
-	return p.PrintObj(obj, nil, "")
+	return p.printObj(obj)
 }

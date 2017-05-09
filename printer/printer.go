@@ -13,6 +13,10 @@ import (
 // Options contains options used when creating a ResourcePrinter
 type Options map[string]string
 
+type commonPrinter struct {
+	w io.Writer
+}
+
 // ResourcePrinter is an interface used to print objects.
 type ResourcePrinter interface {
 	// PrintObj receives a runtime object, formats it and prints it to a writer.

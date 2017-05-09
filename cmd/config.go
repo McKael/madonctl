@@ -118,7 +118,7 @@ func configDisplayToken() error {
 		errPrint("Error: %v", err)
 		os.Exit(1)
 	}
-	return p.PrintObj(gClient.UserToken, nil, "")
+	return p.printObj(gClient.UserToken)
 }
 
 // configDisplayThemes lists the available themes

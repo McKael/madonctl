@@ -73,7 +73,7 @@ func instanceRunE(cmd *cobra.Command, args []string) error {
 		errPrint("Error: %s", err.Error())
 		os.Exit(1)
 	}
-	return p.PrintObj(i, nil, "")
+	return p.printObj(i)
 }
 
 func instanceStats() error {
@@ -126,5 +126,5 @@ func instanceStats() error {
 		errPrint("Error: %s", err.Error())
 		os.Exit(1)
 	}
-	return p.PrintObj(obj, nil, "")
+	return p.printObj(obj)
 }

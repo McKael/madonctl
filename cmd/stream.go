@@ -176,11 +176,11 @@ LISTEN:
 				errPrint("Event: [%s]", ev.Event)
 			case "update":
 				s := ev.Data.(madon.Status)
-				p.PrintObj(&s, nil, "")
+				p.printObj(&s)
 				continue
 			case "notification":
 				n := ev.Data.(madon.Notification)
-				p.PrintObj(&n, nil, "")
+				p.printObj(&n)
 				continue
 			case "delete":
 				// TODO PrintObj ?

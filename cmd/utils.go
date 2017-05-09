@@ -47,8 +47,19 @@ func getOutputFormat() string {
 	return of
 }
 
+type mcPrinter struct {
+	printer.ResourcePrinter
+	command string
+}
+
+type mcResourcePrinter interface {
+	printer.ResourcePrinter
+	printObj(interface{}) error
+	setCommand(string)
+}
+
 // getPrinter returns a resource printer for the requested output format.
-func getPrinter() (printer.ResourcePrinter, error) {
+func getPrinter() (mcResourcePrinter, error) {
 	opt := make(printer.Options)
 	of := getOutputFormat()
 
@@ -75,7 +86,13 @@ func getPrinter() (printer.ResourcePrinter, error) {
 			opt["template"] = string(tmpl)
 		}
 	}
-	return printer.NewPrinter(of, opt)
+	var mcrp mcPrinter
+	p, err := printer.NewPrinter(of, opt)
+	if err != nil {
+		return mcrp, err
+	}
+	mcrp.ResourcePrinter = p
+	return mcrp, nil
 }
 
 func readTemplate(name, templateDir string) ([]byte, error) {
@@ -122,4 +139,12 @@ func fileExists(filename string) bool {
 
 func errPrint(format string, a ...interface{}) (n int, err error) {
 	return fmt.Fprintf(os.Stderr, format+"\n", a...)
+}
+
+func (mcp mcPrinter) printObj(obj interface{}) error {
+	return mcp.PrintObj(obj, nil, "")
+}
+
+func (mcp mcPrinter) setCommand(cmd string) {
+	mcp.command = cmd
 }

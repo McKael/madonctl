@@ -55,5 +55,5 @@ func searchRunE(cmd *cobra.Command, args []string) error {
 		errPrint("Error: %s", err.Error())
 		os.Exit(1)
 	}
-	return p.PrintObj(results, nil, "")
+	return p.printObj(results)
 }
