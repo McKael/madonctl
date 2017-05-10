@@ -82,10 +82,7 @@ var statusCmd = &cobra.Command{
 		if statusOpts.statusID < 1 && cmd.Name() != "post" {
 			return errors.New("missing status ID")
 		}
-		if err := madonInit(true); err != nil {
-			return err
-		}
-		return nil
+		return madonInit(true)
 	},
 }
 

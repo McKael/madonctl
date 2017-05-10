@@ -86,7 +86,6 @@ var accountsCmd = &cobra.Command{
 	Aliases: []string{"account"},
 	Short:   "Account-related functions",
 	//Long:    `TBW...`, // TODO
-	//PersistentPreRunE: func(cmd *cobra.Command, args []string) error {},
 }
 
 // Note: Some account subcommands are not defined in this file.
