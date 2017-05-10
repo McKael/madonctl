@@ -8,6 +8,7 @@ package cmd
 import (
 	"os"
 
+	"github.com/mattn/go-isatty"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
@@ -89,9 +90,11 @@ func configDump() error {
 		if cfile == "" {
 			cfile = defaultConfigFile
 		}
-		errPrint("You can copy the following lines into a configuration file.")
-		errPrint("E.g. %s -i INSTANCE -L USERNAME -P PASS config dump > %s", AppName, cfile)
-		errPrint(" or  %s -i INSTANCE oauth2 > %s\n", AppName, cfile)
+		if isatty.IsTerminal(os.Stdout.Fd()) {
+			errPrint("You can copy the following lines into a configuration file.")
+			errPrint("E.g. %s -i INSTANCE -L USERNAME -P PASS config dump > %s", AppName, cfile)
+			errPrint(" or  %s -i INSTANCE oauth2 > %s\n", AppName, cfile)
+		}
 		pOptions := printer.Options{"template": configurationTemplate}
 		p, err = printer.NewPrinterTemplate(pOptions)
 	} else {
