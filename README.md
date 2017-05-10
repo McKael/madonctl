@@ -46,9 +46,31 @@ Note that you can **generate a configuration file** for your settings with
 
 (You can redirect the output to a configuration file.)
 
-If you only provide the Mastodon instance, it will generate a configuration file with an application ID/secret for this instance and you will have to add the user credentials.
+If you only provide the Mastodon instance, it will generate a configuration
+file with an application ID/secret for this instance and you will have to add
+the user credentials.
 
-Note that every variable from the configration file can also be set with an environment variable (e.g. `export MADONCTL_INSTANCE='https://mamot.fr'`).
+Note that every variable from the configration file can also be set with an
+environment variable (e.g. `export MADONCTL_INSTANCE='https://mamot.fr'`).
+
+If you don't want to use the password or if you have enabled *Two-factor
+authentication*, you can use **OAuth2** with the `oauth2` command, either
+interactively or non-interactively:
+
+`madonctl -i mastodon.social oauth2`
+
+The output is similar to the previous `config dump` command, so you can create
+your configuration file like this as well:
+
+`madonctl -i mastodon.social oauth2 > config_file.yaml`
+
+Note: If don't want to use the tool interactively, check to `get-url` and `code`
+subcommands:
+``` sh
+madonctl -i mastodon.social oauth2 get-url
+# (Paste the link into your browser...)
+madonctl -i mastodon.social code $CODE > config_file.yaml
+```
 
 ### Usage
 
@@ -183,6 +205,12 @@ You can also use **hashtag streams**:
 Please note that madonctl will use one socket per stream, so the number of
 concurrent hashtags is currently limited to 4 for "politeness".
 
+It is also possible to send every stream event (notification or status) to
+an **external command**.  You can can even combine it with a customized theme.
+The contents will be sent to the standard input of this command:
+``` sh
+madonctl stream --command gateway.sh --theme gateway
+```
 
 (Almost) All commands have a **customizable output**:
 ``` sh
