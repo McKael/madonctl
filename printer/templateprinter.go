@@ -6,10 +6,8 @@
 package printer
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
-	"go/doc"
 	"io"
 	"os"
 	"reflect"
@@ -17,6 +15,7 @@ import (
 	"text/template"
 	"time"
 
+	"github.com/kr/text"
 	"github.com/m0t0k1ch1/gomif"
 	"github.com/mattn/go-isatty"
 
@@ -158,20 +157,6 @@ func ansiColor(desc string) (string, error) {
 	return colors.ANSICodeString(desc)
 }
 
-// Wrap text with indent prefix
-// Currently paragraph-based (cf. doc.ToText), which is not very good for
-// our use case since CRs are ignored.
-func wrap(indent string, lineLength int, text string) string {
-	var buf bytes.Buffer
-
-	width := lineLength - len(indent)
-	if width < 10 {
-		width = 10
-	}
-	doc.ToText(&buf, text, indent, indent+"  ", width)
-	return buf.String()
-}
-
 // Parse datetime string from RFC3339 (default format in templates because
 // of implicit conversion to string) and return a local time.
 func dateToLocal(s string) (time.Time, error) {
@@ -180,4 +165,20 @@ func dateToLocal(s string) (time.Time, error) {
 		return t, err
 	}
 	return t.Local(), err
+}
+
+// Wrap text with indent prefix
+func wrap(indent string, lineLength int, txt string) string {
+	width := lineLength - len(indent)
+	if width < 10 {
+		width = 10
+	}
+
+	lines := strings.SplitAfter(txt, "\n")
+	var out []string
+	for _, l := range lines {
+		l = strings.TrimLeft(l, " ")
+		out = append(out, text.Indent(text.Wrap(l, width), indent))
+	}
+	return strings.Join(out, "\n")
 }
