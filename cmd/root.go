@@ -169,6 +169,9 @@ func init() {
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
+	if cfgFile == "/dev/null" {
+		return
+	}
 	if cfgFile != "" { // enable ability to specify config file via flag
 		viper.SetConfigFile(cfgFile)
 	}
