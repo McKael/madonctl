@@ -15,6 +15,7 @@ import (
 	"reflect"
 	"strings"
 	"text/template"
+	"time"
 
 	"github.com/m0t0k1ch1/gomif"
 	"github.com/mattn/go-isatty"
@@ -43,7 +44,8 @@ func NewPrinterTemplate(options Options) (*TemplatePrinter, error) {
 	}
 	t, err := template.New("output").Funcs(template.FuncMap{
 		"fromhtml": html2string,
-		"fromunix": unix2string,
+		"fromunix": unix2time,
+		"tolocal":  dateToLocal,
 		"color":    ansiColor,
 		"trim":     strings.TrimSpace,
 		"wrap":     wrap,
@@ -168,4 +170,14 @@ func wrap(indent string, lineLength int, text string) string {
 	}
 	doc.ToText(&buf, text, indent, indent+"  ", width)
 	return buf.String()
+}
+
+// Parse datetime string from RFC3339 (default format in templates because
+// of implicit conversion to string) and return a local time.
+func dateToLocal(s string) (time.Time, error) {
+	t, err := time.Parse(time.RFC3339, s)
+	if err != nil {
+		return t, err
+	}
+	return t.Local(), err
 }

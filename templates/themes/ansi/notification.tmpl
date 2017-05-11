@@ -1,6 +1,6 @@
 - Notification ID: {{color "red"}}{{printf "%.0f" .id}}{{color "reset"}}
   Type: {{color ",,bold"}}{{.type}}{{color "reset"}}
-  Timestamp: {{.created_at}}
+  Timestamp: {{.created_at | tolocal}}
 {{- with .url}}
       URL: {{.url}}{{end}}
 {{- with .account}}
@@ -8,13 +8,13 @@
 {{- with .status}}
   - Status ID: {{color "red"}}{{printf "%.0f" .id}}{{color "reset"}}  {{color "magenta"}}@{{.account.acct}}{{color "reset"}}
     Name: {{color ",,bold"}}{{.account.display_name}}{{color "reset"}}
-    Date: {{.created_at}}
+    Date: {{.created_at | tolocal}}
     URL: {{.url}}
 {{- if .reblog }}{{with .reblog}}
     {{color ",,bold"}}Reblogged from: {{color "magenta"}}@{{.account.acct}}{{color "reset"}}
       ID: {{printf "%.0f" .id}}
       Name: {{color ",,bold"}}{{.account.display_name}}{{color "reset"}}
-      Date: {{.created_at}}
+      Date: {{.created_at | tolocal}}
 {{- if gt .in_reply_to_id 0.0}}
       Replying to: {{printf "%.0f" .in_reply_to_id}}{{end}}
 {{- if .sensitive}}

@@ -40,11 +40,12 @@ Here's an example using a template with ANSI color escape codes (for UNIX/Linux)
 ### Template development
 
 Here's a list of available commands (please check the Go template documentation for the built-in functions):
-- fromunix UNIXTIMESTAMP
-- fromhtml HTMLTEXT
-- wrap TEXT
-- trim TEXT
-- color COLORSPEC\
+- fromunix UNIXTIMESTAMP *converts from UNIX timestampto date*
+- tolocal TEXTRFC3339DATE *converts a RFC3339 date string to a local time*
+- fromhtml HTMLTEXT *converts HTML to plain text*
+- wrap TEXT *rewrap text, with indent and max width*
+- trim TEXT *trims text whitespace*
+- color COLORSPEC *sends an ANSI color code sequence*\
   COLORSPEC is a string with the following format: `[FGCOLOR][,BGCOLOR[,STYLE]]` or `reset`.
 
 Examples:
