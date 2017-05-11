@@ -262,11 +262,19 @@ func (p *PlainPrinter) plainPrintResults(r *madon.Results, w io.Writer, indent s
 
 func (p *PlainPrinter) plainPrintStatus(s *madon.Status, w io.Writer, indent string) error {
 	indentedPrint(w, indent, true, false, "Status ID", "%d", s.ID)
-	indentedPrint(w, indent, false, false, "From", "%s", s.Account.Acct)
+	if s.Account != nil {
+		author := s.Account.Acct
+		if s.Account.DisplayName != "" {
+			author += " (" + s.Account.DisplayName + ")"
+		}
+		indentedPrint(w, indent, false, false, "From", "%s", author)
+	}
 	indentedPrint(w, indent, false, false, "Timestamp", "%v", s.CreatedAt.Local())
 
 	if s.Reblog != nil {
-		indentedPrint(w, indent, false, false, "Reblogged from", "%s", s.Reblog.Account.Username)
+		if s.Reblog.Account != nil {
+			indentedPrint(w, indent, false, false, "Reblogged from", "%s", s.Reblog.Account.Username)
+		}
 		return p.plainPrintStatus(s.Reblog, w, indent+p.Indent)
 	}
 
