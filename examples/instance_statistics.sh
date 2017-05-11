@@ -16,7 +16,7 @@
 start=${1:-1 hour ago}
 end=${2:-now}
 
-TMPL='{{.date | fromunix}}: {{.users}} users, {{.statuses}} statuses{{"\n"}}'
+TMPL='{{.date | fromunix}} {{.instance_name}}: {{printf "%.0f users, %.0f statuses\n" .users .statuses}}'
 madonctl instance --stats --template "$TMPL" \
     --start "$(date +%s -d "$start")" \
     --end   "$(date +%s -d "$end")"
