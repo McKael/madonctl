@@ -18,6 +18,16 @@ import (
 var configCmd = &cobra.Command{
 	Use:   "config",
 	Short: "Display configuration",
+	Long: `Display configuration
+
+Display current configuration.  You can use this command to generate an
+initial configuration file (see the examples below).
+
+This command is disabled if the safe_mode setting is set to true in the
+configuration file.`,
+	Example: `  madonctl config dump -i INSTANCE -L USERNAME -P PASS > config.yaml
+  madonctl whoami
+  madonctl whoami --template '{{.access_token}}'`,
 }
 
 func init() {
@@ -29,8 +39,9 @@ func init() {
 
 var configSubcommands = []*cobra.Command{
 	&cobra.Command{
-		Use:   "dump",
-		Short: "Dump the configuration",
+		Use:     "dump",
+		Short:   "Dump the configuration",
+		Example: `  madonctl config dump -i INSTANCE -L USERNAME -P PASS > config.yaml`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return configDump()
 		},

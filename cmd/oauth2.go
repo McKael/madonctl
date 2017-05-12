@@ -17,9 +17,11 @@ import (
 var oauth2Cmd = &cobra.Command{
 	Use:   "oauth2",
 	Short: "OAuth2 authentication/authorization",
-	Example: `  madonctl oauth2           # Interactive OAuth2 login
-  madonctl oauth2 get-url   # Display OAuth2 auhtorization URL
-  madonctl oauth2 code CODE # Enter OAuth2 code`,
+	Example: `  madonctl oauth2                 # Interactive OAuth2 login
+  madonctl oauth2 get-url         # Display OAuth2 auhtorization URL
+  madonctl oauth2 code CODE       # Enter OAuth2 code
+
+  madonctl oauth2 > config.yaml   # Redirect to configuration file`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return oAuth2Interactive(args)
 	},
