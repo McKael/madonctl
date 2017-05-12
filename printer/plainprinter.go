@@ -12,10 +12,10 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/jaytaylor/html2text"
 	"github.com/m0t0k1ch1/gomif"
 
 	"github.com/McKael/madon"
+	"github.com/McKael/madonctl/printer/html2text"
 )
 
 // PlainPrinter is the default "plain text" printer
@@ -120,7 +120,7 @@ func (p *PlainPrinter) plainForeach(ol interface{}, w io.Writer, ii string) erro
 }
 
 func html2string(h string) string {
-	t, err := html2text.FromString(h)
+	t, err := html2text.Textify(h)
 	if err == nil {
 		return t
 	}
