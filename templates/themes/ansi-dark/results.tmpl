@@ -1,0 +1,37 @@
+{{with .accounts}}
+{{- color ",,bold"}}Accounts:{{color "reset"}}
+{{- range .}}
+  - Account ID: {{color "red"}}{{printf "%.0f" .id}}{{color "reset"}}  {{color "magenta"}}@{{.username}}{{color "reset"}}
+    UID: {{color "red"}}{{.acct}}{{color "reset"}}
+    Display name: {{color "white,,bold"}}{{.display_name}}{{color "reset"}}
+    Date: {{.created_at}}
+    URL: {{color "cyan"}}{{.url}}{{color "reset"}}
+    Statuses: {{.statuses_count}}
+    Followers: {{.followers_count}}
+    Following: {{.following_count}}
+  {{- with .note}}{{if ne . "<p></p>"}}
+    Note: {{color "yellow"}}{{. | fromhtml | wrap "     " 80 | trim}}{{color "reset"}}{{end}}{{end}}
+  {{- if eq .locked true}}
+    Locked: true{{end}}{{end}}{{/* of range */}}
+{{end}}{{/* of accounts */}}
+{{- with .statuses}}{{color ",,bold"}}Statuses:{{color "reset"}}
+{{- range .}}
+  - Status ID: {{color "red"}}{{printf "%.0f" .id}}{{color "reset"}}  {{color "magenta"}}@{{.account.acct}}{{color "reset"}}
+    Name: {{color ",,bold"}}{{.account.display_name}}{{color "reset"}}
+    Date: {{.created_at}}
+    URL: {{.url}}
+{{- if .sensitive}}
+    Sensitive: true{{end}}
+{{- with .spoiler_text}}
+    Spoiler: {{.}}{{end}}
+    Message: {{color "blue"}}{{.content | fromhtml | wrap "     " 80 | trim}}{{color "reset"}}
+{{- range .media_attachments}}
+    - Attachment ID: {{printf "%.0f" .id}}
+{{- if .text_url}}
+      Text URL: {{.text_url}}{{else if .url}}
+      URL: {{.url}}{{else if .remote_url}}
+      Remote URL: {{.remote_url}}{{end}}{{end}}{{end}}{{/* of range */}}{{end}}{{/* of statuses */}}
+{{- with .hashtags}}{{color ",,bold"}}Hashtags:{{color "reset"}}
+{{- range .}}
+  - {{.}}{{end}}{{/* of range */}}
+{{end}}{{/* of statuses */ -}}

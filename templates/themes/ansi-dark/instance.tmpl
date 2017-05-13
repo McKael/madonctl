@@ -1,0 +1,5 @@
+- Title:    {{color ",,bold"}}{{.title}}{{color "reset"}}
+  URI:      {{color "magenta"}}{{.uri}}{{color "reset"}}
+  Email:    {{.email}}
+  Version:  {{.version}}
+  Description: {{color "blue"}}{{.description | fromhtml | wrap "     " 80 | trim}}{{color "reset"}}
