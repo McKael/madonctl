@@ -116,6 +116,11 @@ func anchor(n *html.Node, b *bytes.Buffer, class string) {
 		last = b.Bytes()[bl-1]
 	}
 
+	// Add heading space if needed
+	if last != ' ' && last != '\n' && last != '#' && last != '@' {
+		b.WriteString(" ")
+	}
+
 	var tmpbuf bytes.Buffer
 	for c := n.FirstChild; c != nil; c = c.NextSibling {
 		process(c, &tmpbuf, class)
@@ -124,11 +129,6 @@ func anchor(n *html.Node, b *bytes.Buffer, class string) {
 	if class == "tag" || class == "h-card" || last == '@' {
 		b.Write(tmpbuf.Bytes())
 		return
-	}
-
-	// Add heading space if needed
-	if last != ' ' && last != '\n' {
-		b.WriteString(" ")
 	}
 
 	s := tmpbuf.String()

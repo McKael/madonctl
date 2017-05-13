@@ -146,6 +146,16 @@ func TestTextifyMastodonSample4(t *testing.T) {
 	assert.Equal(t, expected, r)
 }
 
+func TestTextifyMastodonMention(t *testing.T) {
+	expected := "La tête à @Toto \\o/"
+
+	body := `<p>La tête à <span class="h-card"><a href="https://example.com/@Toto">@<span>Toto</span></a></span> \o/</p>`
+
+	r, e := Textify(body)
+	assert.Nil(t, e)
+	assert.Equal(t, expected, r)
+}
+
 func TestTextifyMastodonMentionAndTag(t *testing.T) {
 	expected := "@ACh Mais heu ! Moi aussi je fais du #TootRadio de gens morts il y a 5 siècles. Gesulado, Charpentier, Mireille Mathieu..."
 
