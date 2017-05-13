@@ -29,6 +29,7 @@ var statusOpts struct {
 	mediaFilePath string
 	textFilePath  string
 	stdin         bool
+	addMentions   bool
 
 	// Used for several subcommands to limit the number of results
 	limit uint
@@ -62,6 +63,7 @@ func init() {
 	statusPostSubcommand.Flags().StringVar(&statusOpts.textFilePath, "text-file", "", "Text file name (message content)")
 	statusPostSubcommand.Flags().Int64VarP(&statusOpts.inReplyToID, "in-reply-to", "r", 0, "Status ID to reply to")
 	statusPostSubcommand.Flags().BoolVar(&statusOpts.stdin, "stdin", false, "Read message content from standard input")
+	statusPostSubcommand.Flags().BoolVar(&statusOpts.addMentions, "add-mentions", false, "Add mentions when replying")
 
 	// Flag completion
 	annotation := make(map[string][]string)
@@ -163,6 +165,8 @@ var statusPostSubcommand = &cobra.Command{
   madonctl status toot --sensitive --file image.jpg Image
   madonctl status post --media-ids ID1,ID2,ID3 Image
   madonctl status toot --text-file message.txt
+  madonctl status post --in-reply-to STATUSID "@user response"
+  madonctl status post --in-reply-to STATUSID --add-mentions "response"
   echo "Hello from #madonctl" | madonctl status toot --stdin
 
 The default visibility can be set in the configuration file with the option

@@ -106,6 +106,14 @@ Send (text) file content as new message:
 % echo "Hello from #madonctl" | madonctl toot --stdin
 ```
 
+Reply to a message:
+``` sh
+% madonctl toot --in-reply-to 1234 --visibility direct "@user1 @user2 response"
+% madonctl toot --in-reply-to 1234 --add-mentions "response"
+```
+The flag `--add-mentions` automatically adds mentions based on the toot you're
+replying to.
+
 Some **account-related commands**:
 ``` sh
 % madonctl accounts blocked                       # List blocked accounts

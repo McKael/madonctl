@@ -6,6 +6,8 @@
 package cmd
 
 import (
+	"strings"
+
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -26,6 +28,7 @@ func init() {
 	tootAliasCmd.Flags().StringVar(&statusOpts.textFilePath, "text-file", "", "Text file name (message content)")
 	tootAliasCmd.Flags().Int64VarP(&statusOpts.inReplyToID, "in-reply-to", "r", 0, "Status ID to reply to")
 	tootAliasCmd.Flags().BoolVar(&statusOpts.stdin, "stdin", false, "Read message content from standard input")
+	tootAliasCmd.Flags().BoolVar(&statusOpts.addMentions, "add-mentions", false, "Add mentions when replying")
 
 	// Flag completion
 	annotation := make(map[string][]string)
@@ -43,6 +46,8 @@ var tootAliasCmd = &cobra.Command{
   madonctl status post --media-ids ID1,ID2 "Here are the photos"
   madonctl post --sensitive --file image.jpg Image
   madonctl toot --text-file message.txt
+  madonctl toot --in-reply-to STATUSID "@user response"
+  madonctl toot --in-reply-to STATUSID --add-mentions "response"
   echo "Hello from #madonctl" | madonctl toot --visibility unlisted --stdin
 
 The default visibility can be set in the configuration file with the option
@@ -81,6 +86,19 @@ func toot(tootText string) (*madon.Status, error) {
 		return nil, errors.New("cannot parse media IDs")
 	}
 
+	if tootText == "" && len(ids) == 0 && opt.spoiler == "" && opt.mediaFilePath == "" {
+		return nil, errors.New("toot is empty")
+	}
+
+	if opt.addMentions && opt.inReplyToID > 0 {
+		mentions, err := mentionsList(opt.inReplyToID)
+		if err != nil {
+			return nil, err
+		}
+		tootText = mentions + tootText
+	}
+
+	// Uploading media file last
 	if opt.mediaFilePath != "" {
 		if len(ids) > 3 {
 			return nil, errors.New("too many media attachments")
@@ -95,9 +113,33 @@ func toot(tootText string) (*madon.Status, error) {
 		}
 	}
 
-	if tootText == "" && len(ids) == 0 && opt.spoiler == "" {
-		return nil, errors.New("toot is empty")
+	return gClient.PostStatus(tootText, opt.inReplyToID, ids, opt.sensitive, opt.spoiler, opt.visibility)
+}
+
+func mentionsList(statusID int64) (string, error) {
+	a, err := gClient.GetCurrentAccount()
+	if err != nil {
+		return "", errors.Wrap(err, "cannot check account details")
 	}
 
-	return gClient.PostStatus(tootText, opt.inReplyToID, ids, opt.sensitive, opt.spoiler, opt.visibility)
+	s, err := gClient.GetStatus(statusID)
+	if err != nil {
+		return "", errors.Wrap(err, "cannot get mentions")
+	}
+
+	var mentions []string
+	// Add the sender if she is not the connected user
+	if s.Account.Acct != a.Acct {
+		mentions = append(mentions, "@"+s.Account.Acct)
+	}
+	for _, m := range s.Mentions {
+		if m.Acct != a.Acct {
+			mentions = append(mentions, "@"+m.Acct)
+		}
+	}
+	mentionsStr := strings.Join(mentions, " ")
+	if len(mentionsStr) > 0 {
+		return mentionsStr + " ", nil
+	}
+	return "", nil
 }
