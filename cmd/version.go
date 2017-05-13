@@ -23,7 +23,7 @@ type madonctlVersion struct {
 }
 
 // VERSION of the madonctl application
-var VERSION = "1.1.0-dev"
+var VERSION = "1.1.0"
 
 var versionCmd = &cobra.Command{
 	Use:   "version",
