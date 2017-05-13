@@ -20,3 +20,4 @@ install:
 - go get github.com/kr/text
 - go get github.com/m0t0k1ch1/gomif
 - go get github.com/mattn/go-isatty
+- go get github.com/stretchr/testify/assert
