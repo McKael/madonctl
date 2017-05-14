@@ -1,7 +1,7 @@
 - Account ID: {{color "red"}}{{printf "%.0f" .id}}{{color "reset"}}  {{color "magenta"}}@{{.username}}{{color "reset"}}
   UID: {{color "red"}}{{.acct}}{{color "reset"}}
   Display name: {{color "white,,bold"}}{{.display_name}}{{color "reset"}}
-  Date: {{.created_at}}
+  Date: {{.created_at | tolocal}}
   URL: {{color "cyan"}}{{.url}}{{color "reset"}}
   Statuses: {{.statuses_count}}
   Followers: {{.followers_count}}
