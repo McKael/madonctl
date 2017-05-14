@@ -65,6 +65,7 @@ Option | Description
 `login`     | User login (email)
 `password`  | User password
 `safe_mode` | If set to *true*, the configuration cannot be dumped with *config dump*
+`default_visibility` | Default toots visibillity (Mastodon's default is 'public')
 `default_output`     | Default output format; one of plain, yaml, json or theme
 `template_directory` | The local directory where templates and themes are installed
 `default_theme`      | Default theme name (e.g. *ansi*)
