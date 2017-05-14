@@ -102,7 +102,7 @@ Some **account-related commands**:
 % madonctl accounts notifications --list --all    # List really all notifications
 % madonctl accounts notifications --list --clear  # List and clear notifications
 % madonctl accounts notifications --notification-id 1234 # Display notification
-% madonctl accounts notifications --dismiss --notification-id 1234 # Mastodon 1.3+
+% madonctl accounts notifications --dismiss --notification-id 1234
 ```
 
 Note: By default, madonctl will send a single query.  If you want all available
@@ -162,8 +162,8 @@ When the account ID is unknown, --user-id can be useful.\
 You can specify the (instance-specific) account ID number (--account-id) or
 the user ID (--user-id).  In the later case, madonctl will search for the
 user so it must match exactly the ID known to your instance (without the
-@domain suffix if the user is on the same instance).  With madonctl v0.6.1+,
-the --user-id flag can also contain an HTTP account URL.
+@domain suffix if the user is on the same instance).  The --user-id flag can
+also contain an HTTP account URL.
 ``` sh
 % madonctl accounts --user-id Gargron@mastodon.social -l5 # Last 5 statuses
 % madonctl accounts --user-id https://mastodon.social/@Gargron -l5 # Same
@@ -219,7 +219,7 @@ Number of users on current instance (statistics from instances.mastodon.xyz API)
 madonctl instance --stats --template '{{printf "%v\n" .users}}'
 ```
 
-You can write and use [themes](templates) as well (madonctl 0.6+):
+You can write and use [themes](templates) as well:
 ```
 madonctl --theme=ansi timeline
 ```
