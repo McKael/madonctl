@@ -73,6 +73,14 @@ app_secret: '{{.Secret}}'
 #login: ''
 #password: ''
 safe_mode: true
+
+#default_visibility: unlisted
+
+#template_directory: ''
+#default_output: theme
+#default_theme: ansi
+#color: auto
+#verbose: false
 ...
 `
 
