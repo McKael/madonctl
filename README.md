@@ -26,9 +26,11 @@ Travis automated testing is run for Go versions 1.7 and 1.8.
 
 ### Download
 
-Check the [Release page](https://github.com/McKael/madonctl/releases) for some pre-built binaries.
+Check the [Release page](https://github.com/McKael/madonctl/releases) for some
+pre-built binaries.
 
-More pre-built binaries are available from the [Homepage](https://lilotux.net/~mikael/pub/madonctl/) (development version and builds for a few other platforms).
+More pre-built binaries might be available from the [Homepage](https://lilotux.net/~mikael/pub/madonctl/)
+(development version and builds for a few other platforms).
 
 ## Usage
 
@@ -55,11 +57,13 @@ For details on the configuration, please check the [configuration](configuration
 
 ### Usage
 
-The complete list of commands is available in the online help (`madonctl help`, `madonctl command --help`...)
-or in the [manpages](https://lilotux.net/~mikael/pub/madonctl/manual/html/).\
-The [Homepage](https://lilotux.net/~mikael/pub/madonctl/) also contains a plain list of commands.
+The complete list of commands is available in the online help (`madonctl help`,
+`madonctl command --help`...) or in the
+[manpages](https://lilotux.net/~mikael/pub/madonctl/manual/html/).
 
 ### Examples
+
+This is a non-exhaustive list of commands, showing how madonctl works.
 
 To post a simple "toot":
 ``` sh
@@ -258,6 +262,7 @@ See the [themes & templates](templates) folder.
 
 ## References
 
+- [madonctl manpages](https://lilotux.net/~mikael/pub/madonctl/manual/html/)
 - [madon](https://github.com/McKael/madon), the Go library for Mastodon API
 - [Mastodon API documentation](https://github.com/tootsuite/documentation/blob/master/Using-the-API/API.md)
 - [Mastodon repository](https://github.com/tootsuite/mastodon)
