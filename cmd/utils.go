@@ -21,7 +21,10 @@ import (
 )
 
 func checkOutputFormat(cmd *cobra.Command, args []string) error {
-	of := viper.GetString("output")
+	of := outputFormat
+	if of == "" {
+		of = viper.GetString("default_output")
+	}
 	switch of {
 	case "", "plain", "json", "yaml", "template", "theme":
 		return nil // Accepted
@@ -31,9 +34,12 @@ func checkOutputFormat(cmd *cobra.Command, args []string) error {
 
 // getOutputFormat return the requested output format, defaulting to "plain".
 func getOutputFormat() string {
-	of := viper.GetString("output")
+	of := outputFormat
 	if of == "" {
-		of = "plain"
+		of = viper.GetString("default_output")
+		if of == "" {
+			of = "plain"
+		}
 	}
 	// Override format if a template is provided
 	if of == "plain" {
@@ -66,16 +72,20 @@ func getPrinter() (mcResourcePrinter, error) {
 
 	// Initialize color mode
 	switch viper.GetString("color") {
-	case "on", "yes", "force":
+	case "on", "true", "yes", "force":
 		opt["color_mode"] = "on"
-	case "off", "no":
+	case "off", "false", "no":
 		opt["color_mode"] = "off"
 	default:
 		opt["color_mode"] = "auto"
 	}
 
 	if of == "theme" {
-		opt["name"] = outputTheme
+		if outputTheme != "" {
+			opt["name"] = outputTheme
+		} else {
+			opt["name"] = viper.GetString("default_theme")
+		}
 		opt["template_directory"] = viper.GetString("template_directory")
 	} else if of == "template" {
 		opt["template"] = outputTemplate

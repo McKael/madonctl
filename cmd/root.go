@@ -133,7 +133,7 @@ func init() {
 	RootCmd.PersistentFlags().StringVarP(&login, "login", "L", "", "Instance user login")
 	RootCmd.PersistentFlags().StringVarP(&password, "password", "P", "", "Instance user password")
 	RootCmd.PersistentFlags().StringVarP(&token, "token", "t", "", "User token")
-	RootCmd.PersistentFlags().StringVarP(&outputFormat, "output", "o", "plain",
+	RootCmd.PersistentFlags().StringVarP(&outputFormat, "output", "o", "",
 		"Output format (plain|json|yaml|template|theme)")
 	RootCmd.PersistentFlags().StringVar(&outputTemplate, "template", "",
 		"Go template (for output=template)")
@@ -145,9 +145,7 @@ func init() {
 		"Color mode (auto|on|off; for output=template)")
 
 	// Configuration file bindings
-	viper.BindPFlag("output", RootCmd.PersistentFlags().Lookup("output"))
 	viper.BindPFlag("verbose", RootCmd.PersistentFlags().Lookup("verbose"))
-	// XXX viper.BindPFlag("apiKey", RootCmd.PersistentFlags().Lookup("api-key"))
 	viper.BindPFlag("instance", RootCmd.PersistentFlags().Lookup("instance"))
 	viper.BindPFlag("login", RootCmd.PersistentFlags().Lookup("login"))
 	viper.BindPFlag("password", RootCmd.PersistentFlags().Lookup("password"))
