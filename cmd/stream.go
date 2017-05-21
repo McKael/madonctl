@@ -17,7 +17,8 @@ import (
 )
 
 var streamOpts struct {
-	command string
+	command           string
+	notificationsOnly bool
 }
 
 // Maximum number of websockets (1 hashtag <=> 1 ws)
@@ -51,6 +52,7 @@ func init() {
 	RootCmd.AddCommand(streamCmd)
 
 	streamCmd.Flags().StringVar(&streamOpts.command, "command", "", "Execute external command")
+	streamCmd.Flags().BoolVar(&streamOpts.notificationsOnly, "notifications-only", false, "Display only notifications (user stream)")
 }
 
 func streamRunE(cmd *cobra.Command, args []string) error {
@@ -176,6 +178,9 @@ LISTEN:
 				}
 				errPrint("Event: [%s]", ev.Event)
 			case "update":
+				if streamOpts.notificationsOnly {
+					continue
+				}
 				s := ev.Data.(madon.Status)
 				if err = p.printObj(&s); err != nil {
 					break LISTEN
@@ -188,6 +193,9 @@ LISTEN:
 				}
 				continue
 			case "delete":
+				if streamOpts.notificationsOnly {
+					continue
+				}
 				// TODO PrintObj ?
 				errPrint("Event: [%s] Status %d was deleted", ev.Event, ev.Data.(int64))
 			default:
