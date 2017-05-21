@@ -51,6 +51,9 @@ madonctl -i mastodon.social oauth2 get-url
 madonctl -i mastodon.social code $CODE > config_file.yaml
 ```
 
+Note that if you have set up madonctl to use a default theme, you will have
+to force the output with `-o plain` to get the example configuration file.
+
 ## Settings
 
 All the available settings should be displayed with *config dump* (assuming
