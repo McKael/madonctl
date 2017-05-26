@@ -41,15 +41,12 @@ func getOutputFormat() string {
 			of = "plain"
 		}
 	}
-	// Override format if a template is provided
-	if of == "plain" {
-		// If the format is plain and there is a template option,
-		// set the format to "template".  Same for "theme".
-		if outputTemplate != "" || outputTemplateFile != "" {
-			of = "template"
-		} else if outputTheme != "" {
-			of = "theme"
-		}
+
+	// Override format if a template or a theme is provided
+	if outputTemplate != "" || outputTemplateFile != "" {
+		of = "template"
+	} else if outputTheme != "" {
+		of = "theme"
 	}
 	return of
 }
