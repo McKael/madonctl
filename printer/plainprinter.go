@@ -230,7 +230,6 @@ func (p *PlainPrinter) plainPrintRelationship(r *madon.Relationship, w io.Writer
 	indentedPrint(w, indent, false, false, "Followed-by", "%v", r.FollowedBy)
 	indentedPrint(w, indent, false, false, "Blocking", "%v", r.Blocking)
 	indentedPrint(w, indent, false, false, "Muting", "%v", r.Muting)
-	indentedPrint(w, indent, false, false, "Muting Boosts", "%v", r.MutingBoosts)
 	indentedPrint(w, indent, false, false, "Requested", "%v", r.Requested)
 	return nil
 }
