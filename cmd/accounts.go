@@ -394,11 +394,14 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 		}
 		obj = statusList
 	case "follow":
+		var relationship *madon.Relationship
 		if opt.unset {
-			err = gClient.UnfollowAccount(opt.accountID)
+			relationship, err = gClient.UnfollowAccount(opt.accountID)
+			obj = relationship
 		} else {
 			if opt.accountID > 0 {
-				err = gClient.FollowAccount(opt.accountID)
+				relationship, err = gClient.FollowAccount(opt.accountID)
+				obj = relationship
 			} else {
 				var account *madon.Account
 				account, err = gClient.FollowRemoteAccount(opt.remoteUID)
@@ -417,17 +420,21 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 			err = gClient.FollowRequestAuthorize(opt.accountID, !opt.rejectFR)
 		}
 	case "block":
+		var relationship *madon.Relationship
 		if opt.unset {
-			err = gClient.UnblockAccount(opt.accountID)
+			relationship, err = gClient.UnblockAccount(opt.accountID)
 		} else {
-			err = gClient.BlockAccount(opt.accountID)
+			relationship, err = gClient.BlockAccount(opt.accountID)
 		}
+		obj = relationship
 	case "mute":
+		var relationship *madon.Relationship
 		if opt.unset {
-			err = gClient.UnmuteAccount(opt.accountID)
+			relationship, err = gClient.UnmuteAccount(opt.accountID)
 		} else {
-			err = gClient.MuteAccount(opt.accountID)
+			relationship, err = gClient.MuteAccount(opt.accountID)
 		}
+		obj = relationship
 	case "favourites":
 		var statusList []madon.Status
 		statusList, err = gClient.GetFavourites(limOpts)

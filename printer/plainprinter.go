@@ -225,7 +225,7 @@ func (p *PlainPrinter) plainPrintNotification(n *madon.Notification, w io.Writer
 }
 
 func (p *PlainPrinter) plainPrintRelationship(r *madon.Relationship, w io.Writer, indent string) error {
-	indentedPrint(w, indent, true, false, "ID", "%d", r.ID)
+	indentedPrint(w, indent, true, false, "Account ID", "%d", r.ID)
 	indentedPrint(w, indent, false, false, "Following", "%v", r.Following)
 	indentedPrint(w, indent, false, false, "Followed-by", "%v", r.FollowedBy)
 	indentedPrint(w, indent, false, false, "Blocking", "%v", r.Blocking)
