@@ -30,7 +30,6 @@ var accountsOpts struct {
 	accountIDs                string // For account relationships
 	statusIDs                 string // For account reports
 	comment                   string // For account reports
-	show                      bool   // For account reports
 	displayName, note         string // For account update
 	avatar, header            string // For account update
 }
