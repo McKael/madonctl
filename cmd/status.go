@@ -134,6 +134,22 @@ var statusSubcommands = []*cobra.Command{
 			return statusSubcommandRunE(cmd.Name(), args)
 		},
 	},
+	&cobra.Command{
+		Use:     "mute-conversation",
+		Aliases: []string{"mute"},
+		Short:   "Mute the conversation containing the status",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return statusSubcommandRunE(cmd.Name(), args)
+		},
+	},
+	&cobra.Command{
+		Use:     "unmute-conversation",
+		Aliases: []string{"unmute"},
+		Short:   "Unmute the conversation containing the status",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return statusSubcommandRunE(cmd.Name(), args)
+		},
+	},
 	statusReblogSubcommand,
 	statusFavouriteSubcommand,
 	statusPostSubcommand,
@@ -241,6 +257,14 @@ func statusSubcommandRunE(subcmd string, args []string) error {
 		} else {
 			err = gClient.FavouriteStatus(opt.statusID)
 		}
+	case "mute-conversation":
+		var s *madon.Status
+		s, err = gClient.MuteConversation(opt.statusID)
+		obj = s
+	case "unmute-conversation":
+		var s *madon.Status
+		s, err = gClient.UnmuteConversation(opt.statusID)
+		obj = s
 	case "post": // toot
 		var s *madon.Status
 		text := strings.Join(args, " ")
