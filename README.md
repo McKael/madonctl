@@ -169,8 +169,8 @@ user so it must match exactly the ID known to your instance (without the
 @domain suffix if the user is on the same instance).  The --user-id flag can
 also contain an HTTP account URL.
 ``` sh
-% madonctl accounts --user-id Gargron@mastodon.social -l5 # Last 5 statuses
-% madonctl accounts --user-id https://mastodon.social/@Gargron -l5 # Same
+% madonctl accounts --user-id Gargron@mastodon.social -l5 statuses # Last 5 statuses
+% madonctl accounts --user-id https://mastodon.social/@Gargron -l5 statuses # Same
 ```
 
 Read **timelines**:
