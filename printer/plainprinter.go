@@ -45,9 +45,13 @@ func (p *PlainPrinter) PrintObj(obj interface{}, w io.Writer, initialIndent stri
 	case []madon.Account, []madon.Attachment, []madon.Card, []madon.Context,
 		[]madon.Instance, []madon.Mention, []madon.Notification,
 		[]madon.Relationship, []madon.Report, []madon.Results,
-		[]madon.Status, []madon.StreamEvent, []madon.Tag,
+		[]madon.Status, []madon.StreamEvent, []madon.Tag, []madon.DomainName,
 		[]*gomif.InstanceStatus:
 		return p.plainForeach(o, w, initialIndent)
+	case *madon.DomainName:
+		return p.plainPrintDomainName(o, w, initialIndent)
+	case madon.DomainName:
+		return p.plainPrintDomainName(&o, w, initialIndent)
 	case *madon.Account:
 		return p.plainPrintAccount(o, w, initialIndent)
 	case madon.Account:
@@ -152,6 +156,11 @@ func indentedPrint(w io.Writer, indent string, title, skipIfEmpty bool, label st
 		return
 	}
 	fmt.Fprintf(w, "%s%s: %s\n", prefix, label, value)
+}
+
+func (p *PlainPrinter) plainPrintDomainName(d *madon.DomainName, w io.Writer, indent string) error {
+	indentedPrint(w, indent, true, false, "Domain Name", "%s", string(*d))
+	return nil
 }
 
 func (p *PlainPrinter) plainPrintAccount(a *madon.Account, w io.Writer, indent string) error {
