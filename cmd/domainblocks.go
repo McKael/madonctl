@@ -96,12 +96,12 @@ func domainBlocksRunE(cmd *cobra.Command, args []string) error {
 	switch {
 	case opt.show:
 		var domainList []madon.DomainName
-		domainList, err = gClient.GetDomainBlocks(limOpts)
+		domainList, err = gClient.GetBlockedDomains(limOpts)
 		obj = domainList
 	case opt.block:
-		err = gClient.DomainBlock(domName)
+		err = gClient.BlockDomain(domName)
 	case opt.unblock:
-		err = gClient.DomainUnblock(domName)
+		err = gClient.UnblockDomain(domName)
 	default:
 		return errors.New("domainBlocksCmd: internal error")
 	}
