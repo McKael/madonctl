@@ -294,12 +294,12 @@ func (p *PlainPrinter) plainPrintStatus(s *madon.Status, w io.Writer, indent str
 	//return p.PrintObj(s.MediaAttachments, w, indent+p.Indent)
 	for _, a := range s.MediaAttachments {
 		indentedPrint(w, indent+p.Indent, true, false, "Attachment ID", "%d", a.ID)
-		if a.TextURL != "" {
-			indentedPrint(w, indent+p.Indent, true, false, "Text URL", "%s", a.TextURL)
+		if a.TextURL != nil && *a.TextURL != "" {
+			indentedPrint(w, indent+p.Indent, true, false, "Text URL", "%s", *a.TextURL)
 		} else if a.URL != "" {
 			indentedPrint(w, indent+p.Indent, false, false, "URL", "%s", a.URL)
-		} else {
-			indentedPrint(w, indent+p.Indent, false, false, "Remote URL", "%s", a.RemoteURL)
+		} else if a.RemoteURL != nil {
+			indentedPrint(w, indent+p.Indent, false, false, "Remote URL", "%s", *a.RemoteURL)
 		}
 	}
 	return nil
