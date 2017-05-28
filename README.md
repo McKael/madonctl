@@ -172,6 +172,9 @@ also contain an HTTP account URL.
 % madonctl accounts --user-id Gargron@mastodon.social -l5 statuses # Last 5 statuses
 % madonctl accounts --user-id https://mastodon.social/@Gargron -l5 statuses # Same
 ```
+Please note that the form "Gargron@mastodon.social" will only work if this
+account is known by the instance.  If it is unknown, the https link should work
+(and the Mastodon server will learn about the account).
 
 Read **timelines**:
 ``` sh
