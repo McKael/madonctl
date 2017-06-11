@@ -72,13 +72,13 @@ func madonInitClient() error {
 		return errors.Wrap(err, "app registration failed")
 	}
 
-	errPrint("Registred new application.")
+	errPrint("Registered new application.")
 	return nil
 }
 
 func madonLogin() error {
 	if gClient == nil {
-		return errors.New("application not registred")
+		return errors.New("application not registered")
 	}
 
 	token = viper.GetString("token")
