@@ -411,8 +411,23 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 		if opt.list {
 			var followRequests []madon.Account
 			followRequests, err = gClient.GetAccountFollowRequests(limOpts)
-			if opt.limit > 0 && len(followRequests) > int(opt.limit) {
-				followRequests = followRequests[:opt.limit]
+			if opt.accountID > 0 { // Display a specific request
+				var fRequest *madon.Account
+				for _, fr := range followRequests {
+					if fr.ID == opt.accountID {
+						fRequest = &fr
+						break
+					}
+				}
+				if fRequest != nil {
+					followRequests = []madon.Account{*fRequest}
+				} else {
+					followRequests = []madon.Account{}
+				}
+			} else {
+				if opt.limit > 0 && len(followRequests) > int(opt.limit) {
+					followRequests = followRequests[:opt.limit]
+				}
 			}
 			obj = followRequests
 		} else {
