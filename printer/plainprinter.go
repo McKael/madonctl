@@ -278,6 +278,9 @@ func (p *PlainPrinter) plainPrintStatus(s *madon.Status, w io.Writer, indent str
 		}
 		indentedPrint(w, indent, false, false, "From", "%s", author)
 	}
+	if s.Visibility == "private" {
+		indentedPrint(w, indent, false, false, "Private", "true")
+	}
 	indentedPrint(w, indent, false, false, "Timestamp", "%v", s.CreatedAt.Local())
 
 	if s.Reblog != nil {
