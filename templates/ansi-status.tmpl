@@ -1,5 +1,7 @@
 - Status ID: {{color "red"}}{{printf "%.0f" .id}}{{color "reset"}}  {{color "magenta"}}@{{.account.acct}}{{color "reset"}}
   Name: {{color ",,bold"}}{{.account.display_name}}{{color "reset"}}
+{{- if eq .visibility "private"}}
+  Private: true{{end}}
   Date: {{.created_at | tolocal}}
   URL: {{.url}}
 {{- if .reblog }}{{with .reblog}}
