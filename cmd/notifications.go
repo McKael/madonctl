@@ -7,6 +7,7 @@ package cmd
 
 import (
 	"os"
+	"strings"
 
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -17,6 +18,7 @@ import (
 var notificationsOpts struct {
 	list, clear, dismiss bool
 	notifID              int64
+	types                string
 }
 
 // notificationsCmd represents the notifications subcommand
@@ -27,7 +29,10 @@ var notificationsCmd = &cobra.Command{
 	Example: `  madonctl accounts notifications --list
   madonctl accounts notifications --list --clear
   madonctl accounts notifications --dismiss --notification-id N
-  madonctl accounts notifications --notification-id N`,
+  madonctl accounts notifications --notification-id N
+  madonctl accounts notifications --list --notification-types mentions
+  madonctl accounts notifications --list --notification-types favourites
+  madonctl accounts notifications --list --notification-types follows,reblogs`,
 	//Long:    `TBW...`,
 	RunE: notificationRunE,
 }
@@ -39,6 +44,7 @@ func init() {
 	notificationsCmd.Flags().BoolVar(&notificationsOpts.clear, "clear", false, "Clear all current notifications")
 	notificationsCmd.Flags().BoolVar(&notificationsOpts.dismiss, "dismiss", false, "Delete a notification")
 	notificationsCmd.Flags().Int64Var(&notificationsOpts.notifID, "notification-id", 0, "Get a notification")
+	notificationsCmd.Flags().StringVar(&notificationsOpts.types, "notification-types", "", "Filter notifications (mentions, favourites, reblogs, follows)")
 }
 
 func notificationRunE(cmd *cobra.Command, args []string) error {
@@ -68,12 +74,45 @@ func notificationRunE(cmd *cobra.Command, args []string) error {
 		limOpts.SinceID = int64(accountsOpts.sinceID)
 	}
 
+	filterMap := make(map[string]bool)
+	if opt.types != "" {
+		for _, f := range strings.Split(opt.types, ",") {
+			switch f {
+			case "mention", "mentions":
+				filterMap["mention"] = true
+			case "favourite", "favourites", "favorite", "favorites", "fave", "faves":
+				filterMap["favourite"] = true
+			case "reblog", "reblogs", "retoot", "retoots":
+				filterMap["reblog"] = true
+			case "follow", "follows":
+				filterMap["follow"] = true
+			default:
+				return errors.Errorf("unknown notification type: '%s'", f)
+			}
+		}
+	}
+
 	var obj interface{}
 	var err error
 
 	if opt.list {
 		var notifications []madon.Notification
 		notifications, err = gClient.GetNotifications(limOpts)
+
+		// Filter notifications
+		if len(filterMap) > 0 {
+			if verbose {
+				errPrint("Filtering notifications")
+			}
+			var newNotifications []madon.Notification
+			for _, notif := range notifications {
+				if filterMap[notif.Type] {
+					newNotifications = append(newNotifications, notif)
+				}
+			}
+			notifications = newNotifications
+		}
+
 		if accountsOpts.limit > 0 && len(notifications) > int(accountsOpts.limit) {
 			notifications = notifications[:accountsOpts.limit]
 		}
