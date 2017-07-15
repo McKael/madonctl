@@ -19,6 +19,7 @@ import (
 var streamOpts struct {
 	command           string
 	notificationsOnly bool
+	notificationTypes string
 }
 
 // Maximum number of websockets (1 hashtag <=> 1 ws)
@@ -38,6 +39,8 @@ It can also get a hashtag-based stream if the keyword or prefixed with
   madonctl stream public    # Public timeline stream
   madonctl stream :mastodon # Hashtag
   madonctl stream #madonctl
+  madonctl stream --notifications-only
+  madonctl stream --notifications-only --notification-types mentions,follows
 
 Several (up to 4) hashtags can be given.
 Note: madonctl will use 1 websocket per hashtag stream.
@@ -53,6 +56,7 @@ func init() {
 
 	streamCmd.Flags().StringVar(&streamOpts.command, "command", "", "Execute external command")
 	streamCmd.Flags().BoolVar(&streamOpts.notificationsOnly, "notifications-only", false, "Display only notifications (user stream)")
+	streamCmd.Flags().StringVar(&streamOpts.notificationTypes, "notification-types", "", "Filter notifications (mentions, favourites, reblogs, follows)")
 }
 
 func streamRunE(cmd *cobra.Command, args []string) error {
@@ -97,6 +101,15 @@ func streamRunE(cmd *cobra.Command, args []string) error {
 
 	if err := madonInit(true); err != nil {
 		return err
+	}
+
+	var filterMap *map[string]bool
+	if streamOpts.notificationTypes != "" {
+		var err error
+		filterMap, err = buildFilterMap(streamOpts.notificationTypes)
+		if err != nil {
+			return err
+		}
 	}
 
 	evChan := make(chan madon.StreamEvent, 10)
@@ -188,6 +201,9 @@ LISTEN:
 				continue
 			case "notification":
 				n := ev.Data.(madon.Notification)
+				if filterMap != nil && !(*filterMap)[n.Type] {
+					continue
+				}
 				if p.printObj(&n); err != nil {
 					break LISTEN
 				}

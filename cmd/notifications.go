@@ -74,21 +74,12 @@ func notificationRunE(cmd *cobra.Command, args []string) error {
 		limOpts.SinceID = int64(accountsOpts.sinceID)
 	}
 
-	filterMap := make(map[string]bool)
+	var filterMap *map[string]bool
 	if opt.types != "" {
-		for _, f := range strings.Split(opt.types, ",") {
-			switch f {
-			case "mention", "mentions":
-				filterMap["mention"] = true
-			case "favourite", "favourites", "favorite", "favorites", "fave", "faves":
-				filterMap["favourite"] = true
-			case "reblog", "reblogs", "retoot", "retoots":
-				filterMap["reblog"] = true
-			case "follow", "follows":
-				filterMap["follow"] = true
-			default:
-				return errors.Errorf("unknown notification type: '%s'", f)
-			}
+		var err error
+		filterMap, err = buildFilterMap(opt.types)
+		if err != nil {
+			return nil
 		}
 	}
 
@@ -100,13 +91,13 @@ func notificationRunE(cmd *cobra.Command, args []string) error {
 		notifications, err = gClient.GetNotifications(limOpts)
 
 		// Filter notifications
-		if len(filterMap) > 0 {
+		if filterMap != nil && len(*filterMap) > 0 {
 			if verbose {
 				errPrint("Filtering notifications")
 			}
 			var newNotifications []madon.Notification
 			for _, notif := range notifications {
-				if filterMap[notif.Type] {
+				if (*filterMap)[notif.Type] {
 					newNotifications = append(newNotifications, notif)
 				}
 			}
@@ -143,4 +134,25 @@ func notificationRunE(cmd *cobra.Command, args []string) error {
 		os.Exit(1)
 	}
 	return p.printObj(obj)
+}
+
+func buildFilterMap(types string) (*map[string]bool, error) {
+	filterMap := make(map[string]bool)
+	if types != "" {
+		for _, f := range strings.Split(types, ",") {
+			switch f {
+			case "mention", "mentions":
+				filterMap["mention"] = true
+			case "favourite", "favourites", "favorite", "favorites", "fave", "faves":
+				filterMap["favourite"] = true
+			case "reblog", "reblogs", "retoot", "retoots":
+				filterMap["reblog"] = true
+			case "follow", "follows":
+				filterMap["follow"] = true
+			default:
+				return nil, errors.Errorf("unknown notification type: '%s'", f)
+			}
+		}
+	}
+	return &filterMap, nil
 }
