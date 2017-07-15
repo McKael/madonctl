@@ -20,7 +20,7 @@ var accountsOpts struct {
 	accountID                 int64
 	accountUID                string
 	unset                     bool   // TODO remove eventually?
-	limit                     uint   // Limit the results
+	limit, keep               uint   // Limit the results
 	sinceID, maxID            int64  // Query boundaries
 	all                       bool   // Try to fetch all results
 	onlyMedia, excludeReplies bool   // For acccount statuses
@@ -45,7 +45,8 @@ func init() {
 	// Global flags
 	accountsCmd.PersistentFlags().Int64VarP(&accountsOpts.accountID, "account-id", "a", 0, "Account ID number")
 	accountsCmd.PersistentFlags().StringVarP(&accountsOpts.accountUID, "user-id", "u", "", "Account user ID")
-	accountsCmd.PersistentFlags().UintVarP(&accountsOpts.limit, "limit", "l", 0, "Limit number of results")
+	accountsCmd.PersistentFlags().UintVarP(&accountsOpts.limit, "limit", "l", 0, "Limit number of API results")
+	accountsCmd.PersistentFlags().UintVarP(&accountsOpts.keep, "keep", "k", 0, "Limit number of results")
 	accountsCmd.PersistentFlags().Int64Var(&accountsOpts.sinceID, "since-id", 0, "Request IDs greater than a value")
 	accountsCmd.PersistentFlags().Int64Var(&accountsOpts.maxID, "max-id", 0, "Request IDs less (or equal) than a value")
 	accountsCmd.PersistentFlags().BoolVar(&accountsOpts.all, "all", false, "Fetch all results")
@@ -374,22 +375,22 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 	case "followers":
 		var accountList []madon.Account
 		accountList, err = gClient.GetAccountFollowers(opt.accountID, limOpts)
-		if opt.limit > 0 && len(accountList) > int(opt.limit) {
-			accountList = accountList[:opt.limit]
+		if opt.keep > 0 && len(accountList) > int(opt.keep) {
+			accountList = accountList[:opt.keep]
 		}
 		obj = accountList
 	case "following":
 		var accountList []madon.Account
 		accountList, err = gClient.GetAccountFollowing(opt.accountID, limOpts)
-		if opt.limit > 0 && len(accountList) > int(opt.limit) {
-			accountList = accountList[:opt.limit]
+		if opt.keep > 0 && len(accountList) > int(opt.keep) {
+			accountList = accountList[:opt.keep]
 		}
 		obj = accountList
 	case "statuses":
 		var statusList []madon.Status
 		statusList, err = gClient.GetAccountStatuses(opt.accountID, opt.onlyMedia, opt.excludeReplies, limOpts)
-		if opt.limit > 0 && len(statusList) > int(opt.limit) {
-			statusList = statusList[:opt.limit]
+		if opt.keep > 0 && len(statusList) > int(opt.keep) {
+			statusList = statusList[:opt.keep]
 		}
 		obj = statusList
 	case "follow":
@@ -425,8 +426,8 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 					followRequests = []madon.Account{}
 				}
 			} else {
-				if opt.limit > 0 && len(followRequests) > int(opt.limit) {
-					followRequests = followRequests[:opt.limit]
+				if opt.keep > 0 && len(followRequests) > int(opt.keep) {
+					followRequests = followRequests[:opt.keep]
 				}
 			}
 			obj = followRequests
@@ -452,22 +453,22 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 	case "favourites":
 		var statusList []madon.Status
 		statusList, err = gClient.GetFavourites(limOpts)
-		if opt.limit > 0 && len(statusList) > int(opt.limit) {
-			statusList = statusList[:opt.limit]
+		if opt.keep > 0 && len(statusList) > int(opt.keep) {
+			statusList = statusList[:opt.keep]
 		}
 		obj = statusList
 	case "blocks":
 		var accountList []madon.Account
 		accountList, err = gClient.GetBlockedAccounts(limOpts)
-		if opt.limit > 0 && len(accountList) > int(opt.limit) {
-			accountList = accountList[:opt.limit]
+		if opt.keep > 0 && len(accountList) > int(opt.keep) {
+			accountList = accountList[:opt.keep]
 		}
 		obj = accountList
 	case "mutes":
 		var accountList []madon.Account
 		accountList, err = gClient.GetMutedAccounts(limOpts)
-		if opt.limit > 0 && len(accountList) > int(opt.limit) {
-			accountList = accountList[:opt.limit]
+		if opt.keep > 0 && len(accountList) > int(opt.keep) {
+			accountList = accountList[:opt.keep]
 		}
 		obj = accountList
 	case "relationships":
@@ -489,8 +490,8 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 		if opt.list {
 			var reports []madon.Report
 			reports, err = gClient.GetReports(limOpts)
-			if opt.limit > 0 && len(reports) > int(opt.limit) {
-				reports = reports[:opt.limit]
+			if opt.keep > 0 && len(reports) > int(opt.keep) {
+				reports = reports[:opt.keep]
 			}
 			obj = reports
 			break

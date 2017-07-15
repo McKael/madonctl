@@ -15,7 +15,7 @@ import (
 
 var timelineOpts struct {
 	local          bool
-	limit          uint
+	limit, keep    uint
 	sinceID, maxID int64
 }
 
@@ -39,7 +39,8 @@ func init() {
 	RootCmd.AddCommand(timelineCmd)
 
 	timelineCmd.Flags().BoolVar(&timelineOpts.local, "local", false, "Posts from the local instance")
-	timelineCmd.Flags().UintVarP(&timelineOpts.limit, "limit", "l", 0, "Limit number of results")
+	timelineCmd.Flags().UintVarP(&timelineOpts.limit, "limit", "l", 0, "Limit number of API results")
+	timelineCmd.Flags().UintVarP(&timelineOpts.keep, "keep", "k", 0, "Limit number of results")
 	timelineCmd.PersistentFlags().Int64Var(&timelineOpts.sinceID, "since-id", 0, "Request IDs greater than a value")
 	timelineCmd.PersistentFlags().Int64Var(&timelineOpts.maxID, "max-id", 0, "Request IDs less (or equal) than a value")
 }
@@ -78,8 +79,8 @@ func timelineRunE(cmd *cobra.Command, args []string) error {
 		os.Exit(1)
 	}
 
-	if opt.limit > 0 && len(sl) > int(opt.limit) {
-		sl = sl[:opt.limit]
+	if opt.keep > 0 && len(sl) > int(opt.keep) {
+		sl = sl[:opt.keep]
 	}
 
 	p, err := getPrinter()

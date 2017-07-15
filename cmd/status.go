@@ -32,7 +32,7 @@ var statusOpts struct {
 	addMentions   bool
 
 	// Used for several subcommands to limit the number of results
-	limit uint
+	limit, keep uint
 	//sinceID, maxID int64
 	all bool
 }
@@ -45,7 +45,8 @@ func init() {
 
 	// Global flags
 	statusCmd.PersistentFlags().Int64VarP(&statusOpts.statusID, "status-id", "s", 0, "Status ID number")
-	statusCmd.PersistentFlags().UintVarP(&statusOpts.limit, "limit", "l", 0, "Limit number of results")
+	statusCmd.PersistentFlags().UintVarP(&statusOpts.limit, "limit", "l", 0, "Limit number of API results")
+	statusCmd.PersistentFlags().UintVarP(&statusOpts.keep, "keep", "k", 0, "Limit number of results")
 	//statusCmd.PersistentFlags().Int64Var(&statusOpts.sinceID, "since-id", 0, "Request IDs greater than a value")
 	//statusCmd.PersistentFlags().Int64Var(&statusOpts.maxID, "max-id", 0, "Request IDs less (or equal) than a value")
 	statusCmd.PersistentFlags().BoolVar(&statusOpts.all, "all", false, "Fetch all results (for reblogged-by/favourited-by)")
@@ -232,15 +233,15 @@ func statusSubcommandRunE(subcmd string, args []string) error {
 	case "reblogged-by":
 		var accountList []madon.Account
 		accountList, err = gClient.GetStatusRebloggedBy(opt.statusID, limOpts)
-		if opt.limit > 0 && len(accountList) > int(opt.limit) {
-			accountList = accountList[:opt.limit]
+		if opt.keep > 0 && len(accountList) > int(opt.keep) {
+			accountList = accountList[:opt.keep]
 		}
 		obj = accountList
 	case "favourited-by":
 		var accountList []madon.Account
 		accountList, err = gClient.GetStatusFavouritedBy(opt.statusID, limOpts)
-		if opt.limit > 0 && len(accountList) > int(opt.limit) {
-			accountList = accountList[:opt.limit]
+		if opt.keep > 0 && len(accountList) > int(opt.keep) {
+			accountList = accountList[:opt.keep]
 		}
 		obj = accountList
 	case "delete":

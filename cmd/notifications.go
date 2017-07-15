@@ -104,8 +104,8 @@ func notificationRunE(cmd *cobra.Command, args []string) error {
 			notifications = newNotifications
 		}
 
-		if accountsOpts.limit > 0 && len(notifications) > int(accountsOpts.limit) {
-			notifications = notifications[:accountsOpts.limit]
+		if accountsOpts.keep > 0 && len(notifications) > int(accountsOpts.keep) {
+			notifications = notifications[:accountsOpts.keep]
 		}
 		obj = notifications
 	} else if opt.notifID > 0 {
