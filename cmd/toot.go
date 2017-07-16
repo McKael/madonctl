@@ -29,12 +29,16 @@ func init() {
 	tootAliasCmd.Flags().Int64VarP(&statusOpts.inReplyToID, "in-reply-to", "r", 0, "Status ID to reply to")
 	tootAliasCmd.Flags().BoolVar(&statusOpts.stdin, "stdin", false, "Read message content from standard input")
 	tootAliasCmd.Flags().BoolVar(&statusOpts.addMentions, "add-mentions", false, "Add mentions when replying")
+	tootAliasCmd.Flags().BoolVar(&statusOpts.sameVisibility, "same-visibility", false, "Use same visibility as original message (for replies)")
 
 	// Flag completion
 	annotation := make(map[string][]string)
 	annotation[cobra.BashCompCustom] = []string{"__madonctl_visibility"}
 
 	tootAliasCmd.Flags().Lookup("visibility").Annotations = annotation
+
+	// This one will be used to check if the options were explicitly set or not
+	updateFlags = tootAliasCmd.Flags()
 }
 
 var tootAliasCmd = &cobra.Command{
@@ -90,12 +94,37 @@ func toot(tootText string) (*madon.Status, error) {
 		return nil, errors.New("toot is empty")
 	}
 
-	if opt.addMentions && opt.inReplyToID > 0 {
-		mentions, err := mentionsList(opt.inReplyToID)
-		if err != nil {
-			return nil, err
+	if opt.inReplyToID > 0 {
+		var initialStatus *madon.Status
+		var preserveVis bool
+		if opt.sameVisibility && !updateFlags.Lookup("visibility").Changed {
+			// Preserve visibility unless the --visibility flag
+			// has been used in the command line.
+			preserveVis = true
 		}
-		tootText = mentions + tootText
+		if preserveVis || opt.addMentions {
+			// Fetch original status message
+			initialStatus, err = gClient.GetStatus(opt.inReplyToID)
+			if err != nil {
+				return nil, errors.Wrap(err, "cannot get original message")
+			}
+		}
+		if preserveVis {
+			v := initialStatus.Visibility
+			// We do not set public visibility unless explicitly requested
+			if v == "public" {
+				opt.visibility = "unlisted"
+			} else {
+				opt.visibility = v
+			}
+		}
+		if opt.addMentions {
+			mentions, err := mentionsList(initialStatus)
+			if err != nil {
+				return nil, err
+			}
+			tootText = mentions + tootText
+		}
 	}
 
 	// Uploading media file last
@@ -116,15 +145,10 @@ func toot(tootText string) (*madon.Status, error) {
 	return gClient.PostStatus(tootText, opt.inReplyToID, ids, opt.sensitive, opt.spoiler, opt.visibility)
 }
 
-func mentionsList(statusID int64) (string, error) {
+func mentionsList(s *madon.Status) (string, error) {
 	a, err := gClient.GetCurrentAccount()
 	if err != nil {
 		return "", errors.Wrap(err, "cannot check account details")
-	}
-
-	s, err := gClient.GetStatus(statusID)
-	if err != nil {
-		return "", errors.Wrap(err, "cannot get mentions")
 	}
 
 	var mentions []string

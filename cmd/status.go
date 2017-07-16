@@ -21,15 +21,16 @@ var statusOpts struct {
 	unset    bool
 
 	// The following fields are used for the post/toot command
-	visibility    string
-	sensitive     bool
-	spoiler       string
-	inReplyToID   int64
-	mediaIDs      string
-	mediaFilePath string
-	textFilePath  string
-	stdin         bool
-	addMentions   bool
+	visibility     string
+	sensitive      bool
+	spoiler        string
+	inReplyToID    int64
+	mediaIDs       string
+	mediaFilePath  string
+	textFilePath   string
+	stdin          bool
+	addMentions    bool
+	sameVisibility bool
 
 	// Used for several subcommands to limit the number of results
 	limit, keep uint
@@ -65,12 +66,16 @@ func init() {
 	statusPostSubcommand.Flags().Int64VarP(&statusOpts.inReplyToID, "in-reply-to", "r", 0, "Status ID to reply to")
 	statusPostSubcommand.Flags().BoolVar(&statusOpts.stdin, "stdin", false, "Read message content from standard input")
 	statusPostSubcommand.Flags().BoolVar(&statusOpts.addMentions, "add-mentions", false, "Add mentions when replying")
+	statusPostSubcommand.Flags().BoolVar(&statusOpts.sameVisibility, "same-visibility", false, "Use same visibility as original message (for replies)")
 
 	// Flag completion
 	annotation := make(map[string][]string)
 	annotation[cobra.BashCompCustom] = []string{"__madonctl_visibility"}
 
 	statusPostSubcommand.Flags().Lookup("visibility").Annotations = annotation
+
+	// This one will be used to check if the options were explicitly set or not
+	updateFlags = statusPostSubcommand.Flags()
 }
 
 // statusCmd represents the status command

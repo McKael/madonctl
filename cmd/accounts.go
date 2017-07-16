@@ -75,7 +75,7 @@ func init() {
 	accountUpdateSubcommand.Flags().StringVar(&accountsOpts.avatar, "avatar", "", "User avatar image")
 	accountUpdateSubcommand.Flags().StringVar(&accountsOpts.header, "header", "", "User header image")
 
-	// This one will be used to check if the options were explicitely set or not
+	// This one will be used to check if the options were explicitly set or not
 	updateFlags = accountUpdateSubcommand.Flags()
 }
 
