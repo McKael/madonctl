@@ -1,7 +1,7 @@
 {{with .accounts}}
 {{- color ",,bold"}}Accounts:{{color "reset"}}
 {{- range .}}
-  - Account ID: {{color "red"}}{{printf "%.0f" .id}}{{color "reset"}}  {{color "magenta"}}@{{.username}}{{color "reset"}}
+  - Account ID: {{color "red"}}{{.id}}{{color "reset"}}  {{color "magenta"}}@{{.username}}{{color "reset"}}
     UID: {{color "red"}}{{.acct}}{{color "reset"}}
     Display name: {{color "white,,bold"}}{{.display_name}}{{color "reset"}}
     Date: {{.created_at}}
@@ -16,7 +16,7 @@
 {{end}}{{/* of accounts */}}
 {{- with .statuses}}{{color ",,bold"}}Statuses:{{color "reset"}}
 {{- range .}}
-  - Status ID: {{color "red"}}{{printf "%.0f" .id}}{{color "reset"}}  {{color "magenta"}}@{{.account.acct}}{{color "reset"}}
+  - Status ID: {{color "red"}}{{.id}}{{color "reset"}}  {{color "magenta"}}@{{.account.acct}}{{color "reset"}}
     Name: {{color ",,bold"}}{{.account.display_name}}{{color "reset"}}
     Date: {{.created_at}}
     URL: {{.url}}
@@ -26,7 +26,7 @@
     Spoiler: {{.}}{{end}}
     Message: {{color "blue"}}{{.content | fromhtml | wrap "     " 80 | trim}}{{color "reset"}}
 {{- range .media_attachments}}
-    - Attachment ID: {{printf "%.0f" .id}}
+    - Attachment ID: {{.id}}
 {{- if .text_url}}
       Text URL: {{.text_url}}{{else if .url}}
       URL: {{.url}}{{else if .remote_url}}

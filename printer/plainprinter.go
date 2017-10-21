@@ -295,8 +295,8 @@ func (p *PlainPrinter) plainPrintStatus(s *madon.Status, w io.Writer, indent str
 	}
 
 	indentedPrint(w, indent, false, false, "Contents", "%s", html2string(s.Content))
-	if s.InReplyToID > 0 {
-		indentedPrint(w, indent, false, false, "In-Reply-To", "%d", s.InReplyToID)
+	if s.InReplyToID != nil && *s.InReplyToID > 0 {
+		indentedPrint(w, indent, false, false, "In-Reply-To", "%d", *s.InReplyToID)
 	}
 	if s.Reblogged {
 		indentedPrint(w, indent, false, false, "Reblogged", "%v", s.Reblogged)
