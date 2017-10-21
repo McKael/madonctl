@@ -11,6 +11,11 @@ It is built on top of [madon](https://github.com/McKael/madon), my Golang implem
 
 ## Installation
 
+Please note that Mastodon 2.0.0 has a breaking API change (see issue #9).
+
+`madonctl` v2.0.0+ is required for Mastodon 2.0.0+ server, but the new version
+will not work with old servers.
+
 ### From source
 
 To install the application from source (you need to have Go >= 1.7), just type:
