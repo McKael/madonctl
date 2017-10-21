@@ -170,9 +170,6 @@ func initConfig() {
 	if cfgFile == "/dev/null" {
 		return
 	}
-	if cfgFile != "" { // enable ability to specify config file via flag
-		viper.SetConfigFile(cfgFile)
-	}
 
 	viper.SetConfigName(AppName) // name of config file (without extension)
 	viper.AddConfigPath("$HOME/.config/" + AppName)
@@ -181,6 +178,9 @@ func initConfig() {
 	// Read in environment variables that match, with a prefix
 	viper.SetEnvPrefix(AppName)
 	viper.AutomaticEnv()
+
+	// Enable ability to specify config file via flag
+	viper.SetConfigFile(cfgFile)
 
 	// If a config file is found, read it in.
 	err := viper.ReadInConfig()
