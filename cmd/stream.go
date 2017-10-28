@@ -213,7 +213,7 @@ LISTEN:
 					continue
 				}
 				// TODO PrintObj ?
-				errPrint("Event: [%s] Status %d was deleted", ev.Event, ev.Data.(int64))
+				errPrint("Event: [%s] Status %s was deleted", ev.Event, ev.Data.(string))
 			default:
 				errPrint("Unhandled event: [%s] %T", ev.Event, ev.Data)
 			}
