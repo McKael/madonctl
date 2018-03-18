@@ -10,12 +10,15 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
+	flag "github.com/spf13/pflag"
 	"github.com/spf13/viper"
 
 	"github.com/McKael/madon"
 )
 
 // toot is a kind of alias for status post
+
+var tootAliasFlags *flag.FlagSet
 
 func init() {
 	RootCmd.AddCommand(tootAliasCmd)
@@ -38,7 +41,7 @@ func init() {
 	tootAliasCmd.Flags().Lookup("visibility").Annotations = annotation
 
 	// This one will be used to check if the options were explicitly set or not
-	updateFlags = tootAliasCmd.Flags()
+	tootAliasFlags = tootAliasCmd.Flags()
 }
 
 var tootAliasCmd = &cobra.Command{
@@ -97,7 +100,9 @@ func toot(tootText string) (*madon.Status, error) {
 	if opt.inReplyToID > 0 {
 		var initialStatus *madon.Status
 		var preserveVis bool
-		if opt.sameVisibility && !updateFlags.Lookup("visibility").Changed {
+		if opt.sameVisibility &&
+			!tootAliasFlags.Lookup("visibility").Changed &&
+			!statusPostFlags.Lookup("visibility").Changed {
 			// Preserve visibility unless the --visibility flag
 			// has been used in the command line.
 			preserveVis = true

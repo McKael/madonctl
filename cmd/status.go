@@ -12,9 +12,12 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
+	flag "github.com/spf13/pflag"
 
 	"github.com/McKael/madon"
 )
+
+var statusPostFlags *flag.FlagSet
 
 var statusOpts struct {
 	statusID int64
@@ -75,7 +78,7 @@ func init() {
 	statusPostSubcommand.Flags().Lookup("visibility").Annotations = annotation
 
 	// This one will be used to check if the options were explicitly set or not
-	updateFlags = statusPostSubcommand.Flags()
+	statusPostFlags = statusPostSubcommand.Flags()
 }
 
 // statusCmd represents the status command
