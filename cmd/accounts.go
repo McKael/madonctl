@@ -32,9 +32,10 @@ var accountsOpts struct {
 	comment                   string // For account reports
 	displayName, note         string // For account update
 	avatar, header            string // For account update
+	locked                    bool   // For account update
 }
 
-var updateFlags *flag.FlagSet
+var accountUpdateFlags *flag.FlagSet
 
 func init() {
 	RootCmd.AddCommand(accountsCmd)
@@ -74,9 +75,10 @@ func init() {
 	accountUpdateSubcommand.Flags().StringVar(&accountsOpts.note, "note", "", "User note (a.k.a. bio)")
 	accountUpdateSubcommand.Flags().StringVar(&accountsOpts.avatar, "avatar", "", "User avatar image")
 	accountUpdateSubcommand.Flags().StringVar(&accountsOpts.header, "header", "", "User header image")
+	accountUpdateSubcommand.Flags().BoolVar(&accountsOpts.locked, "locked", false, "Following account requires approval")
 
 	// This one will be used to check if the options were explicitly set or not
-	updateFlags = accountUpdateSubcommand.Flags()
+	accountUpdateFlags = accountUpdateSubcommand.Flags()
 }
 
 // accountsCmd represents the accounts command
@@ -510,21 +512,26 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 		obj = report
 	case "update":
 		var dn, note, avatar, header *string
+		var locked *bool
 		change := false
-		if updateFlags.Lookup("display-name").Changed {
+		if accountUpdateFlags.Lookup("display-name").Changed {
 			dn = &opt.displayName
 			change = true
 		}
-		if updateFlags.Lookup("note").Changed {
+		if accountUpdateFlags.Lookup("note").Changed {
 			note = &opt.note
 			change = true
 		}
-		if updateFlags.Lookup("avatar").Changed {
+		if accountUpdateFlags.Lookup("avatar").Changed {
 			avatar = &opt.avatar
 			change = true
 		}
-		if updateFlags.Lookup("header").Changed {
+		if accountUpdateFlags.Lookup("header").Changed {
 			header = &opt.header
+			change = true
+		}
+		if accountUpdateFlags.Lookup("locked").Changed {
+			locked = &opt.locked
 			change = true
 		}
 
@@ -533,7 +540,7 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 		}
 
 		var account *madon.Account
-		account, err = gClient.UpdateAccount(dn, note, avatar, header)
+		account, err = gClient.UpdateAccount(dn, note, avatar, header, locked)
 		obj = account
 	default:
 		return errors.New("accountSubcommand: internal error")
