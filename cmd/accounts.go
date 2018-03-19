@@ -34,9 +34,10 @@ var accountsOpts struct {
 	displayName, note     string // For account update
 	avatar, header        string // For account update
 	locked                bool   // For account update
+	muteNotifications     bool   // For account mute
 }
 
-var accountUpdateFlags *flag.FlagSet
+var accountUpdateFlags, accountMuteFlags *flag.FlagSet
 
 func init() {
 	RootCmd.AddCommand(accountsCmd)
@@ -64,6 +65,7 @@ func init() {
 
 	accountBlockSubcommand.Flags().BoolVarP(&accountsOpts.unset, "unset", "", false, "Unblock the account")
 	accountMuteSubcommand.Flags().BoolVarP(&accountsOpts.unset, "unset", "", false, "Unmute the account")
+	accountMuteSubcommand.Flags().BoolVarP(&accountsOpts.muteNotifications, "notifications", "", true, "Mute the notifications")
 	accountFollowSubcommand.Flags().BoolVarP(&accountsOpts.unset, "unset", "", false, "Unfollow the account")
 	accountFollowSubcommand.Flags().StringVarP(&accountsOpts.remoteUID, "remote", "r", "", "Follow remote account (user@domain)")
 
@@ -81,6 +83,7 @@ func init() {
 
 	// This one will be used to check if the options were explicitly set or not
 	accountUpdateFlags = accountUpdateSubcommand.Flags()
+	accountMuteFlags = accountMuteSubcommand.Flags()
 }
 
 // accountsCmd represents the accounts command
@@ -451,7 +454,11 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 		if opt.unset {
 			relationship, err = gClient.UnmuteAccount(opt.accountID)
 		} else {
-			relationship, err = gClient.MuteAccount(opt.accountID)
+			var muteNotif *bool
+			if accountMuteFlags.Lookup("notifications").Changed {
+				muteNotif = &opt.muteNotifications
+			}
+			relationship, err = gClient.MuteAccount(opt.accountID, muteNotif)
 		}
 		obj = relationship
 	case "favourites":
