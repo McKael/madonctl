@@ -35,6 +35,7 @@ var accountsOpts struct {
 	avatar, header        string // For account update
 	locked                bool   // For account update
 	muteNotifications     bool   // For account mute
+	following             bool   // For account search
 }
 
 var accountUpdateFlags, accountMuteFlags *flag.FlagSet
@@ -64,6 +65,7 @@ func init() {
 	accountFollowRequestsSubcommand.Flags().BoolVar(&accountsOpts.rejectFR, "reject", false, "Reject the follow request from the account ID")
 
 	accountBlockSubcommand.Flags().BoolVarP(&accountsOpts.unset, "unset", "", false, "Unblock the account")
+
 	accountMuteSubcommand.Flags().BoolVarP(&accountsOpts.unset, "unset", "", false, "Unmute the account")
 	accountMuteSubcommand.Flags().BoolVarP(&accountsOpts.muteNotifications, "notifications", "", true, "Mute the notifications")
 	accountFollowSubcommand.Flags().BoolVarP(&accountsOpts.unset, "unset", "", false, "Unfollow the account")
@@ -74,6 +76,8 @@ func init() {
 	accountReportsSubcommand.Flags().StringVar(&accountsOpts.statusIDs, "status-ids", "", "Comma-separated list of status IDs")
 	accountReportsSubcommand.Flags().StringVar(&accountsOpts.comment, "comment", "", "Report comment")
 	accountReportsSubcommand.Flags().BoolVar(&accountsOpts.list, "list", false, "List current user reports")
+
+	accountSearchSubcommand.Flags().BoolVar(&accountsOpts.following, "following", false, "Restrict search to accounts you are following")
 
 	accountUpdateSubcommand.Flags().StringVar(&accountsOpts.displayName, "display-name", "", "User display name")
 	accountUpdateSubcommand.Flags().StringVar(&accountsOpts.note, "note", "", "User note (a.k.a. bio)")
@@ -145,16 +149,7 @@ If no account ID is specified, the current user account is used.`,
 			return accountSubcommandsRunE(cmd.Name(), args)
 		},
 	},
-	&cobra.Command{
-		Use:   "search TEXT",
-		Short: "Search for user accounts",
-		Long: `Search for user accounts.
-The server will lookup an account remotely if the search term is in the
-username@domain format and not yet in the database.`,
-		RunE: func(cmd *cobra.Command, args []string) error {
-			return accountSubcommandsRunE(cmd.Name(), args)
-		},
-	},
+	accountSearchSubcommand,
 	accountStatusesSubcommand,
 	accountFollowRequestsSubcommand,
 	accountFollowSubcommand,
@@ -163,6 +158,17 @@ username@domain format and not yet in the database.`,
 	accountRelationshipsSubcommand,
 	accountReportsSubcommand,
 	accountUpdateSubcommand,
+}
+
+var accountSearchSubcommand = &cobra.Command{
+	Use:   "search TEXT",
+	Short: "Search for user accounts",
+	Long: `Search for user accounts.
+er will lookup an account remotely if the search term is in the
+@domain format and not yet in the database.`,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return accountSubcommandsRunE(cmd.Name(), args)
+	},
 }
 
 var accountStatusesSubcommand = &cobra.Command{
@@ -377,7 +383,7 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 		obj = account
 	case "search":
 		var accountList []madon.Account
-		accountList, err = gClient.SearchAccounts(strings.Join(args, " "), limOpts)
+		accountList, err = gClient.SearchAccounts(strings.Join(args, " "), opt.following, limOpts)
 		obj = accountList
 	case "followers":
 		var accountList []madon.Account
@@ -594,7 +600,7 @@ func accountLookupUser(user string) (int64, error) {
 		// Remove leading '@'
 		user = strings.TrimLeft(user, "@")
 
-		accList, err := gClient.SearchAccounts(user, &madon.LimitParams{Limit: 2})
+		accList, err := gClient.SearchAccounts(user, false, &madon.LimitParams{Limit: 2})
 		if err != nil {
 			return 0, err
 		}
