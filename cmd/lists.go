@@ -37,7 +37,8 @@ var listsCmd = &cobra.Command{
   madonctl lists delete --list-id 3
   madonctl lists accounts --list-id 2
   madonctl lists add-accounts --list-id 2 --account-ids 123,456
-  madonctl lists remove-accounts --list-id 2 --account-ids 456`,
+  madonctl lists remove-accounts --list-id 2 --account-ids 456
+  madonctl lists show --account-id 123`,
 }
 
 func init() {
