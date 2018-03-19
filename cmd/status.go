@@ -60,6 +60,7 @@ func init() {
 	// Subcommand flags
 	statusReblogSubcommand.Flags().BoolVar(&statusOpts.unset, "unset", false, "Unreblog the status")
 	statusFavouriteSubcommand.Flags().BoolVar(&statusOpts.unset, "unset", false, "Remove the status from the favourites")
+	statusPinSubcommand.Flags().BoolVar(&statusOpts.unset, "unset", false, "Unpin the status")
 	statusPostSubcommand.Flags().BoolVar(&statusOpts.sensitive, "sensitive", false, "Mark post as sensitive (NSFW)")
 	statusPostSubcommand.Flags().StringVar(&statusOpts.visibility, "visibility", "", "Visibility (direct|private|unlisted|public)")
 	statusPostSubcommand.Flags().StringVar(&statusOpts.spoiler, "spoiler", "", "Spoiler warning (CW)")
@@ -161,6 +162,7 @@ var statusSubcommands = []*cobra.Command{
 	},
 	statusReblogSubcommand,
 	statusFavouriteSubcommand,
+	statusPinSubcommand,
 	statusPostSubcommand,
 }
 
@@ -177,6 +179,14 @@ var statusFavouriteSubcommand = &cobra.Command{
 	Use:     "favourite",
 	Aliases: []string{"favorite", "fave"},
 	Short:   "Mark/unmark the status as favourite",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return statusSubcommandRunE(cmd.Name(), args)
+	},
+}
+
+var statusPinSubcommand = &cobra.Command{
+	Use:   "pin",
+	Short: "Pin/unpin the status",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return statusSubcommandRunE(cmd.Name(), args)
 	},
@@ -265,6 +275,12 @@ func statusSubcommandRunE(subcmd string, args []string) error {
 			err = gClient.UnfavouriteStatus(opt.statusID)
 		} else {
 			err = gClient.FavouriteStatus(opt.statusID)
+		}
+	case "pin":
+		if opt.unset {
+			err = gClient.UnpinStatus(opt.statusID)
+		} else {
+			err = gClient.PinStatus(opt.statusID)
 		}
 	case "mute-conversation":
 		var s *madon.Status
