@@ -1,4 +1,4 @@
-// Copyright © 2017 Mikael Berthe <mikael@lilotux.net>
+// Copyright © 2017-2018 Mikael Berthe <mikael@lilotux.net>
 //
 // Licensed under the MIT license.
 // Please see the LICENSE file is this directory.
