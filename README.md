@@ -146,6 +146,12 @@ Add/remove a **favourite**, **boost** a status...
 % madonctl status --status-id 416671 boost        # Boost a status
 ```
 
+**Pin/unpin** a status...
+``` sh
+% madonctl status --status-id 533769 pin          # Pin a status
+% madonctl status --status-id 533769 pin --unset  # Unpin a status
+```
+
 Search for an account (only accounts known to your instance):
 ``` sh
 % madonctl accounts search gargron
