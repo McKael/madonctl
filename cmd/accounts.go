@@ -17,22 +17,23 @@ import (
 )
 
 var accountsOpts struct {
-	accountID                 int64
-	accountUID                string
-	unset                     bool   // TODO remove eventually?
-	limit, keep               uint   // Limit the results
-	sinceID, maxID            int64  // Query boundaries
-	all                       bool   // Try to fetch all results
-	onlyMedia, excludeReplies bool   // For acccount statuses
-	remoteUID                 string // For account follow
-	acceptFR, rejectFR        bool   // For account follow_requests
-	list                      bool   // For account follow_requests/reports
-	accountIDs                string // For account relationships
-	statusIDs                 string // For account reports
-	comment                   string // For account reports
-	displayName, note         string // For account update
-	avatar, header            string // For account update
-	locked                    bool   // For account update
+	accountID             int64
+	accountUID            string
+	unset                 bool   // TODO remove eventually?
+	limit, keep           uint   // Limit the results
+	sinceID, maxID        int64  // Query boundaries
+	all                   bool   // Try to fetch all results
+	onlyMedia, onlyPinned bool   // For acccount statuses
+	excludeReplies        bool   // For acccount statuses
+	remoteUID             string // For account follow
+	acceptFR, rejectFR    bool   // For account follow_requests
+	list                  bool   // For account follow_requests/reports
+	accountIDs            string // For account relationships
+	statusIDs             string // For account reports
+	comment               string // For account reports
+	displayName, note     string // For account update
+	avatar, header        string // For account update
+	locked                bool   // For account update
 }
 
 var accountUpdateFlags *flag.FlagSet
@@ -53,6 +54,7 @@ func init() {
 	accountsCmd.PersistentFlags().BoolVar(&accountsOpts.all, "all", false, "Fetch all results")
 
 	// Subcommand flags
+	accountStatusesSubcommand.Flags().BoolVar(&accountsOpts.onlyPinned, "pinned", false, "Only statuses that have been pinned")
 	accountStatusesSubcommand.Flags().BoolVar(&accountsOpts.onlyMedia, "only-media", false, "Only statuses with media attachments")
 	accountStatusesSubcommand.Flags().BoolVar(&accountsOpts.excludeReplies, "exclude-replies", false, "Exclude replies to other statuses")
 
@@ -390,7 +392,7 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 		obj = accountList
 	case "statuses":
 		var statusList []madon.Status
-		statusList, err = gClient.GetAccountStatuses(opt.accountID, opt.onlyMedia, opt.excludeReplies, limOpts)
+		statusList, err = gClient.GetAccountStatuses(opt.accountID, opt.onlyPinned, opt.onlyMedia, opt.excludeReplies, limOpts)
 		if opt.keep > 0 && len(statusList) > int(opt.keep) {
 			statusList = statusList[:opt.keep]
 		}
