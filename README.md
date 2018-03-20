@@ -7,14 +7,18 @@ Golang command line interface for the Mastodon API
 
 `madonctl` is a [Go](https://golang.org/) CLI tool to use the Mastondon REST API.
 
-It is built on top of [madon](https://github.com/McKael/madon), my Golang implementation of the API.
+It is built on top of [madon](https://github.com/McKael/madon), my Golang
+implementation of the API.
 
 ## Installation
 
-Please note that Mastodon 2.0.0 has a breaking API change (see issue #9).
+### Download
 
-`madonctl` v2.0.0+ is required for Mastodon 2.0.0+ server, but the new version
-will not work with old servers.
+Check the [Release page](https://github.com/McKael/madonctl/releases) for some
+pre-built binaries.
+
+More pre-built binaries might be available from the [Homepage](https://lilotux.net/~mikael/pub/madonctl/)
+(development version and builds for a few other platforms).
 
 ### From source
 
@@ -28,14 +32,6 @@ For upgrades, don't forget the `-u` option to ensure the dependencies
 (especially [madon](https://github.com/McKael/madon)) are updated as well.
 
 Travis automated testing is run for Go versions 1.7 and 1.8.
-
-### Download
-
-Check the [Release page](https://github.com/McKael/madonctl/releases) for some
-pre-built binaries.
-
-More pre-built binaries might be available from the [Homepage](https://lilotux.net/~mikael/pub/madonctl/)
-(development version and builds for a few other platforms).
 
 ## Usage
 
