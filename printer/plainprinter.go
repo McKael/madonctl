@@ -190,10 +190,16 @@ func (p *PlainPrinter) plainPrintAttachment(a *madon.Attachment, w io.Writer, in
 	indentedPrint(w, indent, true, false, "Attachment ID", "%d", a.ID)
 	indentedPrint(w, indent, false, false, "Type", "%s", a.Type)
 	indentedPrint(w, indent, false, false, "Local URL", "%s", a.URL)
-	indentedPrint(w, indent, false, true, "Remote URL", "%s", a.RemoteURL)
+	if a.RemoteURL != nil {
+		indentedPrint(w, indent, false, true, "Remote URL", "%s", *a.RemoteURL)
+	}
 	indentedPrint(w, indent, false, true, "Preview URL", "%s", a.PreviewURL)
-	indentedPrint(w, indent, false, true, "Text URL", "%s", a.PreviewURL)
-	indentedPrint(w, indent, false, true, "Description", "%s", a.Description)
+	if a.TextURL != nil {
+		indentedPrint(w, indent, false, true, "Text URL", "%s", *a.TextURL)
+	}
+	if a.Description != nil {
+		indentedPrint(w, indent, false, true, "Description", "%s", *a.Description)
+	}
 	return nil
 }
 
@@ -348,7 +354,9 @@ func (p *PlainPrinter) plainPrintStatus(s *madon.Status, w io.Writer, indent str
 		} else if a.RemoteURL != nil {
 			indentedPrint(w, indent+p.Indent, false, false, "Remote URL", "%s", *a.RemoteURL)
 		}
-		indentedPrint(w, indent+p.Indent, false, true, "Description", "%s", a.Description)
+		if a.Description != nil && *a.Description != "" {
+			indentedPrint(w, indent+p.Indent, false, true, "Description", "%s", a.Description)
+		}
 	}
 	return nil
 }
