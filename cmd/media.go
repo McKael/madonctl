@@ -13,7 +13,9 @@ import (
 )
 
 var mediaOpts struct {
-	filePath string
+	filePath    string
+	description string
+	focus       string
 }
 
 // mediaCmd represents the media command
@@ -30,6 +32,9 @@ func init() {
 
 	mediaCmd.Flags().StringVar(&mediaOpts.filePath, "file", "", "Path of the media file")
 	mediaCmd.MarkFlagRequired("file")
+
+	mediaCmd.Flags().StringVar(&mediaOpts.description, "description", "", "Plain text description")
+	mediaCmd.Flags().StringVar(&mediaOpts.focus, "focus", "", "Focal point")
 }
 
 func mediaRunE(cmd *cobra.Command, args []string) error {
@@ -43,7 +48,7 @@ func mediaRunE(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	attachment, err := gClient.UploadMedia(opt.filePath)
+	attachment, err := gClient.UploadMedia(opt.filePath, opt.description, opt.focus)
 	if err != nil {
 		errPrint("Error: %s", err.Error())
 		os.Exit(1)
@@ -59,7 +64,7 @@ func mediaRunE(cmd *cobra.Command, args []string) error {
 
 // uploadFile uploads a media file and returns the attachment ID
 func uploadFile(filePath string) (int64, error) {
-	attachment, err := gClient.UploadMedia(filePath)
+	attachment, err := gClient.UploadMedia(filePath, "", "")
 	if err != nil {
 		return 0, err
 	}
