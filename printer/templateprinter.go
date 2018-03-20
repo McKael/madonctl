@@ -78,11 +78,12 @@ func (p *TemplatePrinter) PrintObj(obj interface{}, w io.Writer, tmpl string) er
 	}
 
 	switch ot := obj.(type) { // I wish I knew a better way...
-	case []madon.Account, []madon.Application, []madon.Attachment, []madon.Card,
-		[]madon.Client, []madon.Context, []madon.Instance, []madon.Mention,
+	case []madon.Account, []madon.Application, []madon.Attachment,
+		[]madon.Card, []madon.Client, []madon.Context, []madon.Emoji,
+		[]madon.Instance, []madon.List, []madon.Mention,
 		[]madon.Notification, []madon.Relationship, []madon.Report,
-		[]madon.Results, []madon.Status, []madon.StreamEvent, []madon.Tag,
-		[]*gomif.InstanceStatus, []string:
+		[]madon.Results, []madon.Status, []madon.StreamEvent,
+		[]madon.Tag, []*gomif.InstanceStatus, []string:
 		return p.templateForeach(ot, w)
 	}
 

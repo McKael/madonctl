@@ -76,8 +76,12 @@ func (p *ThemePrinter) PrintObj(obj interface{}, w io.Writer, tmpl string) error
 		objType = "client"
 	case []madon.Context, madon.Context, *madon.Context:
 		objType = "context"
+	case []madon.Emoji, madon.Emoji, *madon.Emoji:
+		objType = "emoji"
 	case []madon.Instance, madon.Instance, *madon.Instance:
 		objType = "instance"
+	case []madon.List, madon.List, *madon.List:
+		objType = "list"
 	case []madon.Mention, madon.Mention, *madon.Mention:
 		objType = "mention"
 	case []madon.Notification, madon.Notification, *madon.Notification:
@@ -91,7 +95,7 @@ func (p *ThemePrinter) PrintObj(obj interface{}, w io.Writer, tmpl string) error
 	case []madon.Status, madon.Status, *madon.Status:
 		objType = "status"
 	case []madon.StreamEvent, madon.StreamEvent, *madon.StreamEvent:
-		objType = "streamEvent"
+		objType = "stream_event"
 	case []madon.Tag, madon.Tag, *madon.Tag:
 		objType = "tag"
 
