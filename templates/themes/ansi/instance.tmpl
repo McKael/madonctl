@@ -3,3 +3,9 @@
   Email:    {{.email}}
   Version:  {{.version}}
   Description: {{color "blue"}}{{.description | fromhtml | wrap "     " 80 | trim}}{{color "reset"}}
+{{- with .contact_account }}
+  Contact:
+    Account ID: {{color "red"}}{{.id}}{{color "reset"}}  {{color "magenta"}}@{{.username}}{{color "reset"}}
+    UID: {{color "red"}}{{.acct}}{{color "reset"}}
+    Display name: {{color "black,,bold"}}{{.display_name}}{{color "reset"}}
+{{- end}}

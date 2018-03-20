@@ -1,5 +1,7 @@
 - Status ID: {{color "red"}}{{.id}}{{color "reset"}}  {{color "magenta"}}@{{.account.acct}}{{color "reset"}}
   Name: {{color ",,bold"}}{{.account.display_name}}{{color "reset"}}
+{{- if .pinned}}
+  Pinned: {{.pinned}}{{end}}
   Visibility: {{.visibility}}
   Date: {{.created_at | tolocal}}
   URL: {{.url}}
@@ -17,6 +19,8 @@
     Message: {{color "blue"}}{{.content | fromhtml | wrap "       " 79 | trim}}{{color "reset"}}
 {{- range .media_attachments}}
     - Attachment ID: {{.id}}
+{{- if .description}}
+      Description: {{color ",,bold"}}{{.description}}{{color "reset"}}{{end}}
 {{- if .text_url}}
       Text URL: {{.text_url}}{{else if .url}}
       URL: {{.url}}{{else if .remote_url}}
