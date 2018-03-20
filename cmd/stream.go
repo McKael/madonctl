@@ -27,16 +27,19 @@ const maximumHashtagStreamWS = 4
 
 // streamCmd represents the stream command
 var streamCmd = &cobra.Command{
-	Use:   "stream [user|local|public|:HASHTAG]",
+	Use:   "stream [user|local|public|!LIST|:HASHTAG]",
 	Short: "Listen to an event stream",
-	Long: `
+	Long: `Listen to an event stream
+
 The stream command stays connected to the server and listen to a stream of
 events (user, local or federated).
-It can also get a hashtag-based stream if the keyword or prefixed with
+A list-based stream can be displayed by prefixing the list ID with a '!'.
+It can also get a hashtag-based stream if the keyword is prefixed with
 ':' or '#'.`,
 	Example: `  madonctl stream           # User timeline stream
   madonctl stream local     # Local timeline stream
   madonctl stream public    # Public timeline stream
+  madonctl stream '!42'     # List (ID 42)
   madonctl stream :mastodon # Hashtag
   madonctl stream #madonctl
   madonctl stream --notifications-only
@@ -45,7 +48,8 @@ It can also get a hashtag-based stream if the keyword or prefixed with
 Several (up to 4) hashtags can be given.
 Note: madonctl will use 1 websocket per hashtag stream.
   madonctl stream #madonctl,#mastodon,#golang
-  madonctl stream :madonctl,mastodon,api`,
+  madonctl stream :madonctl,mastodon,api
+`,
 	RunE:       streamRunE,
 	ValidArgs:  []string{"user", "public"},
 	ArgAliases: []string{"home"},
@@ -61,7 +65,7 @@ func init() {
 
 func streamRunE(cmd *cobra.Command, args []string) error {
 	streamName := "user"
-	tag := ""
+	var param string
 	var hashTagList []string
 
 	if len(args) > 0 {
@@ -76,15 +80,24 @@ func streamRunE(cmd *cobra.Command, args []string) error {
 		case "local":
 			streamName = "public:local"
 		default:
+			if arg[0] == '!' {
+				// List-based stream
+				streamName = "list"
+				param = arg[1:]
+				if len(param) == 0 {
+					return errors.New("empty list ID")
+				}
+				break
+			}
 			if arg[0] != ':' && arg[0] != '#' {
 				return errors.New("invalid argument")
 			}
 			streamName = "hashtag"
-			tag = arg[1:]
-			if len(tag) == 0 {
+			param = arg[1:]
+			if len(param) == 0 {
 				return errors.New("empty hashtag")
 			}
-			hashTagList = strings.Split(tag, ",")
+			hashTagList = strings.Split(param, ",")
 			for i, h := range hashTagList {
 				if h[0] == ':' || h[0] == '#' {
 					hashTagList[i] = h[1:]
@@ -118,7 +131,7 @@ func streamRunE(cmd *cobra.Command, args []string) error {
 	var err error
 
 	if streamName != "hashtag" || len(hashTagList) <= 1 { // Usual case: Only 1 stream
-		err = gClient.StreamListener(streamName, tag, evChan, stop, done)
+		err = gClient.StreamListener(streamName, param, evChan, stop, done)
 	} else { // Several streams
 		n := len(hashTagList)
 		tagEvCh := make([]chan madon.StreamEvent, n)
