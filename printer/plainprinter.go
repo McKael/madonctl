@@ -43,10 +43,11 @@ func (p *PlainPrinter) PrintObj(obj interface{}, w io.Writer, initialIndent stri
 	}
 	switch o := obj.(type) {
 	case []madon.Account, []madon.Attachment, []madon.Card, []madon.Context,
-		[]madon.Instance, []madon.Mention, []madon.Notification,
+		[]madon.Emoji, []madon.Instance, []madon.InstancePeer,
+		[]madon.List, []madon.Mention, []madon.Notification,
 		[]madon.Relationship, []madon.Report, []madon.Results,
-		[]madon.Status, []madon.StreamEvent, []madon.Tag, []madon.DomainName,
-		[]*gomif.InstanceStatus:
+		[]madon.Status, []madon.StreamEvent, []madon.Tag,
+		[]madon.DomainName, []*gomif.InstanceStatus:
 		return p.plainForeach(o, w, initialIndent)
 	case *madon.DomainName:
 		return p.plainPrintDomainName(o, w, initialIndent)
@@ -68,10 +69,22 @@ func (p *PlainPrinter) PrintObj(obj interface{}, w io.Writer, initialIndent stri
 		return p.plainPrintContext(o, w, initialIndent)
 	case madon.Context:
 		return p.plainPrintContext(&o, w, initialIndent)
+	case *madon.Emoji:
+		return p.plainPrintEmoji(o, w, initialIndent)
+	case madon.Emoji:
+		return p.plainPrintEmoji(&o, w, initialIndent)
 	case *madon.Instance:
 		return p.plainPrintInstance(o, w, initialIndent)
 	case madon.Instance:
 		return p.plainPrintInstance(&o, w, initialIndent)
+	case *madon.InstancePeer:
+		return p.plainPrintInstancePeer(o, w, initialIndent)
+	case madon.InstancePeer:
+		return p.plainPrintInstancePeer(&o, w, initialIndent)
+	case *madon.List:
+		return p.plainPrintList(o, w, initialIndent)
+	case madon.List:
+		return p.plainPrintList(&o, w, initialIndent)
 	case *madon.Notification:
 		return p.plainPrintNotification(o, w, initialIndent)
 	case madon.Notification:
@@ -186,6 +199,7 @@ func (p *PlainPrinter) plainPrintAttachment(a *madon.Attachment, w io.Writer, in
 	indentedPrint(w, indent, false, true, "Remote URL", "%s", a.RemoteURL)
 	indentedPrint(w, indent, false, true, "Preview URL", "%s", a.PreviewURL)
 	indentedPrint(w, indent, false, true, "Text URL", "%s", a.PreviewURL)
+	indentedPrint(w, indent, false, true, "Description", "%s", a.Description)
 	return nil
 }
 
@@ -210,12 +224,35 @@ func (p *PlainPrinter) plainPrintContext(c *madon.Context, w io.Writer, indent s
 	return nil
 }
 
+func (p *PlainPrinter) plainPrintEmoji(e *madon.Emoji, w io.Writer, indent string) error {
+	indentedPrint(w, indent, true, false, "Emoji shortcode", "%s", e.ShortCode)
+	indentedPrint(w, indent, false, false, "URL", "%s", e.URL)
+	return nil
+}
+
 func (p *PlainPrinter) plainPrintInstance(i *madon.Instance, w io.Writer, indent string) error {
 	indentedPrint(w, indent, true, false, "Instance title", "%s", i.Title)
 	indentedPrint(w, indent, false, true, "Description", "%s", html2string(i.Description))
 	indentedPrint(w, indent, false, true, "URL", "%s", i.URI)
 	indentedPrint(w, indent, false, true, "Email", "%s", i.Email)
 	indentedPrint(w, indent, false, true, "Version", "%s", i.Version)
+	if i.ContactAccount != nil {
+		c := i.ContactAccount
+		indentedPrint(w, indent+p.Indent, true, false, "Contact account ID", "%d (%s)", c.ID, c.Username)
+		indentedPrint(w, indent+p.Indent, false, false, "Contact user ID", "%s", c.Acct)
+		indentedPrint(w, indent+p.Indent, false, false, "Contact display name", "%s", c.DisplayName)
+	}
+	return nil
+}
+
+func (p *PlainPrinter) plainPrintInstancePeer(i *madon.InstancePeer, w io.Writer, indent string) error {
+	indentedPrint(w, indent, true, false, "Peer", "%s", *i)
+	return nil
+}
+
+func (p *PlainPrinter) plainPrintList(l *madon.List, w io.Writer, indent string) error {
+	indentedPrint(w, indent, true, false, "List ID", "%d", l.ID)
+	indentedPrint(w, indent, false, false, "Title", "%s", l.Title)
 	return nil
 }
 
@@ -239,6 +276,7 @@ func (p *PlainPrinter) plainPrintRelationship(r *madon.Relationship, w io.Writer
 	indentedPrint(w, indent, false, false, "Followed-by", "%v", r.FollowedBy)
 	indentedPrint(w, indent, false, false, "Blocking", "%v", r.Blocking)
 	indentedPrint(w, indent, false, false, "Muting", "%v", r.Muting)
+	indentedPrint(w, indent, false, false, "Muting notifications", "%v", r.MutingNotifications)
 	indentedPrint(w, indent, false, false, "Requested", "%v", r.Requested)
 	return nil
 }
@@ -278,6 +316,9 @@ func (p *PlainPrinter) plainPrintStatus(s *madon.Status, w io.Writer, indent str
 		}
 		indentedPrint(w, indent, false, false, "From", "%s", author)
 	}
+	if s.Pinned {
+		indentedPrint(w, indent, false, false, "Pinned", "%v", s.Pinned)
+	}
 	if s.Visibility == "private" {
 		indentedPrint(w, indent, false, false, "Private", "true")
 	}
@@ -313,6 +354,7 @@ func (p *PlainPrinter) plainPrintStatus(s *madon.Status, w io.Writer, indent str
 		} else if a.RemoteURL != nil {
 			indentedPrint(w, indent+p.Indent, false, false, "Remote URL", "%s", *a.RemoteURL)
 		}
+		indentedPrint(w, indent+p.Indent, false, true, "Description", "%s", a.Description)
 	}
 	return nil
 }
