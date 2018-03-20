@@ -164,8 +164,9 @@ var accountSearchSubcommand = &cobra.Command{
 	Use:   "search TEXT",
 	Short: "Search for user accounts",
 	Long: `Search for user accounts.
-er will lookup an account remotely if the search term is in the
-@domain format and not yet in the database.`,
+
+This command will lookup an account remotely if the search term is in the
+@domain format and not yet known to the server.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return accountSubcommandsRunE(cmd.Name(), args)
 	},
