@@ -15,9 +15,9 @@ import (
 )
 
 var timelineOpts struct {
-	local          bool
-	limit, keep    uint
-	sinceID, maxID int64
+	local, onlyMedia bool
+	limit, keep      uint
+	sinceID, maxID   int64
 }
 
 // timelineCmd represents the timelines command
@@ -41,6 +41,7 @@ func init() {
 	RootCmd.AddCommand(timelineCmd)
 
 	timelineCmd.Flags().BoolVar(&timelineOpts.local, "local", false, "Posts from the local instance")
+	timelineCmd.Flags().BoolVar(&timelineOpts.onlyMedia, "only-media", false, "Only statuses with media attachments")
 	timelineCmd.Flags().UintVarP(&timelineOpts.limit, "limit", "l", 0, "Limit number of API results")
 	timelineCmd.Flags().UintVarP(&timelineOpts.keep, "keep", "k", 0, "Limit number of results")
 	timelineCmd.PersistentFlags().Int64Var(&timelineOpts.sinceID, "since-id", 0, "Request IDs greater than a value")
@@ -75,7 +76,7 @@ func timelineRunE(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	sl, err := gClient.GetTimelines(tl, opt.local, limOpts)
+	sl, err := gClient.GetTimelines(tl, opt.local, opt.onlyMedia, limOpts)
 	if err != nil {
 		errPrint("Error: %s", err.Error())
 		os.Exit(1)
