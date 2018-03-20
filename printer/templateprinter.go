@@ -16,7 +16,6 @@ import (
 	"time"
 
 	"github.com/kr/text"
-	"github.com/m0t0k1ch1/gomif"
 	"github.com/mattn/go-isatty"
 
 	"github.com/McKael/madon"
@@ -83,7 +82,7 @@ func (p *TemplatePrinter) PrintObj(obj interface{}, w io.Writer, tmpl string) er
 		[]madon.Instance, []madon.List, []madon.Mention,
 		[]madon.Notification, []madon.Relationship, []madon.Report,
 		[]madon.Results, []madon.Status, []madon.StreamEvent,
-		[]madon.Tag, []*gomif.InstanceStatus, []string:
+		[]madon.Tag, []string:
 		return p.templateForeach(ot, w)
 	}
 

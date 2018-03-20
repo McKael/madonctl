@@ -12,8 +12,6 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/m0t0k1ch1/gomif"
-
 	"github.com/McKael/madon"
 	"github.com/McKael/madonctl/printer/html2text"
 )
@@ -47,7 +45,7 @@ func (p *PlainPrinter) PrintObj(obj interface{}, w io.Writer, initialIndent stri
 		[]madon.List, []madon.Mention, []madon.Notification,
 		[]madon.Relationship, []madon.Report, []madon.Results,
 		[]madon.Status, []madon.StreamEvent, []madon.Tag,
-		[]madon.DomainName, []*gomif.InstanceStatus:
+		[]madon.DomainName:
 		return p.plainForeach(o, w, initialIndent)
 	case *madon.DomainName:
 		return p.plainPrintDomainName(o, w, initialIndent)
@@ -109,10 +107,6 @@ func (p *PlainPrinter) PrintObj(obj interface{}, w io.Writer, initialIndent stri
 		return p.plainPrintUserToken(o, w, initialIndent)
 	case madon.UserToken:
 		return p.plainPrintUserToken(&o, w, initialIndent)
-	case *gomif.InstanceStatus:
-		return p.plainPrintInstanceStatistics(o, w, initialIndent)
-	case gomif.InstanceStatus:
-		return p.plainPrintInstanceStatistics(&o, w, initialIndent)
 	}
 	// TODO: Mention
 	// TODO: StreamEvent
@@ -366,18 +360,5 @@ func (p *PlainPrinter) plainPrintUserToken(s *madon.UserToken, w io.Writer, inde
 		indentedPrint(w, indent, false, true, "Timestamp", "%v", time.Unix(s.CreatedAt, 0))
 	}
 	indentedPrint(w, indent, false, true, "Scope", "%s", s.Scope)
-	return nil
-}
-
-func (p *PlainPrinter) plainPrintInstanceStatistics(is *gomif.InstanceStatus, w io.Writer, indent string) error {
-	if is == nil {
-		return nil
-	}
-	indentedPrint(w, indent, true, false, "Instance", "%s", is.InstanceName)
-	indentedPrint(w, indent, false, false, "Users", "%d", is.Users)
-	indentedPrint(w, indent, false, false, "Statuses", "%d", is.Statuses)
-	indentedPrint(w, indent, false, false, "Open Registrations", "%v", is.OpenRegistrations)
-	indentedPrint(w, indent, false, false, "Up", "%v", is.Up)
-	indentedPrint(w, indent, false, false, "Date", "%s", time.Unix(is.Date, 0))
 	return nil
 }

@@ -13,7 +13,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/m0t0k1ch1/gomif"
 	"github.com/pkg/errors"
 
 	"github.com/McKael/madon"
@@ -98,9 +97,6 @@ func (p *ThemePrinter) PrintObj(obj interface{}, w io.Writer, tmpl string) error
 		objType = "stream_event"
 	case []madon.Tag, madon.Tag, *madon.Tag:
 		objType = "tag"
-
-	case []*gomif.InstanceStatus, *gomif.InstanceStatus:
-		objType = "instancestats"
 	}
 
 	var rp *ResourcePrinter
