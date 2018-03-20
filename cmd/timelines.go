@@ -7,6 +7,7 @@ package cmd
 
 import (
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 
@@ -21,15 +22,16 @@ var timelineOpts struct {
 
 // timelineCmd represents the timelines command
 var timelineCmd = &cobra.Command{
-	Use:     "timeline [home|public|:HASHTAG] [--local]",
+	Use:     "timeline [home|public|:HASHTAG|!list_id] [--local]",
 	Aliases: []string{"tl"},
 	Short:   "Fetch a timeline",
 	Long: `
 The timeline command fetches a timeline (home, local or federated).
 It can also get a hashtag-based timeline if the keyword or prefixed with
-':' or '#'.`,
+':' or '#', or a list-based timeline (use !ID with the list ID).`,
 	Example: `  madonctl timeline
   madonctl timeline public --local
+  madonctl timeline '!42'
   madonctl timeline :mastodon`,
 	RunE:      timelineRunE,
 	ValidArgs: []string{"home", "public"},
@@ -68,8 +70,8 @@ func timelineRunE(cmd *cobra.Command, args []string) error {
 		tl = args[0]
 	}
 
-	// The home timeline is the only one requiring to be logged in
-	if err := madonInit(tl == "home"); err != nil {
+	// Home timeline and list-based timeline require to be logged in
+	if err := madonInit(tl == "home" || strings.HasPrefix(tl, "!")); err != nil {
 		return err
 	}
 
