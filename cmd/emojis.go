@@ -22,9 +22,10 @@ var emojiOpts struct {
 
 //emojiCmd represents the emoji command
 var emojiCmd = &cobra.Command{
-	Use:     "emoji",
-	Aliases: []string{"emojis"},
+	Use:     "emojis",
+	Aliases: []string{"emoji"},
 	Short:   "Display server emojis",
+	RunE:    emojiGetRunE, // Defaults to list
 }
 
 func init() {
@@ -44,7 +45,7 @@ var emojiSubcommands = []*cobra.Command{
 
 var emojiGetCustomSubcommand = &cobra.Command{
 	Use:     "list",
-	Short:   "Display the custom emojis",
+	Short:   "Display the custom emojis (default subcommand)",
 	Long:    `Display the list of custom emojis of the instance.`,
 	Aliases: []string{"get", "display", "show"},
 	RunE:    emojiGetRunE,
