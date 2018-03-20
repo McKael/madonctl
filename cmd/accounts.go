@@ -16,6 +16,8 @@ import (
 	"github.com/McKael/madon"
 )
 
+var accountUpdateFlags, accountMuteFlags, accountFollowFlags *flag.FlagSet
+
 var accountsOpts struct {
 	accountID             int64
 	accountUID            string
@@ -26,6 +28,7 @@ var accountsOpts struct {
 	onlyMedia, onlyPinned bool   // For acccount statuses
 	excludeReplies        bool   // For acccount statuses
 	remoteUID             string // For account follow
+	reblogs               bool   // For account follow
 	acceptFR, rejectFR    bool   // For account follow_requests
 	list                  bool   // For account follow_requests/reports
 	accountIDs            string // For account relationships
@@ -37,8 +40,6 @@ var accountsOpts struct {
 	muteNotifications     bool   // For account mute
 	following             bool   // For account search
 }
-
-var accountUpdateFlags, accountMuteFlags *flag.FlagSet
 
 func init() {
 	RootCmd.AddCommand(accountsCmd)
@@ -69,6 +70,7 @@ func init() {
 	accountMuteSubcommand.Flags().BoolVarP(&accountsOpts.unset, "unset", "", false, "Unmute the account")
 	accountMuteSubcommand.Flags().BoolVarP(&accountsOpts.muteNotifications, "notifications", "", true, "Mute the notifications")
 	accountFollowSubcommand.Flags().BoolVarP(&accountsOpts.unset, "unset", "", false, "Unfollow the account")
+	accountFollowSubcommand.Flags().BoolVarP(&accountsOpts.reblogs, "show-reblogs", "", true, "Follow account's boosts")
 	accountFollowSubcommand.Flags().StringVarP(&accountsOpts.remoteUID, "remote", "r", "", "Follow remote account (user@domain)")
 
 	accountRelationshipsSubcommand.Flags().StringVar(&accountsOpts.accountIDs, "account-ids", "", "Comma-separated list of account IDs")
@@ -85,9 +87,11 @@ func init() {
 	accountUpdateSubcommand.Flags().StringVar(&accountsOpts.header, "header", "", "User header image")
 	accountUpdateSubcommand.Flags().BoolVar(&accountsOpts.locked, "locked", false, "Following account requires approval")
 
-	// This one will be used to check if the options were explicitly set or not
+	// Those variables will be used to check if the options were
+	// explicitly set or not
 	accountUpdateFlags = accountUpdateSubcommand.Flags()
 	accountMuteFlags = accountMuteSubcommand.Flags()
+	accountFollowFlags = accountFollowSubcommand.Flags()
 }
 
 // accountsCmd represents the accounts command
@@ -413,14 +417,22 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 			relationship, err = gClient.UnfollowAccount(opt.accountID)
 			obj = relationship
 		} else {
-			if opt.accountID > 0 {
-				relationship, err = gClient.FollowAccount(opt.accountID)
-				obj = relationship
-			} else {
+			if opt.accountID <= 0 {
+				// Remote account
 				var account *madon.Account
 				account, err = gClient.FollowRemoteAccount(opt.remoteUID)
 				obj = account
+				break
 			}
+
+			// Locally-known account
+			var followReblogs *bool
+			if accountFollowFlags.Lookup("show-reblogs").Changed {
+				// Set followReblogs as it's been explicitly requested
+				followReblogs = &opt.reblogs
+			}
+			relationship, err = gClient.FollowAccount(opt.accountID, followReblogs)
+			obj = relationship
 		}
 	case "follow-requests":
 		if opt.list {
