@@ -31,7 +31,7 @@ and you should be able to run `madonctl`.
 For upgrades, don't forget the `-u` option to ensure the dependencies
 (especially [madon](https://github.com/McKael/madon)) are updated as well.
 
-Travis automated testing is run for Go versions 1.7 and 1.8.
+Travis automated testing is run for Go versions 1.7 - 1.10.
 
 ## Usage
 
