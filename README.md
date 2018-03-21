@@ -164,6 +164,17 @@ Follow a remote account:
 % madonctl account follow --remote Gargron@mastodon.social
 ```
 
+madonctl 2.3.0+ is able to recognize the kind of argument to specify and to
+use the relevant API calls, so the previous commands could be written as:
+``` sh
+% madonctl account follow 1234
+% madonctl account follow Gargron@mastodon.social
+% madonctl account follow https://mastodon.social/@Gargron
+```
+
+Note: If you know the numeric account ID, you should use it to save extra API
+calls.
+
 **Search** for accounts, statuses or hashtags:
 ``` sh
 % madonctl search gargron
@@ -180,6 +191,14 @@ also contain an HTTP account URL.
 % madonctl account --user-id Gargron@mastodon.social -l5 statuses # Last 5 statuses
 % madonctl account --user-id https://mastodon.social/@Gargron -l5 statuses # Same
 ```
+
+With madonctl 2.3.0+, you can use the shorter forms:
+``` sh
+% madonctl account statuses -l5 Gargron@mastodon.social
+% madonctl account statuses -l5 https://mastodon.social/@Gargron
+% madonctl account statuses -l5 1   # (account ID)
+```
+
 Please note that the form "Gargron@mastodon.social" will only work if this
 account is known by the instance.  If it is unknown, the https link should work
 (and the Mastodon server will learn about the account).

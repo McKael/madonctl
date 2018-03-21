@@ -96,18 +96,21 @@ file.
   madonctl toot --visibility private --spoiler CW "The answer was 42"
   madonctl post --file image.jpg Selfie
   madonctl --instance INSTANCE --login USERNAME --password PASS timeline
-  madonctl accounts notifications --list --clear
-  madonctl accounts blocked
-  madonctl accounts search Gargron
+  madonctl account notifications --list --clear
+  madonctl account blocked
+  madonctl account search Gargron
   madonctl search --resolve https://mastodon.social/@Gargron
-  madonctl accounts follow --remote Gargron@mastodon.social
-  madonctl accounts --account-id 399 statuses
+  madonctl account follow 37
+  madonctl account follow Gargron@mastodon.social
+  madonctl account follow https://mastodon.social/@Gargron
+  madonctl account --account-id 399 statuses
   madonctl status --status-id 416671 show
   madonctl status --status-id 416671 favourite
   madonctl status --status-id 416671 boost
-  madonctl accounts show
-  madonctl accounts show -o yaml
-  madonctl accounts --account-id 1 followers --template '{{.acct}}{{"\n"}}'
+  madonctl account show
+  madonctl account show Gargron@mastodon.social
+  madonctl account show -o yaml
+  madonctl account --account-id 1 followers --template '{{.acct}}{{"\n"}}'
   madonctl config whoami
   madonctl timeline :mastodon`,
 	BashCompletionFunction: shellComplFunc,
