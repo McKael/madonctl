@@ -7,6 +7,7 @@ package cmd
 
 import (
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -111,6 +112,16 @@ var accountSubcommands = []*cobra.Command{
 If no account ID is specified, the current user account is used.`,
 		Aliases: []string{"display"},
 		Short:   "Display the account",
+		Example: `  madonctl account show   # Display your own account
+
+  madonctl accounts show --account-id 1234
+  madonctl accounts show --user-id Gargron@mastodon.social
+  madonctl accounts show --user-id https://mastodon.social/@Gargron
+
+  madonctl accounts show 1234
+  madonctl accounts show Gargron@mastodon.social
+  madonctl accounts show https://mastodon.social/@Gargron
+`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return accountSubcommandsRunE(cmd.Name(), args)
 		},
@@ -180,6 +191,12 @@ var accountStatusesSubcommand = &cobra.Command{
 	Use:     "statuses",
 	Aliases: []string{"st"},
 	Short:   "Display the account statuses",
+	Example: `  madonctl accounts statuses
+  madonctl accounts statuses 404                         # local account numeric ID
+  madonctl accounts statuses @McKael                     # local account
+  madonctl accounts statuses Gargron@mastodon.social     # remote (known account)
+  madonctl accounts statuses https://mastodon.social/@Gargron  # any account URL
+`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return accountSubcommandsRunE(cmd.Name(), args)
 	},
@@ -199,6 +216,15 @@ var accountFollowRequestsSubcommand = &cobra.Command{
 var accountFollowSubcommand = &cobra.Command{
 	Use:   "follow",
 	Short: "Follow or unfollow the account",
+	Example: `# Argument type can be set explicitly:
+  madonctl accounts follow --account-id 1234
+  madonctl accounts follow --remote Gargron@mastodon.social
+
+# Or argument type can be guessed:
+  madonctl accounts follow 4800
+  madonctl accounts follow Gargron@mastodon.social --show-reblogs=false
+  madonctl accounts follow https://mastodon.social/@Gargron
+`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return accountSubcommandsRunE(cmd.Name(), args)
 	},
@@ -261,6 +287,61 @@ replaced.`,
 func accountSubcommandsRunE(subcmd string, args []string) error {
 	opt := accountsOpts
 
+	if len(args) > 1 {
+		return errors.New("too many arguments")
+	}
+
+	userInArg := false
+
+	if len(args) == 1 {
+		if len(args[0]) > 0 {
+			userInArg = true
+		} else {
+			return errors.New("invalid argument (empty)")
+		}
+	}
+
+	// Check account is provided in only one way
+	aCounter := 0
+	if opt.accountID > 0 {
+		aCounter++
+	}
+	if opt.accountUID != "" {
+		aCounter++
+	}
+	if opt.remoteUID != "" {
+		aCounter++
+	}
+	if userInArg {
+		aCounter++
+	}
+
+	if aCounter > 1 {
+		return errors.New("too many account identifiers provided")
+	}
+
+	if userInArg {
+		// Is the argument an account ID?
+		if n, err := strconv.ParseInt(args[0], 10, 64); err == nil {
+			opt.accountID = n
+		} else if strings.HasPrefix(args[0], "https://") || strings.HasPrefix(args[0], "http://") {
+			// That is not a remote UID scheme
+			opt.accountUID = args[0]
+		} else if subcmd == "follow" {
+			// For the follow API, got to be a remote UID...
+			opt.remoteUID = args[0]
+			// ... unless it's local (i.e. no '@' in the identifier)...
+			fid := strings.TrimLeft(args[0], "@")
+			if !strings.ContainsRune(fid, '@') {
+				opt.accountUID = args[0]
+				opt.remoteUID = ""
+			}
+		} else {
+			// Fall back to account UID
+			opt.accountUID = args[0]
+		}
+	}
+
 	if opt.accountUID != "" {
 		if opt.accountID > 0 {
 			return errors.New("cannot use both account ID and UID")
@@ -290,6 +371,7 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 			return errors.New("useless account ID")
 		}
 	case "follow":
+		// We need an account ID or a remote UID
 		if opt.accountID < 1 && opt.remoteUID == "" {
 			return errors.New("missing account ID or URI")
 		}
@@ -416,24 +498,27 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 		if opt.unset {
 			relationship, err = gClient.UnfollowAccount(opt.accountID)
 			obj = relationship
-		} else {
-			if opt.accountID <= 0 {
+			break
+		}
+		if opt.accountID <= 0 {
+			if opt.remoteUID != "" {
 				// Remote account
 				var account *madon.Account
 				account, err = gClient.FollowRemoteAccount(opt.remoteUID)
 				obj = account
 				break
 			}
-
-			// Locally-known account
-			var followReblogs *bool
-			if accountFollowFlags.Lookup("show-reblogs").Changed {
-				// Set followReblogs as it's been explicitly requested
-				followReblogs = &opt.reblogs
-			}
-			relationship, err = gClient.FollowAccount(opt.accountID, followReblogs)
-			obj = relationship
+			return errors.New("error: no usable parameter")
 		}
+
+		// Locally-known account
+		var followReblogs *bool
+		if accountFollowFlags.Lookup("show-reblogs").Changed {
+			// Set followReblogs as it's been explicitly requested
+			followReblogs = &opt.reblogs
+		}
+		relationship, err = gClient.FollowAccount(opt.accountID, followReblogs)
+		obj = relationship
 	case "follow-requests":
 		if opt.list {
 			var followRequests []madon.Account
