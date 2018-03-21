@@ -55,8 +55,6 @@ func init() {
 	//statusCmd.PersistentFlags().Int64Var(&statusOpts.maxID, "max-id", 0, "Request IDs less (or equal) than a value")
 	statusCmd.PersistentFlags().BoolVar(&statusOpts.all, "all", false, "Fetch all results (for reblogged-by/favourited-by)")
 
-	statusCmd.MarkPersistentFlagRequired("status-id")
-
 	// Subcommand flags
 	statusReblogSubcommand.Flags().BoolVar(&statusOpts.unset, "unset", false, "Unreblog the status")
 	statusFavouriteSubcommand.Flags().BoolVar(&statusOpts.unset, "unset", false, "Remove the status from the favourites")
