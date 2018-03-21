@@ -104,10 +104,11 @@ Some **account-related commands**:
 ``` sh
 % madonctl accounts blocked                       # List blocked accounts
 % madonctl accounts muted                         # List muted accounts
-% madonctl accounts notifications --list --all    # List really all notifications
-% madonctl accounts notifications --list --clear  # List and clear notifications
-% madonctl accounts notifications --notification-id 1234 # Display notification
-% madonctl accounts notifications --dismiss --notification-id 1234
+
+% madonctl account notifications --list --all    # List really all notifications
+% madonctl account notifications --list --clear  # List and clear notifications
+% madonctl account notifications --notification-id 1234 # Display notification
+% madonctl account notifications --dismiss --notification-id 1234
 ```
 
 Note: By default, madonctl will send a single query.  If you want all available
@@ -117,16 +118,16 @@ value.
 
 **Update** your account information:
 ``` sh
-% madonctl accounts update --display-name "John"  # Update display name
-% madonctl accounts update --note "Newcomer"      # Update user note (bio)
-% madonctl accounts update --note ""              # Clear note
-% madonctl accounts update --avatar me.png        # Update avatar
+% madonctl account update --display-name "John"  # Update display name
+% madonctl account update --note "Newcomer"      # Update user note (bio)
+% madonctl account update --note ""              # Clear note
+% madonctl account update --avatar me.png        # Update avatar
 ```
 
 See your own **posts**:
 ``` sh
-% madonctl accounts statuses                      # See last posts
-% madonctl accounts statuses --all                # See all statuses
+% madonctl account statuses                      # See last posts
+% madonctl account statuses --all                # See all statuses
 ```
 
 Display accounts you're **following** or your **followers**:
@@ -155,12 +156,12 @@ Search for an account (only accounts known to your instance):
 
 **Follow** an account with known ID:
 ``` sh
-% madonctl accounts follow --account-id 1234
+% madonctl account follow --account-id 1234
 ```
 
 Follow a remote account:
 ``` sh
-% madonctl accounts follow --remote Gargron@mastodon.social
+% madonctl account follow --remote Gargron@mastodon.social
 ```
 
 **Search** for accounts, statuses or hashtags:
@@ -176,8 +177,8 @@ user so it must match exactly the ID known to your instance (without the
 @domain suffix if the user is on the same instance).  The --user-id flag can
 also contain an HTTP account URL.
 ``` sh
-% madonctl accounts --user-id Gargron@mastodon.social -l5 statuses # Last 5 statuses
-% madonctl accounts --user-id https://mastodon.social/@Gargron -l5 statuses # Same
+% madonctl account --user-id Gargron@mastodon.social -l5 statuses # Last 5 statuses
+% madonctl account --user-id https://mastodon.social/@Gargron -l5 statuses # Same
 ```
 Please note that the form "Gargron@mastodon.social" will only work if this
 account is known by the instance.  If it is unknown, the https link should work
@@ -217,15 +218,15 @@ madonctl stream --command gateway.sh --theme gateway
 
 (Almost) All commands have a **customizable output**:
 ``` sh
-% madonctl accounts show            # Display an account
-% madonctl accounts show -o yaml    # Display an account, in yaml
-% madonctl accounts show -o json    # Display an account, in json
+% madonctl account show            # Display an account
+% madonctl account show -o yaml    # Display an account, in yaml
+% madonctl account show -o json    # Display an account, in json
 % madonctl stream local -o json     # Stream local timeline and output to JSON
 ```
 
 You can also use Go (Golang) **templates**:
 ``` sh
-% madonctl accounts --account-id 1 followers --template '{{.acct}}{{"\n"}}'
+% madonctl account --account-id 1 followers --template '{{.acct}}{{"\n"}}'
 ```
 
 You can write and use [themes](templates) as well:

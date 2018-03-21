@@ -98,8 +98,8 @@ func init() {
 // accountsCmd represents the accounts command
 // This command does nothing without a subcommand
 var accountsCmd = &cobra.Command{
-	Use:     "accounts [--account-id ID] subcommand",
-	Aliases: []string{"account"},
+	Use:     "account [--account-id ID] subcommand",
+	Aliases: []string{"accounts"},
 	Short:   "Account-related functions",
 	//Long:    `TBW...`, // TODO
 }
@@ -114,13 +114,13 @@ If no account ID is specified, the current user account is used.`,
 		Short:   "Display the account",
 		Example: `  madonctl account show   # Display your own account
 
-  madonctl accounts show --account-id 1234
-  madonctl accounts show --user-id Gargron@mastodon.social
-  madonctl accounts show --user-id https://mastodon.social/@Gargron
+  madonctl account show --account-id 1234
+  madonctl account show --user-id Gargron@mastodon.social
+  madonctl account show --user-id https://mastodon.social/@Gargron
 
-  madonctl accounts show 1234
-  madonctl accounts show Gargron@mastodon.social
-  madonctl accounts show https://mastodon.social/@Gargron
+  madonctl account show 1234
+  madonctl account show Gargron@mastodon.social
+  madonctl account show https://mastodon.social/@Gargron
 `,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return accountSubcommandsRunE(cmd.Name(), args)
@@ -191,11 +191,11 @@ var accountStatusesSubcommand = &cobra.Command{
 	Use:     "statuses",
 	Aliases: []string{"st"},
 	Short:   "Display the account statuses",
-	Example: `  madonctl accounts statuses
-  madonctl accounts statuses 404                         # local account numeric ID
-  madonctl accounts statuses @McKael                     # local account
-  madonctl accounts statuses Gargron@mastodon.social     # remote (known account)
-  madonctl accounts statuses https://mastodon.social/@Gargron  # any account URL
+	Example: `  madonctl account statuses
+  madonctl account statuses 404                         # local account numeric ID
+  madonctl account statuses @McKael                     # local account
+  madonctl account statuses Gargron@mastodon.social     # remote (known account)
+  madonctl account statuses https://mastodon.social/@Gargron  # any account URL
 `,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return accountSubcommandsRunE(cmd.Name(), args)
@@ -205,10 +205,10 @@ var accountStatusesSubcommand = &cobra.Command{
 var accountFollowRequestsSubcommand = &cobra.Command{
 	Use:     "follow-requests",
 	Aliases: []string{"follow-request", "fr"},
-	Example: `  madonctl accounts follow-requests --list
-  madonctl accounts follow-requests --account-id X --accept
-  madonctl accounts follow-requests --account-id Y --reject`,
-	Short: "List, accept or deny a follow request",
+	Short:   "List, accept or deny a follow request",
+	Example: `  madonctl account follow-requests --list
+  madonctl account follow-requests --account-id X --accept
+  madonctl account follow-requests --account-id Y --reject`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return accountSubcommandsRunE(cmd.Name(), args)
 	},
@@ -217,13 +217,13 @@ var accountFollowSubcommand = &cobra.Command{
 	Use:   "follow",
 	Short: "Follow or unfollow the account",
 	Example: `# Argument type can be set explicitly:
-  madonctl accounts follow --account-id 1234
-  madonctl accounts follow --remote Gargron@mastodon.social
+  madonctl account follow --account-id 1234
+  madonctl account follow --remote Gargron@mastodon.social
 
 # Or argument type can be guessed:
-  madonctl accounts follow 4800
-  madonctl accounts follow Gargron@mastodon.social --show-reblogs=false
-  madonctl accounts follow https://mastodon.social/@Gargron
+  madonctl account follow 4800
+  madonctl account follow Gargron@mastodon.social --show-reblogs=false
+  madonctl account follow https://mastodon.social/@Gargron
 `,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return accountSubcommandsRunE(cmd.Name(), args)
@@ -257,8 +257,8 @@ var accountRelationshipsSubcommand = &cobra.Command{
 var accountReportsSubcommand = &cobra.Command{
 	Use:   "reports",
 	Short: "List reports or report a user account",
-	Example: `  madonctl accounts reports --list
-  madonctl accounts reports --account-id ACCOUNT --status-ids ID... --comment TEXT`,
+	Example: `  madonctl account reports --list
+  madonctl account reports --account-id ACCOUNT --status-ids ID... --comment TEXT`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return accountSubcommandsRunE(cmd.Name(), args)
 	},
@@ -275,9 +275,9 @@ images (see Mastodon API specifications for the details).
 
 Please note the avatar and header images cannot be removed, they can only be
 replaced.`,
-	Example: `  madonctl accounts update --display-name "Mr President"
-  madonctl accounts update --note "I like madonctl"
-  madonctl accounts update --avatar happyface.png`,
+	Example: `  madonctl account update --display-name "Mr President"
+  madonctl account update --note "I like madonctl"
+  madonctl account update --avatar happyface.png`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return accountSubcommandsRunE(cmd.Name(), args)
 	},
