@@ -45,7 +45,7 @@ func (p *PlainPrinter) PrintObj(obj interface{}, w io.Writer, initialIndent stri
 		[]madon.List, []madon.Mention, []madon.Notification,
 		[]madon.Relationship, []madon.Report, []madon.Results,
 		[]madon.Status, []madon.StreamEvent, []madon.Tag,
-		[]madon.DomainName:
+		[]madon.WeekActivity, []madon.DomainName:
 		return p.plainForeach(o, w, initialIndent)
 	case *madon.DomainName:
 		return p.plainPrintDomainName(o, w, initialIndent)
@@ -107,6 +107,10 @@ func (p *PlainPrinter) PrintObj(obj interface{}, w io.Writer, initialIndent stri
 		return p.plainPrintUserToken(o, w, initialIndent)
 	case madon.UserToken:
 		return p.plainPrintUserToken(&o, w, initialIndent)
+	case *madon.WeekActivity:
+		return p.plainPrintWeekActivity(o, w, initialIndent)
+	case madon.WeekActivity:
+		return p.plainPrintWeekActivity(&o, w, initialIndent)
 	}
 	// TODO: Mention
 	// TODO: StreamEvent
@@ -375,5 +379,13 @@ func (p *PlainPrinter) plainPrintUserToken(s *madon.UserToken, w io.Writer, inde
 		indentedPrint(w, indent, false, true, "Timestamp", "%v", time.Unix(s.CreatedAt, 0))
 	}
 	indentedPrint(w, indent, false, true, "Scope", "%s", s.Scope)
+	return nil
+}
+
+func (p *PlainPrinter) plainPrintWeekActivity(a *madon.WeekActivity, w io.Writer, indent string) error {
+	indentedPrint(w, indent, true, false, "Activity week", "%v", a.Week.Format("2006-01-02"))
+	indentedPrint(w, indent, false, true, "Weekly logins", "%d", a.Logins)
+	indentedPrint(w, indent, false, true, "Weekly statuses", "%d", a.Statuses)
+	indentedPrint(w, indent, false, true, "Weekly registrations", "%d", a.Registrations)
 	return nil
 }
