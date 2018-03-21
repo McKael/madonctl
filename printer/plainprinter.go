@@ -183,6 +183,12 @@ func (p *PlainPrinter) plainPrintAccount(a *madon.Account, w io.Writer, indent s
 		indentedPrint(w, indent, false, false, "Locked", "%v", a.Locked)
 	}
 	indentedPrint(w, indent, false, true, "User note", "%s", html2string(a.Note)) // XXX too long?
+	if a.Moved != nil {
+		m := a.Moved
+		indentedPrint(w, indent+p.Indent, true, false, "Moved to account ID", "%d (%s)", m.ID, m.Username)
+		indentedPrint(w, indent+p.Indent, false, false, "New user ID", "%s", m.Acct)
+		indentedPrint(w, indent+p.Indent, false, false, "New display name", "%s", m.DisplayName)
+	}
 	return nil
 }
 

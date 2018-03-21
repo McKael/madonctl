@@ -10,3 +10,7 @@
   Note: {{color "yellow"}}{{. | fromhtml | wrap "   " 79 | trim}}{{color "reset"}}{{end}}{{end}}
 {{- if eq .locked true}}
   Locked: true{{end}}
+{{- with .moved}}
+  MOVED to account ID: {{color "red"}}{{.id}}{{color "reset"}}  {{color "magenta"}}@{{.username}}{{color "reset"}}
+    UID: {{color "red"}}{{.acct}}{{color "reset"}}
+    Display name: {{color "black,,bold"}}{{.display_name}}{{color "reset"}}{{end}}
