@@ -47,7 +47,7 @@ for the built-in functions):
 
 Function | Description
 -------- | -----------
-`fromunix UNIXTIMESTAMP`  | converts from UNIX timestampto date
+`fromunix UNIXTIMESTAMP`  | converts from UNIX timestamp to date
 `tolocal TEXTRFC3339DATE` | converts a RFC3339 date string to a local time
 `fromhtml HTMLTEXT`       | converts HTML to plain text
 `wrap TEXT`       | rewrap text, with indent and max width
