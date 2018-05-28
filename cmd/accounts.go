@@ -270,8 +270,7 @@ var accountUpdateSubcommand = &cobra.Command{
 	Long: `Update connected user account
 
 All flags are optional (set to an empty string if you want to delete a field).
-The flags --avatar and --header can be paths to image files or base64-encoded
-images (see Mastodon API specifications for the details).
+The options --avatar and --header should be paths to image files.
 
 Please note the avatar and header images cannot be removed, they can only be
 replaced.`,
