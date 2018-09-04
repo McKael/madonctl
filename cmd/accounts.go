@@ -623,36 +623,43 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 		report, err = gClient.ReportUser(opt.accountID, ids, opt.comment)
 		obj = report
 	case "update":
-		var dn, note, avatar, header *string
-		var locked *bool
+		var updateParams madon.UpdateAccountParams
 		change := false
+
 		if accountUpdateFlags.Lookup("display-name").Changed {
-			dn = &opt.displayName
+			updateParams.DisplayName = &opt.displayName
 			change = true
 		}
 		if accountUpdateFlags.Lookup("note").Changed {
-			note = &opt.note
+			updateParams.Note = &opt.note
 			change = true
 		}
 		if accountUpdateFlags.Lookup("avatar").Changed {
-			avatar = &opt.avatar
+			updateParams.AvatarImagePath = &opt.avatar
 			change = true
 		}
 		if accountUpdateFlags.Lookup("header").Changed {
-			header = &opt.header
+			updateParams.HeaderImagePath = &opt.header
 			change = true
 		}
 		if accountUpdateFlags.Lookup("locked").Changed {
-			locked = &opt.locked
+			updateParams.Locked = &opt.locked
 			change = true
 		}
+
+		/*
+			TODO:
+			updateParams.Bot
+			updateParams.FieldsAttributes
+			updateParams.Source
+		*/
 
 		if !change { // We want at least one update
 			return errors.New("missing parameters")
 		}
 
 		var account *madon.Account
-		account, err = gClient.UpdateAccount(dn, note, avatar, header, locked)
+		account, err = gClient.UpdateAccount(updateParams)
 		obj = account
 	default:
 		return errors.New("accountSubcommand: internal error")

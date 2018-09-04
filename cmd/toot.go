@@ -147,7 +147,15 @@ func toot(tootText string) (*madon.Status, error) {
 		}
 	}
 
-	return gClient.PostStatus(tootText, opt.inReplyToID, ids, opt.sensitive, opt.spoiler, opt.visibility)
+	postParam := madon.PostStatusParams{
+		Text:        tootText,
+		InReplyTo:   opt.inReplyToID,
+		MediaIDs:    ids,
+		Sensitive:   opt.sensitive,
+		SpoilerText: opt.spoiler,
+		Visibility:  opt.visibility,
+	}
+	return gClient.PostStatus(postParam)
 }
 
 func mentionsList(s *madon.Status) (string, error) {
