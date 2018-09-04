@@ -194,7 +194,9 @@ var statusPostSubcommand = &cobra.Command{
 	Use:     "post",
 	Aliases: []string{"toot", "pouet"},
 	Short:   "Post a message (same as 'madonctl toot')",
-	Example: `  madonctl status post --spoiler Warning "Hello, World"
+	Example: `  madonctl status post "Hello, World"
+  madonctl status post --spoiler Warning "Spoiled"
+  madonctl status toot --visibility private "To my followers only"
   madonctl status toot --sensitive --file image.jpg Image
   madonctl status post --media-ids ID1,ID2,ID3 Image
   madonctl status toot --text-file message.txt

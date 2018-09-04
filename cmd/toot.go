@@ -49,6 +49,7 @@ var tootAliasCmd = &cobra.Command{
 	Aliases: []string{"post", "pouet"},
 	Short:   "Post a message (toot)",
 	Example: `  madonctl toot message
+  madonctl toot --visibility private "To my followers only"
   madonctl toot --spoiler Warning "Hello, World"
   madonctl status post --media-ids ID1,ID2 "Here are the photos"
   madonctl post --sensitive --file image.jpg Image
