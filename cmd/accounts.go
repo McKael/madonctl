@@ -37,7 +37,7 @@ var accountsOpts struct {
 	comment               string // For account reports
 	displayName, note     string // For account update
 	avatar, header        string // For account update
-	locked                bool   // For account update
+	locked, bot           bool   // For account update
 	muteNotifications     bool   // For account mute
 	following             bool   // For account search
 }
@@ -87,6 +87,7 @@ func init() {
 	accountUpdateSubcommand.Flags().StringVar(&accountsOpts.avatar, "avatar", "", "User avatar image")
 	accountUpdateSubcommand.Flags().StringVar(&accountsOpts.header, "header", "", "User header image")
 	accountUpdateSubcommand.Flags().BoolVar(&accountsOpts.locked, "locked", false, "Following account requires approval")
+	accountUpdateSubcommand.Flags().BoolVar(&accountsOpts.bot, "bot", false, "Set as service (automated) account")
 
 	// Those variables will be used to check if the options were
 	// explicitly set or not
@@ -647,9 +648,13 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 			change = true
 		}
 
+		if accountUpdateFlags.Lookup("bot").Changed {
+			updateParams.Bot = &opt.bot
+			change = true
+		}
+
 		/*
 			TODO:
-			updateParams.Bot
 			updateParams.FieldsAttributes
 			updateParams.Source
 		*/
