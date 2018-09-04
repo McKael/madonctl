@@ -22,27 +22,28 @@ var accountUpdateFlags, accountMuteFlags, accountFollowFlags *flag.FlagSet
 var accountsOpts struct {
 	accountID             int64
 	accountUID            string
-	unset                 bool   // TODO remove eventually?
-	limit, keep           uint   // Limit the results
-	sinceID, maxID        int64  // Query boundaries
-	all                   bool   // Try to fetch all results
-	onlyMedia, onlyPinned bool   // For acccount statuses
-	excludeReplies        bool   // For acccount statuses
-	remoteUID             string // For account follow
-	reblogs               bool   // For account follow
-	acceptFR, rejectFR    bool   // For account follow_requests
-	list                  bool   // For account follow_requests/reports
-	accountIDs            string // For account relationships
-	statusIDs             string // For account reports
-	comment               string // For account reports
-	displayName, note     string // For account update
-	avatar, header        string // For account update
-	defaultLanguage       string // For account update
-	defaultPrivacy        string // For account update
-	defaultSensitive      bool   // For account update
-	locked, bot           bool   // For account update
-	muteNotifications     bool   // For account mute
-	following             bool   // For account search
+	unset                 bool     // TODO remove eventually?
+	limit, keep           uint     // Limit the results
+	sinceID, maxID        int64    // Query boundaries
+	all                   bool     // Try to fetch all results
+	onlyMedia, onlyPinned bool     // For acccount statuses
+	excludeReplies        bool     // For acccount statuses
+	remoteUID             string   // For account follow
+	reblogs               bool     // For account follow
+	acceptFR, rejectFR    bool     // For account follow_requests
+	list                  bool     // For account follow_requests/reports
+	accountIDs            string   // For account relationships
+	statusIDs             string   // For account reports
+	comment               string   // For account reports
+	displayName, note     string   // For account update
+	profileFields         []string // For account update
+	avatar, header        string   // For account update
+	defaultLanguage       string   // For account update
+	defaultPrivacy        string   // For account update
+	defaultSensitive      bool     // For account update
+	locked, bot           bool     // For account update
+	muteNotifications     bool     // For account mute
+	following             bool     // For account search
 }
 
 func init() {
@@ -89,6 +90,7 @@ func init() {
 	accountUpdateSubcommand.Flags().StringVar(&accountsOpts.note, "note", "", "User note (a.k.a. bio)")
 	accountUpdateSubcommand.Flags().StringVar(&accountsOpts.avatar, "avatar", "", "User avatar image")
 	accountUpdateSubcommand.Flags().StringVar(&accountsOpts.header, "header", "", "User header image")
+	accountUpdateSubcommand.Flags().StringArrayVar(&accountsOpts.profileFields, "profile-field", nil, "Profile metadata field (NAME=VALUE)")
 	accountUpdateSubcommand.Flags().StringVar(&accountsOpts.defaultLanguage, "default-language", "", "Default toots language (iso 639 code)")
 	accountUpdateSubcommand.Flags().StringVar(&accountsOpts.defaultPrivacy, "default-privacy", "", "Default toot privacy (public, unlisted, private)")
 	accountUpdateSubcommand.Flags().BoolVar(&accountsOpts.defaultSensitive, "default-sensitive", false, "Mark medias as sensitive by default")
@@ -679,11 +681,18 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 			source.Sensitive = &opt.defaultSensitive
 			change = true
 		}
-
-		/*
-			TODO:
-			updateParams.FieldsAttributes
-		*/
+		if accountUpdateFlags.Lookup("profile-field").Changed {
+			var fa = []madon.Field{}
+			for _, f := range opt.profileFields {
+				kv := strings.SplitN(f, "=", 2)
+				if len(kv) != 2 {
+					return errors.New("cannot parse field")
+				}
+				fa = append(fa, madon.Field{Name: kv[0], Value: kv[1]})
+			}
+			updateParams.FieldsAttributes = &fa
+			change = true
+		}
 
 		if !change { // We want at least one update
 			return errors.New("missing parameters")
