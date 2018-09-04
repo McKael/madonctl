@@ -37,6 +37,9 @@ var accountsOpts struct {
 	comment               string // For account reports
 	displayName, note     string // For account update
 	avatar, header        string // For account update
+	defaultLanguage       string // For account update
+	defaultPrivacy        string // For account update
+	defaultSensitive      bool   // For account update
 	locked, bot           bool   // For account update
 	muteNotifications     bool   // For account mute
 	following             bool   // For account search
@@ -86,6 +89,9 @@ func init() {
 	accountUpdateSubcommand.Flags().StringVar(&accountsOpts.note, "note", "", "User note (a.k.a. bio)")
 	accountUpdateSubcommand.Flags().StringVar(&accountsOpts.avatar, "avatar", "", "User avatar image")
 	accountUpdateSubcommand.Flags().StringVar(&accountsOpts.header, "header", "", "User header image")
+	accountUpdateSubcommand.Flags().StringVar(&accountsOpts.defaultLanguage, "default-language", "", "Default toots language (iso 639 code)")
+	accountUpdateSubcommand.Flags().StringVar(&accountsOpts.defaultPrivacy, "default-privacy", "", "Default toot privacy (public, unlisted, private)")
+	accountUpdateSubcommand.Flags().BoolVar(&accountsOpts.defaultSensitive, "default-sensitive", false, "Mark medias as sensitive by default")
 	accountUpdateSubcommand.Flags().BoolVar(&accountsOpts.locked, "locked", false, "Following account requires approval")
 	accountUpdateSubcommand.Flags().BoolVar(&accountsOpts.bot, "bot", false, "Set as service (automated) account")
 
@@ -625,6 +631,7 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 		obj = report
 	case "update":
 		var updateParams madon.UpdateAccountParams
+		var source *madon.SourceParams
 		change := false
 
 		if accountUpdateFlags.Lookup("display-name").Changed {
@@ -647,21 +654,42 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 			updateParams.Locked = &opt.locked
 			change = true
 		}
-
 		if accountUpdateFlags.Lookup("bot").Changed {
 			updateParams.Bot = &opt.bot
+			change = true
+		}
+		if accountUpdateFlags.Lookup("default-language").Changed {
+			if source == nil {
+				source = &madon.SourceParams{}
+			}
+			source.Language = &opt.defaultLanguage
+			change = true
+		}
+		if accountUpdateFlags.Lookup("default-privacy").Changed {
+			if source == nil {
+				source = &madon.SourceParams{}
+			}
+			source.Privacy = &opt.defaultPrivacy
+			change = true
+		}
+		if accountUpdateFlags.Lookup("default-sensitive").Changed {
+			if source == nil {
+				source = &madon.SourceParams{}
+			}
+			source.Sensitive = &opt.defaultSensitive
 			change = true
 		}
 
 		/*
 			TODO:
 			updateParams.FieldsAttributes
-			updateParams.Source
 		*/
 
 		if !change { // We want at least one update
 			return errors.New("missing parameters")
 		}
+
+		updateParams.Source = source
 
 		var account *madon.Account
 		account, err = gClient.UpdateAccount(updateParams)
