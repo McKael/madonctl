@@ -11,8 +11,7 @@ environment variable (e.g. `export MADONCTL_INSTANCE='https://mamot.fr'`).
 
 ## Configuration file
 
-The configuration file is usually located in the `$HOME/.config/madonctl`
-directory.
+The default configuration file is located at `$HOME/.config/madonctl/madonctl.yaml`.
 
 We use [viper](http://spf13.com/project/viper), so you can use the format you
 prefer between YAML, TOML or JSON.  The examples use the YAML format so the
