@@ -179,9 +179,12 @@ If no account ID is specified, the current user account is used.`,
 	accountFollowSubcommand,
 	accountBlockSubcommand,
 	accountMuteSubcommand,
+	accountPinSubcommand,
+	accountUnpinSubcommand,
 	accountRelationshipsSubcommand,
 	accountReportsSubcommand,
 	accountUpdateSubcommand,
+	accountListEndorsementsSubcommand,
 }
 
 var accountSearchSubcommand = &cobra.Command{
@@ -250,6 +253,33 @@ var accountBlockSubcommand = &cobra.Command{
 var accountMuteSubcommand = &cobra.Command{
 	Use:   "mute",
 	Short: "Mute or unmute the account",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return accountSubcommandsRunE(cmd.Name(), args)
+	},
+}
+
+var accountPinSubcommand = &cobra.Command{
+	Use:     "pin",
+	Short:   "Endorse (pin) the account",
+	Aliases: []string{"endorse"},
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return accountSubcommandsRunE(cmd.Name(), args)
+	},
+}
+
+var accountUnpinSubcommand = &cobra.Command{
+	Use:     "unpin",
+	Short:   "Cancel endorsement of an account",
+	Aliases: []string{"disavow"},
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return accountSubcommandsRunE(cmd.Name(), args)
+	},
+}
+
+var accountListEndorsementsSubcommand = &cobra.Command{
+	Use:     "pinned",
+	Short:   `Display the list of pinned (endorsed) accounts`,
+	Aliases: []string{"list-endorsements", "get-endorsements"},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return accountSubcommandsRunE(cmd.Name(), args)
 	},
@@ -373,7 +403,7 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 	switch subcmd {
 	case "show", "search", "update":
 		// These subcommands do not require an account ID
-	case "favourites", "blocks", "mutes":
+	case "favourites", "blocks", "mutes", "pinned":
 		// Those subcommands can not use an account ID
 		if opt.accountID > 0 {
 			return errors.New("useless account ID")
@@ -573,6 +603,14 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 			relationship, err = gClient.MuteAccount(opt.accountID, muteNotif)
 		}
 		obj = relationship
+	case "pin", "unpin":
+		var relationship *madon.Relationship
+		if subcmd == "unpin" {
+			relationship, err = gClient.UnpinAccount(opt.accountID)
+		} else {
+			relationship, err = gClient.PinAccount(opt.accountID)
+		}
+		obj = relationship
 	case "favourites":
 		var statusList []madon.Status
 		statusList, err = gClient.GetFavourites(limOpts)
@@ -590,6 +628,13 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 	case "mutes":
 		var accountList []madon.Account
 		accountList, err = gClient.GetMutedAccounts(limOpts)
+		if opt.keep > 0 && len(accountList) > int(opt.keep) {
+			accountList = accountList[:opt.keep]
+		}
+		obj = accountList
+	case "pinned":
+		var accountList []madon.Account
+		accountList, err = gClient.GetEndorsements(limOpts)
 		if opt.keep > 0 && len(accountList) > int(opt.keep) {
 			accountList = accountList[:opt.keep]
 		}
