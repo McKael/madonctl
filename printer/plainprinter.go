@@ -313,7 +313,8 @@ func (p *PlainPrinter) plainPrintResults(r *madon.Results, w io.Writer, indent s
 	if len(r.Hashtags) > 0 {
 		indentedPrint(w, indent, false, false, "Hashtags", "")
 		for _, tag := range r.Hashtags {
-			indentedPrint(w, indent+p.Indent, true, false, "Tag", "%s", tag)
+			indentedPrint(w, indent+p.Indent, true, false, "Tag", "%s", tag.Name)
+			indentedPrint(w, indent+p.Indent, false, true, "URL", "%s", tag.URL)
 		}
 	}
 	return nil

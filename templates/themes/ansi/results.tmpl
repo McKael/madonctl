@@ -33,5 +33,5 @@
       Remote URL: {{.remote_url}}{{end}}{{end}}{{end}}{{/* of range */}}{{end}}{{/* of statuses */}}
 {{- with .hashtags}}{{color ",,bold"}}Hashtags:{{color "reset"}}
 {{- range .}}
-  - {{.}}{{end}}{{/* of range */}}
+  - Tag: {{.name}}{{end}}{{/* of range */}}
 {{end}}{{/* of statuses */ -}}
