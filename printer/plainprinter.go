@@ -186,12 +186,33 @@ func (p *PlainPrinter) plainPrintAccount(a *madon.Account, w io.Writer, indent s
 	if a.Locked {
 		indentedPrint(w, indent, false, false, "Locked", "%v", a.Locked)
 	}
+	if a.Bot {
+		indentedPrint(w, indent, false, false, "Bot", "%v", a.Bot)
+	}
 	indentedPrint(w, indent, false, true, "User note", "%s", html2string(a.Note)) // XXX too long?
 	if a.Moved != nil {
 		m := a.Moved
 		indentedPrint(w, indent+p.Indent, true, false, "Moved to account ID", "%d (%s)", m.ID, m.Username)
 		indentedPrint(w, indent+p.Indent, false, false, "New user ID", "%s", m.Acct)
 		indentedPrint(w, indent+p.Indent, false, false, "New display name", "%s", m.DisplayName)
+	}
+	if a.Source != nil {
+		s := a.Source
+		if s.Privacy != nil {
+			indentedPrint(w, indent, false, true, "Default Privacy", "%s", *s.Privacy)
+		}
+		if s.Language != nil {
+			indentedPrint(w, indent, false, true, "Default Language", "%s", *s.Language)
+		}
+		if s.Sensitive != nil {
+			indentedPrint(w, indent, false, true, "Sensitive by default", "%v", *s.Sensitive)
+		}
+	}
+	if a.Fields != nil {
+		for _, f := range *a.Fields {
+			indentedPrint(w, indent, false, false, ". Metadata field",
+				"[%s] » %s", f.Name, html2string(f.Value))
+		}
 	}
 	return nil
 }

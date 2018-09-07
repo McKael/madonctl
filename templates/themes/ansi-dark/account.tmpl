@@ -10,7 +10,16 @@
   Note: {{color "yellow"}}{{. | fromhtml | wrap "   " 79 | trim}}{{color "reset"}}{{end}}{{end}}
 {{- if eq .locked true}}
   Locked: true{{end}}
+{{- if eq .bot true}}
+  Bot: true{{end}}
 {{- with .moved}}
   MOVED to account ID: {{color "red"}}{{.id}}{{color "reset"}}  {{color "magenta"}}@{{.username}}{{color "reset"}}
     UID: {{color "red"}}{{.acct}}{{color "reset"}}
     Display name: {{color "white,,bold"}}{{.display_name}}{{color "reset"}}{{end}}
+{{- with .source}}
+  Default Privacy: {{.privacy}}
+  Sensitive by default: {{.sensitive}}
+{{- if .language}}
+  Default Language: {{.language}}{{end}}{{end}}
+{{- range .fields}}
+  . {{color ",,bold"}}Profile metadata: {{color "cyan"}}{{.name}}{{color "reset"}} » {{.value | fromhtml | wrap "    " 79 | trim }}{{end}}
