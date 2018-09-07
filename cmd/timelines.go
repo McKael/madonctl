@@ -22,19 +22,22 @@ var timelineOpts struct {
 
 // timelineCmd represents the timelines command
 var timelineCmd = &cobra.Command{
-	Use:     "timeline [home|public|:HASHTAG|!list_id] [--local]",
+	Use:     "timeline [home|public|direct|:HASHTAG|!list_id] [--local]",
 	Aliases: []string{"tl"},
 	Short:   "Fetch a timeline",
 	Long: `
 The timeline command fetches a timeline (home, local or federated).
+The timeline "direct" contains only direct messages (that is, messages with
+visibility set to "direct").
 It can also get a hashtag-based timeline if the keyword or prefixed with
 ':' or '#', or a list-based timeline (use !ID with the list ID).`,
 	Example: `  madonctl timeline
   madonctl timeline public --local
   madonctl timeline '!42'
-  madonctl timeline :mastodon`,
+  madonctl timeline :mastodon
+  madonctl timeline direct`,
 	RunE:      timelineRunE,
-	ValidArgs: []string{"home", "public"},
+	ValidArgs: []string{"home", "public", "direct"},
 }
 
 func init() {
@@ -72,7 +75,7 @@ func timelineRunE(cmd *cobra.Command, args []string) error {
 	}
 
 	// Home timeline and list-based timeline require to be logged in
-	if err := madonInit(tl == "home" || strings.HasPrefix(tl, "!")); err != nil {
+	if err := madonInit(tl == "home" || tl == "direct" || strings.HasPrefix(tl, "!")); err != nil {
 		return err
 	}
 
