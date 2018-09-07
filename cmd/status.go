@@ -21,7 +21,7 @@ var statusPostFlags *flag.FlagSet
 
 var statusOpts struct {
 	statusID int64
-	unset    bool
+	unset    bool // TODO remove eventually?
 
 	// The following fields are used for the post/toot command
 	visibility     string
@@ -56,9 +56,9 @@ func init() {
 	statusCmd.PersistentFlags().BoolVar(&statusOpts.all, "all", false, "Fetch all results (for reblogged-by/favourited-by)")
 
 	// Subcommand flags
-	statusReblogSubcommand.Flags().BoolVar(&statusOpts.unset, "unset", false, "Unreblog the status")
-	statusFavouriteSubcommand.Flags().BoolVar(&statusOpts.unset, "unset", false, "Remove the status from the favourites")
-	statusPinSubcommand.Flags().BoolVar(&statusOpts.unset, "unset", false, "Unpin the status")
+	statusReblogSubcommand.Flags().BoolVar(&statusOpts.unset, "unset", false, "Unreblog the status (deprecated)")
+	statusFavouriteSubcommand.Flags().BoolVar(&statusOpts.unset, "unset", false, "Remove the status from the favourites (deprecated)")
+	statusPinSubcommand.Flags().BoolVar(&statusOpts.unset, "unset", false, "Unpin the status (deprecated)")
 	statusPostSubcommand.Flags().BoolVar(&statusOpts.sensitive, "sensitive", false, "Mark post as sensitive (NSFW)")
 	statusPostSubcommand.Flags().StringVar(&statusOpts.visibility, "visibility", "", "Visibility (direct|private|unlisted|public)")
 	statusPostSubcommand.Flags().StringVar(&statusOpts.spoiler, "spoiler", "", "Spoiler warning (CW)")
@@ -69,6 +69,11 @@ func init() {
 	statusPostSubcommand.Flags().BoolVar(&statusOpts.stdin, "stdin", false, "Read message content from standard input")
 	statusPostSubcommand.Flags().BoolVar(&statusOpts.addMentions, "add-mentions", false, "Add mentions when replying")
 	statusPostSubcommand.Flags().BoolVar(&statusOpts.sameVisibility, "same-visibility", false, "Use same visibility as original message (for replies)")
+
+	// Deprecated flags
+	statusReblogSubcommand.Flags().MarkDeprecated("unset", "please use unboost instead")
+	statusFavouriteSubcommand.Flags().MarkDeprecated("unset", "please use unfavourite instead")
+	statusPinSubcommand.Flags().MarkDeprecated("unset", "please use unpin instead")
 
 	// Flag completion
 	annotation := make(map[string][]string)
@@ -159,15 +164,27 @@ var statusSubcommands = []*cobra.Command{
 		},
 	},
 	statusReblogSubcommand,
+	statusUnreblogSubcommand,
 	statusFavouriteSubcommand,
+	statusUnfavouriteSubcommand,
 	statusPinSubcommand,
+	statusUnpinSubcommand,
 	statusPostSubcommand,
 }
 
 var statusReblogSubcommand = &cobra.Command{
 	Use:     "boost",
 	Aliases: []string{"reblog"},
-	Short:   "Boost (reblog) or unreblog the status",
+	Short:   "Boost (reblog) a status message",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return statusSubcommandRunE(cmd.Name(), args)
+	},
+}
+
+var statusUnreblogSubcommand = &cobra.Command{
+	Use:     "unboost",
+	Aliases: []string{"unreblog"},
+	Short:   "Cancel boost (reblog) of a status message",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return statusSubcommandRunE(cmd.Name(), args)
 	},
@@ -176,7 +193,16 @@ var statusReblogSubcommand = &cobra.Command{
 var statusFavouriteSubcommand = &cobra.Command{
 	Use:     "favourite",
 	Aliases: []string{"favorite", "fave"},
-	Short:   "Mark/unmark the status as favourite",
+	Short:   "Mark the status as favourite",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return statusSubcommandRunE(cmd.Name(), args)
+	},
+}
+
+var statusUnfavouriteSubcommand = &cobra.Command{
+	Use:     "unfavourite",
+	Aliases: []string{"unfavorite", "unfave"},
+	Short:   "Unmark the status as favourite",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return statusSubcommandRunE(cmd.Name(), args)
 	},
@@ -184,7 +210,15 @@ var statusFavouriteSubcommand = &cobra.Command{
 
 var statusPinSubcommand = &cobra.Command{
 	Use:   "pin",
-	Short: "Pin/unpin the status",
+	Short: "Pin a status",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return statusSubcommandRunE(cmd.Name(), args)
+	},
+}
+
+var statusUnpinSubcommand = &cobra.Command{
+	Use:   "unpin",
+	Short: "Unpin a status",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return statusSubcommandRunE(cmd.Name(), args)
 	},
@@ -264,20 +298,20 @@ func statusSubcommandRunE(subcmd string, args []string) error {
 		obj = accountList
 	case "delete":
 		err = gClient.DeleteStatus(opt.statusID)
-	case "boost":
-		if opt.unset {
+	case "boost", "unboost":
+		if opt.unset || subcmd == "unboost" {
 			err = gClient.UnreblogStatus(opt.statusID)
 		} else {
 			err = gClient.ReblogStatus(opt.statusID)
 		}
-	case "favourite":
-		if opt.unset {
+	case "favourite", "unfavourite":
+		if opt.unset || subcmd == "unfavourite" {
 			err = gClient.UnfavouriteStatus(opt.statusID)
 		} else {
 			err = gClient.FavouriteStatus(opt.statusID)
 		}
-	case "pin":
-		if opt.unset {
+	case "pin", "unpin":
+		if opt.unset || subcmd == "unpin" {
 			err = gClient.UnpinStatus(opt.statusID)
 		} else {
 			err = gClient.PinStatus(opt.statusID)

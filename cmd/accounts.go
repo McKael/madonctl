@@ -70,11 +70,11 @@ func init() {
 	accountFollowRequestsSubcommand.Flags().BoolVar(&accountsOpts.acceptFR, "accept", false, "Accept the follow request from the account ID")
 	accountFollowRequestsSubcommand.Flags().BoolVar(&accountsOpts.rejectFR, "reject", false, "Reject the follow request from the account ID")
 
-	accountBlockSubcommand.Flags().BoolVarP(&accountsOpts.unset, "unset", "", false, "Unblock the account")
+	accountBlockSubcommand.Flags().BoolVarP(&accountsOpts.unset, "unset", "", false, "Unblock the account (deprecated)")
 
-	accountMuteSubcommand.Flags().BoolVarP(&accountsOpts.unset, "unset", "", false, "Unmute the account")
+	accountMuteSubcommand.Flags().BoolVarP(&accountsOpts.unset, "unset", "", false, "Unmute the account (deprecated)")
 	accountMuteSubcommand.Flags().BoolVarP(&accountsOpts.muteNotifications, "notifications", "", true, "Mute the notifications")
-	accountFollowSubcommand.Flags().BoolVarP(&accountsOpts.unset, "unset", "", false, "Unfollow the account")
+	accountFollowSubcommand.Flags().BoolVarP(&accountsOpts.unset, "unset", "", false, "Unfollow the account (deprecated)")
 	accountFollowSubcommand.Flags().BoolVarP(&accountsOpts.reblogs, "show-reblogs", "", true, "Follow account's boosts")
 	accountFollowSubcommand.Flags().StringVarP(&accountsOpts.remoteUID, "remote", "r", "", "Follow remote account (user@domain)")
 
@@ -96,6 +96,11 @@ func init() {
 	accountUpdateSubcommand.Flags().BoolVar(&accountsOpts.defaultSensitive, "default-sensitive", false, "Mark medias as sensitive by default")
 	accountUpdateSubcommand.Flags().BoolVar(&accountsOpts.locked, "locked", false, "Following account requires approval")
 	accountUpdateSubcommand.Flags().BoolVar(&accountsOpts.bot, "bot", false, "Set as service (automated) account")
+
+	// Deprecated flags
+	accountBlockSubcommand.Flags().MarkDeprecated("unset", "please use unblock instead")
+	accountMuteSubcommand.Flags().MarkDeprecated("unset", "please use unmute instead")
+	accountFollowSubcommand.Flags().MarkDeprecated("unset", "please use unfollow instead")
 
 	// Those variables will be used to check if the options were
 	// explicitly set or not
@@ -177,8 +182,11 @@ If no account ID is specified, the current user account is used.`,
 	accountStatusesSubcommand,
 	accountFollowRequestsSubcommand,
 	accountFollowSubcommand,
+	accountUnfollowSubcommand,
 	accountBlockSubcommand,
+	accountUnblockSubcommand,
 	accountMuteSubcommand,
+	accountUnmuteSubcommand,
 	accountPinSubcommand,
 	accountUnpinSubcommand,
 	accountRelationshipsSubcommand,
@@ -227,7 +235,7 @@ var accountFollowRequestsSubcommand = &cobra.Command{
 }
 var accountFollowSubcommand = &cobra.Command{
 	Use:   "follow",
-	Short: "Follow or unfollow the account",
+	Short: "Follow an account",
 	Example: `# Argument type can be set explicitly:
   madonctl account follow --account-id 1234
   madonctl account follow --remote Gargron@mastodon.social
@@ -242,9 +250,29 @@ var accountFollowSubcommand = &cobra.Command{
 	},
 }
 
+var accountUnfollowSubcommand = &cobra.Command{
+	Use:   "unfollow",
+	Short: "Stop following an account",
+	Example: `  madonctl account unfollow --account-id 1234
+
+Same usage as madonctl follow.
+`,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return accountSubcommandsRunE(cmd.Name(), args)
+	},
+}
+
 var accountBlockSubcommand = &cobra.Command{
 	Use:   "block",
-	Short: "Block or unblock the account",
+	Short: "Block the account",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return accountSubcommandsRunE(cmd.Name(), args)
+	},
+}
+
+var accountUnblockSubcommand = &cobra.Command{
+	Use:   "unblock",
+	Short: "Unblock the account",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return accountSubcommandsRunE(cmd.Name(), args)
 	},
@@ -252,7 +280,15 @@ var accountBlockSubcommand = &cobra.Command{
 
 var accountMuteSubcommand = &cobra.Command{
 	Use:   "mute",
-	Short: "Mute or unmute the account",
+	Short: "Mute the account",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return accountSubcommandsRunE(cmd.Name(), args)
+	},
+}
+
+var accountUnmuteSubcommand = &cobra.Command{
+	Use:   "unmute",
+	Short: "Unmute the account",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return accountSubcommandsRunE(cmd.Name(), args)
 	},
@@ -408,7 +444,7 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 		if opt.accountID > 0 {
 			return errors.New("useless account ID")
 		}
-	case "follow":
+	case "follow", "unfollow":
 		// We need an account ID or a remote UID
 		if opt.accountID < 1 && opt.remoteUID == "" {
 			return errors.New("missing account ID or URI")
@@ -416,7 +452,7 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 		if opt.accountID > 0 && opt.remoteUID != "" {
 			return errors.New("cannot use both account ID and URI")
 		}
-		if opt.unset && opt.accountID < 1 {
+		if (opt.unset || subcmd == "unfollow") && opt.accountID < 1 {
 			return errors.New("unfollowing requires an account ID")
 		}
 	case "follow-requests":
@@ -531,9 +567,9 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 			statusList = statusList[:opt.keep]
 		}
 		obj = statusList
-	case "follow":
+	case "follow", "unfollow":
 		var relationship *madon.Relationship
-		if opt.unset {
+		if opt.unset || subcmd == "unfollow" {
 			relationship, err = gClient.UnfollowAccount(opt.accountID)
 			obj = relationship
 			break
@@ -583,17 +619,17 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 		} else {
 			err = gClient.FollowRequestAuthorize(opt.accountID, !opt.rejectFR)
 		}
-	case "block":
+	case "block", "unblock":
 		var relationship *madon.Relationship
-		if opt.unset {
+		if opt.unset || subcmd == "unblock" {
 			relationship, err = gClient.UnblockAccount(opt.accountID)
 		} else {
 			relationship, err = gClient.BlockAccount(opt.accountID)
 		}
 		obj = relationship
-	case "mute":
+	case "mute", "unmute":
 		var relationship *madon.Relationship
-		if opt.unset {
+		if opt.unset || subcmd == "unmute" {
 			relationship, err = gClient.UnmuteAccount(opt.accountID)
 		} else {
 			var muteNotif *bool
