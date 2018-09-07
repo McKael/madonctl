@@ -122,6 +122,11 @@ value.
 % madonctl account update --note "Newcomer"      # Update user note (bio)
 % madonctl account update --note ""              # Clear note
 % madonctl account update --avatar me.png        # Update avatar
+
+% madonctl account update --bot               # Advertise account as automated
+% madonctl account update --default-sensitive # Set medias sensitive by default
+% madonctl account update --default-language fra    # Set default toot language
+% madonctl account update --default-privacy private # Set default toot privacy
 ```
 
 See your own **posts**:
@@ -140,13 +145,25 @@ Display accounts you're **following** or your **followers**:
 Add/remove a **favourite**, **boost** a status...
 ``` sh
 % madonctl status --status-id 416671 favourite    # Fave a status
-% madonctl status --status-id 416671 boost        # Boost a status
+% madonctl status --status-id 416671 boost        # Boost (reblog) a status
+
+% madonctl status --status-id 416671 unboost       # Cancel a boost
+% madonctl status --status-id 416671 boost --unset # Cancel a boost (deprecated)
 ```
 
 **Pin/unpin** a status...
 ``` sh
 % madonctl status --status-id 533769 pin          # Pin a status
-% madonctl status --status-id 533769 pin --unset  # Unpin a status
+% madonctl status --status-id 533769 unpin        # Unpin a status
+% madonctl status --status-id 533769 pin --unset  # Unpin a status (deprecated)
+```
+
+**Pin/unpin** an account (i.e., account endorsement)...
+``` sh
+% madonctl status --account-id 1234 pin           # Pin (endorse) an account
+% madonctl status --account-id 1234 unpin         # Unpin an account
+
+% madonctl status pin @Gargron@mastodon.social
 ```
 
 Search for an account (only accounts known to your instance):
@@ -206,8 +223,10 @@ account is known by the instance.  If it is unknown, the https link should work
 Read **timelines**:
 ``` sh
 % madonctl timeline                 # Display home timeline
+% madonctl timeline home            # (same as previous command)
 % madonctl timeline public          # Display federated timeline
 % madonctl timeline public --local  # Display public local timeline
+% madonctl timeline direct          # Display timeline of direct messages
 
 % madonctl timeline --limit 3       # Display 3 latest home timeline messages
 ```
@@ -217,6 +236,7 @@ Use the **streaming API** and fetch timelines and notifications:
 % madonctl stream                   # Stream home timeline and notifications
 % madonctl stream local             # Stream local timeline
 % madonctl stream public            # Stream federated timeline
+% madonctl stream direct            # Stream direct messages
 ```
 
 You can also use **hashtag streams**:
