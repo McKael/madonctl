@@ -27,7 +27,7 @@ const maximumHashtagStreamWS = 4
 
 // streamCmd represents the stream command
 var streamCmd = &cobra.Command{
-	Use:   "stream [user|local|public|!LIST|:HASHTAG]",
+	Use:   "stream [user|local|public|direct|!LIST|:HASHTAG]",
 	Short: "Listen to an event stream",
 	Long: `Listen to an event stream
 
@@ -39,6 +39,7 @@ It can also get a hashtag-based stream if the keyword is prefixed with
 	Example: `  madonctl stream           # User timeline stream
   madonctl stream local     # Local timeline stream
   madonctl stream public    # Public timeline stream
+  madonctl stream direct    # Direct messages stream
   madonctl stream '!42'     # List (ID 42)
   madonctl stream :mastodon # Hashtag
   madonctl stream #madonctl
@@ -51,7 +52,7 @@ Note: madonctl will use 1 websocket per hashtag stream.
   madonctl stream :madonctl,mastodon,api
 `,
 	RunE:       streamRunE,
-	ValidArgs:  []string{"user", "public"},
+	ValidArgs:  []string{"user", "public", "direct"},
 	ArgAliases: []string{"home"},
 }
 
@@ -76,6 +77,7 @@ func streamRunE(cmd *cobra.Command, args []string) error {
 		switch arg {
 		case "", "user":
 		case "public":
+		case "direct":
 			streamName = arg
 		case "local":
 			streamName = "public:local"
