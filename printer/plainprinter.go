@@ -389,7 +389,7 @@ func (p *PlainPrinter) plainPrintStatus(s *madon.Status, w io.Writer, indent str
 			indentedPrint(w, indent+p.Indent, false, false, "Remote URL", "%s", *a.RemoteURL)
 		}
 		if a.Description != nil && *a.Description != "" {
-			indentedPrint(w, indent+p.Indent, false, true, "Description", "%s", a.Description)
+			indentedPrint(w, indent+p.Indent, false, true, "Description", "%s", *a.Description)
 		}
 	}
 	return nil
