@@ -3,7 +3,7 @@ module github.com/McKael/madonctl
 require (
 	github.com/BurntSushi/toml v0.3.1 // indirect
 	github.com/McKael/madon/v2 v2.3.1-0.20180929094633-c679abc985d6
-	github.com/cpuguy83/go-md2man v1.0.8 // indirect
+	github.com/cpuguy83/go-md2man v1.0.9-0.20180619205630-691ee98543af // indirect
 	github.com/ghodss/yaml v1.0.0
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/kr/pretty v0.1.0 // indirect
