@@ -1,6 +1,5 @@
 language: go
 go:
-- "1.9"
 - "1.10"
 - "1.11"
 - master
@@ -11,13 +10,6 @@ matrix:
 branches:
   only:
   - master
-install:
-- go get golang.org/x/net/html
-- go get github.com/spf13/cobra
-- go get github.com/spf13/viper
-- go get github.com/McKael/madon
-- go get github.com/ghodss/yaml
-- go get github.com/pkg/errors
-- go get github.com/kr/text
-- go get github.com/mattn/go-isatty
-- go get github.com/stretchr/testify/assert
+env:
+  - GO111MODULE=on
+install: true

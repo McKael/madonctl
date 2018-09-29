@@ -25,7 +25,7 @@ More pre-built binaries might be available from the [Homepage](https://lilotux.n
 madonctl now uses Go modules introduced with Go v1.11.
 
 You should still be able to build it "the old way" with an up-to-date release
-of Go 1.9/1.10/1.11+ with:
+of 1.10+ with:
 
     go get -u github.com/McKael/madonctl
 
@@ -34,13 +34,13 @@ For upgrades, don't forget the `-u` option to ensure the dependencies
 
 Alternatively, with Go >= 1.11:
 
-    git clone git clone https://github.com/McKael/madonctl
+    git clone https://github.com/McKael/madonctl
     cd madonctl
     go build    # (or go install)
 
 and you should be able to use `madonctl`.
 
-Travis automated testing is run for Go versions 1.9 - 1.11.
+Travis automated testing is run for Go versions 1.10 - 1.11.
 
 ## Usage
 
