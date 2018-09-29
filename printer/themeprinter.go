@@ -15,7 +15,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/McKael/madon"
+	"github.com/McKael/madon/v2"
 )
 
 const themeDirName = "themes"

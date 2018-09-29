@@ -12,7 +12,7 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/McKael/madon"
+	"github.com/McKael/madon/v2"
 	"github.com/McKael/madonctl/printer/html2text"
 )
 

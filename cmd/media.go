@@ -12,7 +12,7 @@ import (
 	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
 
-	"github.com/McKael/madon"
+	"github.com/McKael/madon/v2"
 )
 
 var mediaFlags *flag.FlagSet

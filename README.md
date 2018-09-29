@@ -22,16 +22,25 @@ More pre-built binaries might be available from the [Homepage](https://lilotux.n
 
 ### From source
 
-To install the application from source (you need to have Go >= 1.7), just type:
+madonctl now uses Go modules introduced with Go v1.11.
+
+You should still be able to build it "the old way" with an up-to-date release
+of Go 1.9/1.10/1.11+ with:
 
     go get -u github.com/McKael/madonctl
-
-and you should be able to run `madonctl`.
 
 For upgrades, don't forget the `-u` option to ensure the dependencies
 (especially [madon](https://github.com/McKael/madon)) are updated as well.
 
-Travis automated testing is run for Go versions 1.7 - 1.10.
+Alternatively, with Go >= 1.11:
+
+    git clone git clone https://github.com/McKael/madonctl
+    cd madonctl
+    go build    # (or go install)
+
+and you should be able to use `madonctl`.
+
+Travis automated testing is run for Go versions 1.9 - 1.11.
 
 ## Usage
 

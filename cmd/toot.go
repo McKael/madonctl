@@ -13,7 +13,7 @@ import (
 	flag "github.com/spf13/pflag"
 	"github.com/spf13/viper"
 
-	"github.com/McKael/madon"
+	"github.com/McKael/madon/v2"
 )
 
 // toot is a kind of alias for status post

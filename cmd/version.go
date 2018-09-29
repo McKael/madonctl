@@ -10,7 +10,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/McKael/madon"
+	"github.com/McKael/madon/v2"
 	"github.com/McKael/madonctl/printer"
 )
 

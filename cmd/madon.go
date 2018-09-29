@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/McKael/madon"
+	"github.com/McKael/madon/v2"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 )

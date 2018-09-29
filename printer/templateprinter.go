@@ -18,7 +18,7 @@ import (
 	"github.com/kr/text"
 	"github.com/mattn/go-isatty"
 
-	"github.com/McKael/madon"
+	"github.com/McKael/madon/v2"
 	"github.com/McKael/madonctl/printer/colors"
 )
 
