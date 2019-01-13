@@ -57,7 +57,7 @@ func (mc *Client) UploadMedia(filePath, description, focus string) (*Attachment,
 		}
 	}
 
-	req, err := mc.prepareRequest("media", rest.Post, params)
+	req, err := mc.prepareRequest("v1/media", rest.Post, params)
 	if err != nil {
 		return nil, errors.Wrap(err, "media prepareRequest failed")
 	}

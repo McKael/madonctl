@@ -1,7 +1,5 @@
-# github.com/McKael/madon/v2 v2.3.1-0.20180929094633-c679abc985d6
+# github.com/McKael/madon/v2 v2.3.1-0.20190113122558-9d8259932fb8
 github.com/McKael/madon/v2
-# github.com/cpuguy83/go-md2man v1.0.9-0.20180619205630-691ee98543af
-github.com/cpuguy83/go-md2man/md2man
 # github.com/davecgh/go-spew v1.1.1
 github.com/davecgh/go-spew/spew
 # github.com/fsnotify/fsnotify v1.4.7
@@ -35,16 +33,12 @@ github.com/mattn/go-isatty
 github.com/mitchellh/mapstructure
 # github.com/pelletier/go-toml v1.2.0
 github.com/pelletier/go-toml
-# github.com/pkg/errors v0.8.0
+# github.com/pkg/errors v0.8.1
 github.com/pkg/errors
 # github.com/pmezard/go-difflib v1.0.0
 github.com/pmezard/go-difflib/difflib
-# github.com/russross/blackfriday v2.0.0+incompatible
-github.com/russross/blackfriday
 # github.com/sendgrid/rest v2.4.1+incompatible
 github.com/sendgrid/rest
-# github.com/shurcooL/sanitized_anchor_name v0.0.0-20170918181015-86672fcb3f95
-github.com/shurcooL/sanitized_anchor_name
 # github.com/spf13/afero v1.1.2
 github.com/spf13/afero
 github.com/spf13/afero/mem
@@ -52,10 +46,9 @@ github.com/spf13/afero/mem
 github.com/spf13/cast
 # github.com/spf13/cobra v0.0.3
 github.com/spf13/cobra
-github.com/spf13/cobra/doc
 # github.com/spf13/jwalterweatherman v1.0.0
 github.com/spf13/jwalterweatherman
-# github.com/spf13/pflag v1.0.2
+# github.com/spf13/pflag v1.0.3
 github.com/spf13/pflag
 # github.com/spf13/viper v1.2.1
 github.com/spf13/viper
@@ -82,5 +75,5 @@ google.golang.org/appengine/internal/base
 google.golang.org/appengine/internal/datastore
 google.golang.org/appengine/internal/log
 google.golang.org/appengine/internal/remote_api
-# gopkg.in/yaml.v2 v2.2.1
+# gopkg.in/yaml.v2 v2.2.2
 gopkg.in/yaml.v2
