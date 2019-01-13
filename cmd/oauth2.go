@@ -88,7 +88,7 @@ func oAuth2ExchangeCode(args []string) error {
 
 	if gClient.UserToken != nil {
 		errPrint("Login successful.\n")
-		configDump()
+		configDump(true)
 	}
 	return nil
 }

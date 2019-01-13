@@ -43,7 +43,7 @@ var configSubcommands = []*cobra.Command{
 		Short:   "Dump the configuration",
 		Example: `  madonctl config dump -i INSTANCE -L USERNAME -P PASS > config.yaml`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return configDump()
+			return configDump(false)
 		},
 	},
 	&cobra.Command{
@@ -84,8 +84,8 @@ safe_mode: true
 ...
 `
 
-func configDump() error {
-	if viper.GetBool("safe_mode") {
+func configDump(force bool) error {
+	if !force && viper.GetBool("safe_mode") {
 		errPrint("Cannot dump: disabled by configuration (safe_mode)")
 		return nil
 	}
