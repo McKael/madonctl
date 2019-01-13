@@ -47,7 +47,7 @@ var oauth2Subcommands = []*cobra.Command{
 		},
 	},
 	&cobra.Command{
-		Use:   "code",
+		Use:   "code CODE",
 		Short: "Log in with OAuth2 code",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return oAuth2ExchangeCode(args)
