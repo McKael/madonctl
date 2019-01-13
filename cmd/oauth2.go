@@ -88,6 +88,7 @@ func oAuth2ExchangeCode(args []string) error {
 
 	if gClient.UserToken != nil {
 		errPrint("Login successful.\n")
+		errPrint("The new token is %s.\n", gClient.UserToken.AccessToken)
 		configDump(true)
 	}
 	return nil

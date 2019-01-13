@@ -84,20 +84,23 @@ safe_mode: true
 ...
 `
 
-func configDump(force bool) error {
-	if !force && viper.GetBool("safe_mode") {
-		errPrint("Cannot dump: disabled by configuration (safe_mode)")
-		return nil
-	}
+func configDump(oauth2 bool) error {
+	if !oauth2 {
+		if viper.GetBool("safe_mode") {
+			errPrint("Cannot dump: disabled by configuration (safe_mode)")
+			return nil
+		}
 
-	if err := madonInitClient(); err != nil {
-		return err
-	}
-	// Try to sign in if a login was provided
-	if viper.GetString("token") != "" || viper.GetString("login") != "" {
-		if err := madonLogin(); err != nil {
-			errPrint("Error: could not log in: %v", err)
-			os.Exit(-1)
+		if err := madonInitClient(); err != nil {
+			return err
+		}
+
+		// Try to sign in if a login was provided
+		if viper.GetString("token") != "" || viper.GetString("login") != "" {
+			if err := madonLogin(); err != nil {
+				errPrint("Error: could not log in: %v", err)
+				os.Exit(-1)
+			}
 		}
 	}
 
