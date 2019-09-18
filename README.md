@@ -5,7 +5,7 @@ Golang command line interface for the Mastodon API
 [![license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://raw.githubusercontent.com/McKael/madonctl/master/LICENSE)
 [![Build Status](https://travis-ci.org/McKael/madonctl.svg?branch=master)](https://travis-ci.org/McKael/madonctl)
 
-`madonctl` is a [Go](https://golang.org/) CLI tool to use the Mastondon REST API.
+`madonctl` is a [Go](https://golang.org/) CLI tool to use the Mastodon REST API.
 
 It is built on top of [madon](https://github.com/McKael/madon), my Golang
 implementation of the API.
