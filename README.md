@@ -37,7 +37,7 @@ Alternatively, with Go >= 1.11:
 
 and you should be able to use `madonctl`.
 
-Travis automated testing is run for Go versions 1.9 - 1.11.
+Travis automated testing is run for Go versions 1.11 - 1.13.
 
 ## Usage
 
