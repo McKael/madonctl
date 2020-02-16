@@ -19,12 +19,12 @@ import (
 	"github.com/sendgrid/rest"
 )
 
+const mediaUploadFieldName = "file"
+
 // UploadMedia uploads the given file and returns an attachment
 // The description and focus arguments can be empty strings.
 // 'focus' is the "focal point", written as two comma-delimited floating points.
 func (mc *Client) UploadMedia(filePath, description, focus string) (*Attachment, error) {
-	var b bytes.Buffer
-
 	if filePath == "" {
 		return nil, ErrInvalidParameter
 	}
@@ -35,11 +35,27 @@ func (mc *Client) UploadMedia(filePath, description, focus string) (*Attachment,
 	}
 	defer f.Close()
 
-	w := multipart.NewWriter(&b)
-	formWriter, err := w.CreateFormFile("file", filepath.Base(filePath))
+	return mc.UploadMediaReader(f, filepath.Base(f.Name()), description, focus)
+}
+
+// UploadMediaReader uploads data from the given reader and returns an attachment
+// name, description and focus arguments can be empty strings.
+// 'focus' is the "focal point", written as two comma-delimited floating points.
+func (mc *Client) UploadMediaReader(f io.Reader, name, description, focus string) (*Attachment, error) {
+	buf := bytes.Buffer{}
+
+	w := multipart.NewWriter(&buf)
+	var formWriter io.Writer
+	var err error
+	if len(name) > 0 {
+		formWriter, err = w.CreateFormFile(mediaUploadFieldName, name)
+	} else {
+		formWriter, err = w.CreateFormField(mediaUploadFieldName)
+	}
 	if err != nil {
 		return nil, errors.Wrap(err, "media upload")
 	}
+
 	if _, err = io.Copy(formWriter, f); err != nil {
 		return nil, errors.Wrap(err, "media upload")
 	}
@@ -62,7 +78,7 @@ func (mc *Client) UploadMedia(filePath, description, focus string) (*Attachment,
 		return nil, errors.Wrap(err, "media prepareRequest failed")
 	}
 	req.Headers["Content-Type"] = w.FormDataContentType()
-	req.Body = b.Bytes()
+	req.Body = buf.Bytes()
 
 	// Make API call
 	r, err := restAPI(req)

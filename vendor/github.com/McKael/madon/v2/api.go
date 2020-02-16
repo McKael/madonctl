@@ -130,11 +130,22 @@ func restAPI(request rest.Request) (*rest.Response, error) {
 		return nil, err
 	}
 	if res.StatusCode < 200 || res.StatusCode >= 300 {
+		var errorText string
+		// Try to unmarshal the returned error object for a description
+		mastodonError := Error{}
+		decodeErr := json.NewDecoder(res.Body).Decode(&mastodonError)
+		if decodeErr != nil {
+			// Decode unsuccessful, fallback to generic error based on response code
+			errorText = http.StatusText(res.StatusCode)
+		} else {
+			errorText = mastodonError.Text
+		}
+
 		// Please note that the error string code is used by Search()
 		// to check the error cause.
 		const errFormatString = "bad server status code (%d)"
 		return nil, errors.Errorf(errFormatString+": %s",
-			res.StatusCode, http.StatusText(res.StatusCode))
+			res.StatusCode, errorText)
 	}
 
 	// Build Response object.
