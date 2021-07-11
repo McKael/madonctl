@@ -3,10 +3,14 @@ package rest
 
 import (
 	"bytes"
+	"context"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 )
+
+// Version represents the current version of the rest library
+const Version = "2.6.4"
 
 // Method contains the supported HTTP verbs.
 type Method string
@@ -40,7 +44,7 @@ func (e *RestError) Error() string {
 }
 
 // DefaultClient is used if no custom HTTP client is defined
-var DefaultClient = &Client{HTTPClient: http.DefaultClient}
+var DefaultClient = &Client{HTTPClient: &http.Client{}}
 
 // Client allows modification of client headers, redirect policy
 // and other settings
@@ -94,30 +98,28 @@ func MakeRequest(req *http.Request) (*http.Response, error) {
 // BuildResponse builds the response struct.
 func BuildResponse(res *http.Response) (*Response, error) {
 	body, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		return nil, err
-	}
-	defer func() {
-		if err := res.Body.Close(); err != nil {
-			return // maybe log in the future
-		}
-	}()
 	response := Response{
 		StatusCode: res.StatusCode,
 		Body:       string(body),
 		Headers:    res.Header,
 	}
-	return &response, nil
+	res.Body.Close() // nolint
+	return &response, err
 }
 
-// API supports old implementation (deprecated)
+// Deprecated: API supports old implementation
 func API(request Request) (*Response, error) {
 	return Send(request)
 }
 
 // Send uses the DefaultClient to send your request
 func Send(request Request) (*Response, error) {
-	return DefaultClient.Send(request)
+	return SendWithContext(context.Background(), request)
+}
+
+// SendWithContext uses the DefaultClient to send your request with the provided context.
+func SendWithContext(ctx context.Context, request Request) (*Response, error) {
+	return DefaultClient.SendWithContext(ctx, request)
 }
 
 // The following functions enable the ability to define a
@@ -128,18 +130,25 @@ func (c *Client) MakeRequest(req *http.Request) (*http.Response, error) {
 	return c.HTTPClient.Do(req)
 }
 
-// API supports old implementation (deprecated)
+// Deprecated: API supports old implementation
 func (c *Client) API(request Request) (*Response, error) {
 	return c.Send(request)
 }
 
 // Send will build your request, make the request, and build your response.
 func (c *Client) Send(request Request) (*Response, error) {
+	return c.SendWithContext(context.Background(), request)
+}
+
+// SendWithContext will build your request passing in the provided context, make the request, and build your response.
+func (c *Client) SendWithContext(ctx context.Context, request Request) (*Response, error) {
 	// Build the HTTP request object.
 	req, err := BuildRequestObject(request)
 	if err != nil {
 		return nil, err
 	}
+	// Pass in the user provided context
+	req = req.WithContext(ctx)
 
 	// Build the HTTP client and make the request.
 	res, err := c.MakeRequest(req)
@@ -148,10 +157,5 @@ func (c *Client) Send(request Request) (*Response, error) {
 	}
 
 	// Build Response object.
-	response, err := BuildResponse(res)
-	if err != nil {
-		return nil, err
-	}
-
-	return response, nil
+	return BuildResponse(res)
 }

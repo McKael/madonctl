@@ -6,7 +6,7 @@
 <a name="request-body"></a>
 ## Viewing the Request Body
 
-When debugging or testing, it may be useful to exampine the raw request body to compare against the [documented format](https://sendgrid.com/docs/API_Reference/api_v3.html).
+When debugging or testing, it may be useful to examine the raw request body to compare against the [documented format](https://sendgrid.com/docs/API_Reference/api_v3.html).
 
 Example Code
 ```go

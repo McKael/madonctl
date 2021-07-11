@@ -1,33 +1,16 @@
 language: go
 go:
-- 1.6.x
-- 1.7.x
-- 1.8.x
-- 1.9.x
-- 1.10.x
-- tip
-
-before_install:
-  - go get -t -v ./...
-
-before_script:
-- go get -u github.com/alecthomas/gometalinter
-- gometalinter --install
-
+- '1.14'
+- '1.15'
 script:
-- gometalinter --disable=golint ./...
-- go test -race -cover -v ./...
-
+- make test
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
-
+- bash <(curl -s https://codecov.io/bash)
 notifications:
-  hipchat:
+  slack:
+    if: branch = main
+    on_pull_requests: false
+    on_success: never
+    on_failure: change
     rooms:
-      secure: TYzGrT/tsf6DiLiLLiSMvfQ/US5h13OzSpwf7HUQK85I2nLX3mDUnH4CNFhAYlMoO6c9FppRYGfANEQiY5Pi2LVyHy9ReF0W0cBBXLBtNbrIkwvmDsaqZcWgj5RkE0IeQUcsTixDt6YJsSsApkSm4T5SgXM/ccMqTvinP8vu7DwJ+lk4Tuig6vX4U9AbrYQB7wRC5Ha7joDkounAc7Wx9uycQYdWAvowbmelPhdk0pW2YL109onPOqr9GBBNeOvfJ1hwfqAptXPNNV7Laj0k5/0XCFD/SlHez5PXCeSNHxxDQVQtTr7AW/JWH+iXM28bNh7w+9lRXZH4J7+2dUSITL/qsvwshL8+Z42c6ZPHrGnV/snbyRW2pPWpkAwj//Rct6Thqz52PxffrnDQNdVlg+91kuqnb5N08BQyqXNK5Qi3lO42ZQoyb1656T6lPL3kqA3m/YM0/1xY8qc6cgoKUBXyz/AoCxDo6wVYFDHQkr0L1i2MprbO8Kk4tTMBBttdMZNo/whmfqzNO4FDVfMNHXO2nqQTi1KPRBpT0UMGfqQExl4Wmp+mydt080PnEn9GUfzR4LtYauDHmruiJhaVLUDEo5RSBZlgkJq8FN0SX7nDzpeNhe9qXIWFqaHkyACg4ThIB29Tx+F3OOVL9JQWWix7VbMALolaj/Ro6WXOnMo=
-    template:
-    - '<a href="https://travis-ci.org/%{repository}/builds/%{build_id}">%{repository}
-      Build %{build_number}</a> on branch <i>%{branch}</i> by %{author}: <strong>%{message}</strong>
-      <a href="https://github.com/sendgrid/%{repository}/commits/%{commit}">View on GitHub</a>'
-    format: html
-    notify: true
+      secure: UyvLoQ/d1pyz9aBSAHqluZn0IgwJsQ486K3W8PF6Z0/nEf7UNVD/+qqq65L1fqHVT1hYbNW9+F24EzwcwWOt56wOSIC4udM7EFd3DI6P9M8p28nldRO/eQba8XnIJr61loQDNAD5FhO2X4R/Ytq3yhhE+ynPctLt4L9GibbbN+tWiVrhfOh6gExb/LlEz/T6DSKg728ICeUFs9CXBcxk0Z02L/y+vmCHojQzn9Y/FlD1zix0JvN5AugaEszjTjIxip3NxsQq6qSAYnFw8kgrBSm8VgLfPThjPIbzCKhXYACDk3qjCO7+IsS4eOBpW6caKpNxGOYDWkQ/sw+6VORsagxddK/qFcv3cSgZkoZb6E8H+H9091WMpV+CGaj7R+3G443p0AQRzH2vkTUhl8p+S1BF+/ot/OggYngvD+I98jUCYAil7DujjNE00IQ+v9X94rMCz+wJfGWxZR6jgTXkGjcDRtwJOEmiaCtihSYCYrZH9OHD9PKaLpUAsmE5dN+5I5UW5g4mtf3PGytAzJekP6X4W9k11gxVwRKuvlZOK4Jc0INDoGbCFY/6bz+suZmWSXk6LJF30vIsOUtzThBaZfIkfJssGgnnXqc4HEwP0C6pyDIUvEH+3w8OMzxcpQimHtGNPYwrcuGK75128d29qzFdYhOwCKzUNc3jXQ3hhRY=
