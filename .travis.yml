@@ -1,8 +1,7 @@
 language: go
 go:
-- "1.11.13"
-- "1.12"
-- "1.13"
+- "1.15"
+- "1.18"
 - master
 matrix:
   allow_failures:
