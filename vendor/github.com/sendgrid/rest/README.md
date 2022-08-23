@@ -1,9 +1,8 @@
 ![SendGrid Logo](twilio_sendgrid_logo.png)
 
-[![Build Status](https://travis-ci.com/sendgrid/rest.svg?branch=main)](https://travis-ci.com/sendgrid/rest)
+[![BuildStatus](https://github.com/sendgrid/rest/actions/workflows/test.yml/badge.svg)](https://github.com/sendgrid/rest/actions/workflows/test.yml)
 [![GoDoc](https://godoc.org/github.com/sendgrid/rest?status.png)](http://godoc.org/github.com/sendgrid/rest)
 [![Go Report Card](https://goreportcard.com/badge/github.com/sendgrid/rest)](https://goreportcard.com/report/github.com/sendgrid/rest)
-[![Email Notifications Badge](https://dx.sendgrid.com/badge/go)](https://dx.sendgrid.com/newsletter/go)
 [![Twitter Follow](https://img.shields.io/twitter/follow/sendgrid.svg?style=social&label=Follow)](https://twitter.com/sendgrid)
 [![GitHub contributors](https://img.shields.io/github/contributors/sendgrid/rest.svg)](https://github.com/sendgrid/rest/graphs/contributors)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
@@ -28,9 +27,14 @@ All updates to this library is documented in our [CHANGELOG](CHANGELOG.md).
 <a name="installation"></a>
 # Installation
 
-## Prerequisites
+## Supported Versions
 
-- Go version 1.6.X, 1.7.X, 1.8.X, 1.9.X or 1.10.X
+This library supports the following Go implementations:
+
+* Go 1.14
+* Go 1.15
+* Go 1.16
+* Go 1.17
 
 ## Install Package
 

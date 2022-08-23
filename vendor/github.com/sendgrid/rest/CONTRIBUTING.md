@@ -45,9 +45,9 @@ We welcome direct contributions to the rest code base. Thank you!
 
 #### Install and Run Locally ####
 
-##### Prerequisites #####
+##### Supported Versions #####
 
-- Go version 1.6
+- Go version 1.14, 1.15 or 1.16
 
 ##### Initial setup: #####
 

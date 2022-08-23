@@ -3,6 +3,37 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+[2022-03-09] Version 2.6.9
+--------------------------
+**Library - Chore**
+- [PR #110](https://github.com/sendgrid/rest/pull/110): push Datadog Release Metric upon deploy success. Thanks to [@eshanholtz](https://github.com/eshanholtz)!
+
+
+[2022-02-09] Version 2.6.8
+--------------------------
+**Library - Chore**
+- [PR #109](https://github.com/sendgrid/rest/pull/109): upgrade supported language versions. Thanks to [@childish-sambino](https://github.com/childish-sambino)!
+- [PR #108](https://github.com/sendgrid/rest/pull/108): add gh release to workflow. Thanks to [@shwetha-manvinkurke](https://github.com/shwetha-manvinkurke)!
+
+
+[2022-01-12] Version 2.6.7
+--------------------------
+**Library - Chore**
+- [PR #107](https://github.com/sendgrid/rest/pull/107): update license year. Thanks to [@JenniferMah](https://github.com/JenniferMah)!
+
+
+[2021-12-15] Version 2.6.6
+--------------------------
+**Library - Chore**
+- [PR #106](https://github.com/sendgrid/rest/pull/106): migrate to gh actions. Thanks to [@beebzz](https://github.com/beebzz)!
+
+
+[2021-09-22] Version 2.6.5
+--------------------------
+**Library - Chore**
+- [PR #105](https://github.com/sendgrid/rest/pull/105): add tests against v1.16. Thanks to [@shwetha-manvinkurke](https://github.com/shwetha-manvinkurke)!
+
+
 [2021-05-05] Version 2.6.4
 --------------------------
 **Library - Chore**
