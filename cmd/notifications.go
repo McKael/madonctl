@@ -17,7 +17,7 @@ import (
 
 var notificationsOpts struct {
 	list, clear, dismiss bool
-	notifID              int64
+	notifID              madon.ActivityID
 	types                string
 	excludeTypes         string
 }
@@ -50,7 +50,7 @@ func init() {
 	notificationsCmd.Flags().BoolVar(&notificationsOpts.list, "list", false, "List all current notifications")
 	notificationsCmd.Flags().BoolVar(&notificationsOpts.clear, "clear", false, "Clear all current notifications")
 	notificationsCmd.Flags().BoolVar(&notificationsOpts.dismiss, "dismiss", false, "Delete a notification")
-	notificationsCmd.Flags().Int64Var(&notificationsOpts.notifID, "notification-id", 0, "Get a notification")
+	notificationsCmd.Flags().StringVar(&notificationsOpts.notifID, "notification-id", "", "Get a notification")
 	notificationsCmd.Flags().StringVar(&notificationsOpts.types, "notification-types", "", "Filter notifications (mention, favourite, reblog, follow)")
 	notificationsCmd.Flags().StringVar(&notificationsOpts.excludeTypes, "exclude-types", "", "Exclude notifications types (mention, favourite, reblog, follow)")
 }
@@ -58,7 +58,7 @@ func init() {
 func notificationRunE(cmd *cobra.Command, args []string) error {
 	opt := notificationsOpts
 
-	if !opt.list && !opt.clear && opt.notifID < 1 {
+	if !opt.list && !opt.clear && opt.notifID == "" {
 		return errors.New("missing parameters")
 	}
 
@@ -67,7 +67,7 @@ func notificationRunE(cmd *cobra.Command, args []string) error {
 	}
 
 	var limOpts *madon.LimitParams
-	if accountsOpts.all || accountsOpts.limit > 0 || accountsOpts.sinceID > 0 || accountsOpts.maxID > 0 {
+	if accountsOpts.all || accountsOpts.limit > 0 || accountsOpts.sinceID != "" || accountsOpts.maxID != "" {
 		limOpts = new(madon.LimitParams)
 		limOpts.All = accountsOpts.all
 	}
@@ -75,11 +75,11 @@ func notificationRunE(cmd *cobra.Command, args []string) error {
 	if accountsOpts.limit > 0 {
 		limOpts.Limit = int(accountsOpts.limit)
 	}
-	if accountsOpts.maxID > 0 {
-		limOpts.MaxID = int64(accountsOpts.maxID)
+	if accountsOpts.maxID != "" {
+		limOpts.MaxID = accountsOpts.maxID
 	}
-	if accountsOpts.sinceID > 0 {
-		limOpts.SinceID = int64(accountsOpts.sinceID)
+	if accountsOpts.sinceID != "" {
+		limOpts.SinceID = accountsOpts.sinceID
 	}
 
 	var filterMap *map[string]bool
@@ -123,7 +123,7 @@ func notificationRunE(cmd *cobra.Command, args []string) error {
 			notifications = notifications[:accountsOpts.keep]
 		}
 		obj = notifications
-	} else if opt.notifID > 0 {
+	} else if opt.notifID != "" {
 		if opt.dismiss {
 			err = gClient.DismissNotification(opt.notifID)
 		} else {

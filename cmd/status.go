@@ -20,14 +20,14 @@ import (
 var statusPostFlags *flag.FlagSet
 
 var statusOpts struct {
-	statusID int64
+	statusID madon.ActivityID
 	unset    bool // TODO remove eventually?
 
 	// The following fields are used for the post/toot command
 	visibility     string
 	sensitive      bool
 	spoiler        string
-	inReplyToID    int64
+	inReplyToID    madon.ActivityID
 	mediaIDs       string
 	mediaFilePath  string
 	textFilePath   string
@@ -39,6 +39,9 @@ var statusOpts struct {
 	limit, keep uint
 	//sinceID, maxID int64
 	all bool
+
+	// Used to indicate whether `in-reply-to` flag is present or not.
+	_hasReplyTo bool
 }
 
 func init() {
@@ -48,7 +51,7 @@ func init() {
 	statusCmd.AddCommand(statusSubcommands...)
 
 	// Global flags
-	statusCmd.PersistentFlags().Int64VarP(&statusOpts.statusID, "status-id", "s", 0, "Status ID number")
+	statusCmd.PersistentFlags().StringVarP(&statusOpts.statusID, "status-id", "s", "", "Status ID number")
 	statusCmd.PersistentFlags().UintVarP(&statusOpts.limit, "limit", "l", 0, "Limit number of API results")
 	statusCmd.PersistentFlags().UintVarP(&statusOpts.keep, "keep", "k", 0, "Limit number of results")
 	//statusCmd.PersistentFlags().Int64Var(&statusOpts.sinceID, "since-id", 0, "Request IDs greater than a value")
@@ -65,7 +68,7 @@ func init() {
 	statusPostSubcommand.Flags().StringVar(&statusOpts.mediaIDs, "media-ids", "", "Comma-separated list of media IDs")
 	statusPostSubcommand.Flags().StringVarP(&statusOpts.mediaFilePath, "file", "f", "", "Media file name")
 	statusPostSubcommand.Flags().StringVar(&statusOpts.textFilePath, "text-file", "", "Text file name (message content)")
-	statusPostSubcommand.Flags().Int64VarP(&statusOpts.inReplyToID, "in-reply-to", "r", 0, "Status ID to reply to")
+	statusPostSubcommand.Flags().StringVarP(&statusOpts.inReplyToID, "in-reply-to", "r", "", "Status ID to reply to")
 	statusPostSubcommand.Flags().BoolVar(&statusOpts.stdin, "stdin", false, "Read message content from standard input")
 	statusPostSubcommand.Flags().BoolVar(&statusOpts.addMentions, "add-mentions", false, "Add mentions when replying")
 	statusPostSubcommand.Flags().BoolVar(&statusOpts.sameVisibility, "same-visibility", false, "Use same visibility as original message (for replies)")
@@ -94,7 +97,7 @@ var statusCmd = &cobra.Command{
 	//Long:    `TBW...`, // TODO
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		// This is common to status and all status subcommands but "post"
-		if statusOpts.statusID < 1 && cmd.Name() != "post" {
+		if statusOpts.statusID == "" && cmd.Name() != "post" {
 			return errors.New("missing status ID")
 		}
 		return madonInit(true)
@@ -241,6 +244,8 @@ var statusPostSubcommand = &cobra.Command{
 The default visibility can be set in the configuration file with the option
 'default_visibility' (or with an environmnent variable).`,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		// Update the extra flag to reflect if `in-reply-to` was present or not
+		statusOpts._hasReplyTo = cmd.Flags().Lookup("in-reply-to").Changed
 		return statusSubcommandRunE(cmd.Name(), args)
 	},
 }

@@ -20,30 +20,30 @@ import (
 var accountUpdateFlags, accountMuteFlags, accountFollowFlags *flag.FlagSet
 
 var accountsOpts struct {
-	accountID             int64
+	accountID             madon.ActivityID
 	accountUID            string
-	unset                 bool     // TODO remove eventually?
-	limit, keep           uint     // Limit the results
-	sinceID, maxID        int64    // Query boundaries
-	all                   bool     // Try to fetch all results
-	onlyMedia, onlyPinned bool     // For acccount statuses
-	excludeReplies        bool     // For acccount statuses
-	remoteUID             string   // For account follow
-	reblogs               bool     // For account follow
-	acceptFR, rejectFR    bool     // For account follow_requests
-	list                  bool     // For account follow_requests/reports
-	accountIDs            string   // For account relationships
-	statusIDs             string   // For account reports
-	comment               string   // For account reports
-	displayName, note     string   // For account update
-	profileFields         []string // For account update
-	avatar, header        string   // For account update
-	defaultLanguage       string   // For account update
-	defaultPrivacy        string   // For account update
-	defaultSensitive      bool     // For account update
-	locked, bot           bool     // For account update
-	muteNotifications     bool     // For account mute
-	following             bool     // For account search
+	unset                 bool             // TODO remove eventually?
+	limit, keep           uint             // Limit the results
+	sinceID, maxID        madon.ActivityID // Query boundaries
+	all                   bool             // Try to fetch all results
+	onlyMedia, onlyPinned bool             // For acccount statuses
+	excludeReplies        bool             // For acccount statuses
+	remoteUID             string           // For account follow
+	reblogs               bool             // For account follow
+	acceptFR, rejectFR    bool             // For account follow_requests
+	list                  bool             // For account follow_requests/reports
+	accountIDs            string           // For account relationships
+	statusIDs             string           // For account reports
+	comment               string           // For account reports
+	displayName, note     string           // For account update
+	profileFields         []string         // For account update
+	avatar, header        string           // For account update
+	defaultLanguage       string           // For account update
+	defaultPrivacy        string           // For account update
+	defaultSensitive      bool             // For account update
+	locked, bot           bool             // For account update
+	muteNotifications     bool             // For account mute
+	following             bool             // For account search
 }
 
 func init() {
@@ -53,12 +53,12 @@ func init() {
 	accountsCmd.AddCommand(accountSubcommands...)
 
 	// Global flags
-	accountsCmd.PersistentFlags().Int64VarP(&accountsOpts.accountID, "account-id", "a", 0, "Account ID number")
+	accountsCmd.PersistentFlags().StringVarP(&accountsOpts.accountID, "account-id", "a", "", "Account ID number")
 	accountsCmd.PersistentFlags().StringVarP(&accountsOpts.accountUID, "user-id", "u", "", "Account user ID")
 	accountsCmd.PersistentFlags().UintVarP(&accountsOpts.limit, "limit", "l", 0, "Limit number of API results")
 	accountsCmd.PersistentFlags().UintVarP(&accountsOpts.keep, "keep", "k", 0, "Limit number of results")
-	accountsCmd.PersistentFlags().Int64Var(&accountsOpts.sinceID, "since-id", 0, "Request IDs greater than a value")
-	accountsCmd.PersistentFlags().Int64Var(&accountsOpts.maxID, "max-id", 0, "Request IDs less (or equal) than a value")
+	accountsCmd.PersistentFlags().StringVar(&accountsOpts.sinceID, "since-id", "", "Request IDs greater than a value")
+	accountsCmd.PersistentFlags().StringVar(&accountsOpts.maxID, "max-id", "", "Request IDs less (or equal) than a value")
 	accountsCmd.PersistentFlags().BoolVar(&accountsOpts.all, "all", false, "Fetch all results")
 
 	// Subcommand flags
@@ -377,7 +377,7 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 
 	// Check account is provided in only one way
 	aCounter := 0
-	if opt.accountID > 0 {
+	if opt.accountID != "" {
 		aCounter++
 	}
 	if opt.accountUID != "" {
@@ -396,8 +396,8 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 
 	if userInArg {
 		// Is the argument an account ID?
-		if n, err := strconv.ParseInt(args[0], 10, 64); err == nil {
-			opt.accountID = n
+		if _, err := strconv.ParseInt(args[0], 10, 64); err == nil {
+			opt.accountID = args[0]
 		} else if strings.HasPrefix(args[0], "https://") || strings.HasPrefix(args[0], "http://") {
 			// That is not a remote UID scheme
 			opt.accountUID = args[0]
@@ -417,7 +417,7 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 	}
 
 	if opt.accountUID != "" {
-		if opt.accountID > 0 {
+		if opt.accountID != "" {
 			return errors.New("cannot use both account ID and UID")
 		}
 		// Sign in early to look the user id up
@@ -426,7 +426,7 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 			return err
 		}
 		opt.accountID, err = accountLookupUser(opt.accountUID)
-		if err != nil || opt.accountID < 1 {
+		if err != nil || opt.accountID == "" {
 			if err != nil {
 				errPrint("Cannot find user '%s': %v", opt.accountUID, err)
 			} else {
@@ -441,18 +441,18 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 		// These subcommands do not require an account ID
 	case "favourites", "blocks", "mutes", "pinned":
 		// Those subcommands can not use an account ID
-		if opt.accountID > 0 {
+		if opt.accountID != "" {
 			return errors.New("useless account ID")
 		}
 	case "follow", "unfollow":
 		// We need an account ID or a remote UID
-		if opt.accountID < 1 && opt.remoteUID == "" {
+		if opt.accountID == "" && opt.remoteUID == "" {
 			return errors.New("missing account ID or URI")
 		}
-		if opt.accountID > 0 && opt.remoteUID != "" {
+		if opt.accountID != "" && opt.remoteUID != "" {
 			return errors.New("cannot use both account ID and URI")
 		}
-		if (opt.unset || subcmd == "unfollow") && opt.accountID < 1 {
+		if (opt.unset || subcmd == "unfollow") && opt.accountID == "" {
 			return errors.New("unfollowing requires an account ID")
 		}
 	case "follow-requests":
@@ -468,27 +468,27 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 			if opt.acceptFR && opt.rejectFR {
 				return errors.New("incompatible options")
 			}
-			if opt.accountID < 1 {
+			if opt.accountID == "" {
 				return errors.New("missing account ID")
 			}
 		}
 	case "relationships":
-		if opt.accountID < 1 && len(opt.accountIDs) == 0 {
+		if opt.accountID == "" && len(opt.accountIDs) == 0 {
 			return errors.New("missing account IDs")
 		}
-		if opt.accountID > 0 && len(opt.accountIDs) > 0 {
+		if opt.accountID != "" && len(opt.accountIDs) > 0 {
 			return errors.New("incompatible options")
 		}
 	case "reports":
 		if opt.list {
 			break // No argument needed
 		}
-		if opt.accountID < 1 || len(opt.statusIDs) == 0 || opt.comment == "" {
+		if opt.accountID == "" || len(opt.statusIDs) == 0 || opt.comment == "" {
 			return errors.New("missing parameter")
 		}
 	case "followers", "following", "statuses":
 		// If the user's account ID is missing, get it
-		if opt.accountID < 1 {
+		if opt.accountID == "" {
 			// Sign in now to look the user id up
 			if err := madonInit(true); err != nil {
 				return err
@@ -504,13 +504,13 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 		}
 	default:
 		// The other subcommands here require an account ID
-		if opt.accountID < 1 {
+		if opt.accountID == "" {
 			return errors.New("missing account ID")
 		}
 	}
 
 	var limOpts *madon.LimitParams
-	if opt.all || opt.limit > 0 || opt.sinceID > 0 || opt.maxID > 0 {
+	if opt.all || opt.limit > 0 || opt.sinceID != "" || opt.maxID != "" {
 		limOpts = new(madon.LimitParams)
 		limOpts.All = opt.all
 	}
@@ -518,10 +518,10 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 	if opt.limit > 0 {
 		limOpts.Limit = int(opt.limit)
 	}
-	if opt.maxID > 0 {
+	if opt.maxID != "" {
 		limOpts.MaxID = opt.maxID
 	}
-	if opt.sinceID > 0 {
+	if opt.sinceID != "" {
 		limOpts.SinceID = opt.sinceID
 	}
 
@@ -536,7 +536,7 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 	switch subcmd {
 	case "show":
 		var account *madon.Account
-		if opt.accountID > 0 {
+		if opt.accountID != "" {
 			account, err = gClient.GetAccount(opt.accountID)
 		} else {
 			account, err = gClient.GetCurrentAccount()
@@ -574,7 +574,7 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 			obj = relationship
 			break
 		}
-		if opt.accountID <= 0 {
+		if opt.accountID == "" {
 			if opt.remoteUID != "" {
 				// Remote account
 				var account *madon.Account
@@ -597,7 +597,7 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 		if opt.list {
 			var followRequests []madon.Account
 			followRequests, err = gClient.GetAccountFollowRequests(limOpts)
-			if opt.accountID > 0 { // Display a specific request
+			if opt.accountID != "" { // Display a specific request
 				var fRequest *madon.Account
 				for _, fr := range followRequests {
 					if fr.ID == opt.accountID {
@@ -676,13 +676,13 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 		}
 		obj = accountList
 	case "relationships":
-		var ids []int64
+		var ids []madon.ActivityID
 		ids, err = splitIDs(opt.accountIDs)
 		if err != nil {
 			return errors.New("cannot parse account IDs")
 		}
-		if opt.accountID > 0 { // Allow --account-id
-			ids = []int64{opt.accountID}
+		if opt.accountID != "" { // Allow --account-id
+			ids = []madon.ActivityID{opt.accountID}
 		}
 		if len(ids) < 1 {
 			return errors.New("missing account IDs")
@@ -701,7 +701,7 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 			break
 		}
 		// Send a report
-		var ids []int64
+		var ids []madon.ActivityID
 		ids, err = splitIDs(opt.statusIDs)
 		if err != nil {
 			return errors.New("cannot parse status IDs")
@@ -807,17 +807,17 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 // accountLookupUser tries to find a (single) user matching 'user'
 // If the user is an HTTP URL, it will use the search API, else
 // it will use the accounts/search API.
-func accountLookupUser(user string) (int64, error) {
-	var accID int64
+func accountLookupUser(user string) (madon.ActivityID, error) {
+	var accID madon.ActivityID
 
 	if strings.HasPrefix(user, "https://") || strings.HasPrefix(user, "http://") {
 		res, err := gClient.Search(user, true)
 		if err != nil {
-			return 0, err
+			return "", err
 		}
 		if res != nil {
 			if len(res.Accounts) > 1 {
-				return 0, errors.New("several results")
+				return "", errors.New("several results")
 			}
 			if len(res.Accounts) == 1 {
 				accID = res.Accounts[0].ID
@@ -829,7 +829,7 @@ func accountLookupUser(user string) (int64, error) {
 
 		accList, err := gClient.SearchAccounts(user, false, &madon.LimitParams{Limit: 2})
 		if err != nil {
-			return 0, err
+			return "", err
 		}
 		for _, u := range accList {
 			if u.Acct == user {
@@ -839,8 +839,8 @@ func accountLookupUser(user string) (int64, error) {
 		}
 	}
 
-	if accID < 1 {
-		return 0, errors.New("user not found")
+	if accID == "" {
+		return "", errors.New("user not found")
 	}
 	if verbose {
 		errPrint("User '%s' is account ID %d", user, user)

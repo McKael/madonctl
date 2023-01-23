@@ -6,7 +6,6 @@
 package cmd
 
 import (
-	"strconv"
 	"strings"
 
 	"github.com/McKael/madon/v2"
@@ -104,18 +103,16 @@ func madonLogin() error {
 }
 
 // splitIDs splits a list of IDs into an int64 array
-func splitIDs(ids string) (list []int64, err error) {
-	var i int64
+func splitIDs(ids string) (list []madon.ActivityID, err error) {
 	if ids == "" {
 		return
 	}
 	l := strings.Split(ids, ",")
 	for _, s := range l {
-		i, err = strconv.ParseInt(s, 10, 64)
-		if err != nil {
+		if s == "" {
 			return
 		}
-		list = append(list, i)
+		list = append(list, s)
 	}
 	return
 }
