@@ -150,14 +150,12 @@ Add/remove a **favourite**, **boost** a status...
 % madonctl status --status-id 416671 boost        # Boost (reblog) a status
 
 % madonctl status --status-id 416671 unboost       # Cancel a boost
-% madonctl status --status-id 416671 boost --unset # Cancel a boost (deprecated)
 ```
 
 **Pin/unpin** a status...
 ``` sh
 % madonctl status --status-id 533769 pin          # Pin a status
 % madonctl status --status-id 533769 unpin        # Unpin a status
-% madonctl status --status-id 533769 pin --unset  # Unpin a status (deprecated)
 ```
 
 **Pin/unpin** an account (i.e., account endorsement)...

@@ -22,7 +22,6 @@ var accountUpdateFlags, accountMuteFlags, accountFollowFlags *flag.FlagSet
 var accountsOpts struct {
 	accountID             madon.ActivityID
 	accountUID            string
-	unset                 bool             // TODO remove eventually?
 	limit, keep           uint             // Limit the results
 	sinceID, maxID        madon.ActivityID // Query boundaries
 	all                   bool             // Try to fetch all results
@@ -70,11 +69,7 @@ func init() {
 	accountFollowRequestsSubcommand.Flags().BoolVar(&accountsOpts.acceptFR, "accept", false, "Accept the follow request from the account ID")
 	accountFollowRequestsSubcommand.Flags().BoolVar(&accountsOpts.rejectFR, "reject", false, "Reject the follow request from the account ID")
 
-	accountBlockSubcommand.Flags().BoolVarP(&accountsOpts.unset, "unset", "", false, "Unblock the account (deprecated)")
-
-	accountMuteSubcommand.Flags().BoolVarP(&accountsOpts.unset, "unset", "", false, "Unmute the account (deprecated)")
 	accountMuteSubcommand.Flags().BoolVarP(&accountsOpts.muteNotifications, "notifications", "", true, "Mute the notifications")
-	accountFollowSubcommand.Flags().BoolVarP(&accountsOpts.unset, "unset", "", false, "Unfollow the account (deprecated)")
 	accountFollowSubcommand.Flags().BoolVarP(&accountsOpts.reblogs, "show-reblogs", "", true, "Follow account's boosts")
 	accountFollowSubcommand.Flags().StringVarP(&accountsOpts.remoteUID, "remote", "r", "", "Follow remote account (user@domain)")
 
@@ -96,11 +91,6 @@ func init() {
 	accountUpdateSubcommand.Flags().BoolVar(&accountsOpts.defaultSensitive, "default-sensitive", false, "Mark medias as sensitive by default")
 	accountUpdateSubcommand.Flags().BoolVar(&accountsOpts.locked, "locked", false, "Following account requires approval")
 	accountUpdateSubcommand.Flags().BoolVar(&accountsOpts.bot, "bot", false, "Set as service (automated) account")
-
-	// Deprecated flags
-	accountBlockSubcommand.Flags().MarkDeprecated("unset", "please use unblock instead")
-	accountMuteSubcommand.Flags().MarkDeprecated("unset", "please use unmute instead")
-	accountFollowSubcommand.Flags().MarkDeprecated("unset", "please use unfollow instead")
 
 	// Those variables will be used to check if the options were
 	// explicitly set or not
@@ -452,7 +442,7 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 		if opt.accountID != "" && opt.remoteUID != "" {
 			return errors.New("cannot use both account ID and URI")
 		}
-		if (opt.unset || subcmd == "unfollow") && opt.accountID == "" {
+		if subcmd == "unfollow" && opt.accountID == "" {
 			return errors.New("unfollowing requires an account ID")
 		}
 	case "follow-requests":
@@ -569,7 +559,7 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 		obj = statusList
 	case "follow", "unfollow":
 		var relationship *madon.Relationship
-		if opt.unset || subcmd == "unfollow" {
+		if subcmd == "unfollow" {
 			relationship, err = gClient.UnfollowAccount(opt.accountID)
 			obj = relationship
 			break
@@ -621,7 +611,7 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 		}
 	case "block", "unblock":
 		var relationship *madon.Relationship
-		if opt.unset || subcmd == "unblock" {
+		if subcmd == "unblock" {
 			relationship, err = gClient.UnblockAccount(opt.accountID)
 		} else {
 			relationship, err = gClient.BlockAccount(opt.accountID)
@@ -629,7 +619,7 @@ func accountSubcommandsRunE(subcmd string, args []string) error {
 		obj = relationship
 	case "mute", "unmute":
 		var relationship *madon.Relationship
-		if opt.unset || subcmd == "unmute" {
+		if subcmd == "unmute" {
 			relationship, err = gClient.UnmuteAccount(opt.accountID)
 		} else {
 			var muteNotif *bool

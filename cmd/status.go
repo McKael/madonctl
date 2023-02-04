@@ -21,7 +21,6 @@ var statusPostFlags *flag.FlagSet
 
 var statusOpts struct {
 	statusID madon.ActivityID
-	unset    bool // TODO remove eventually?
 
 	// The following fields are used for the post/toot command
 	visibility     string
@@ -59,9 +58,6 @@ func init() {
 	statusCmd.PersistentFlags().BoolVar(&statusOpts.all, "all", false, "Fetch all results (for reblogged-by/favourited-by)")
 
 	// Subcommand flags
-	statusReblogSubcommand.Flags().BoolVar(&statusOpts.unset, "unset", false, "Unreblog the status (deprecated)")
-	statusFavouriteSubcommand.Flags().BoolVar(&statusOpts.unset, "unset", false, "Remove the status from the favourites (deprecated)")
-	statusPinSubcommand.Flags().BoolVar(&statusOpts.unset, "unset", false, "Unpin the status (deprecated)")
 	statusPostSubcommand.Flags().BoolVar(&statusOpts.sensitive, "sensitive", false, "Mark post as sensitive (NSFW)")
 	statusPostSubcommand.Flags().StringVar(&statusOpts.visibility, "visibility", "", "Visibility (direct|private|unlisted|public)")
 	statusPostSubcommand.Flags().StringVar(&statusOpts.spoiler, "spoiler", "", "Spoiler warning (CW)")
@@ -72,11 +68,6 @@ func init() {
 	statusPostSubcommand.Flags().BoolVar(&statusOpts.stdin, "stdin", false, "Read message content from standard input")
 	statusPostSubcommand.Flags().BoolVar(&statusOpts.addMentions, "add-mentions", false, "Add mentions when replying")
 	statusPostSubcommand.Flags().BoolVar(&statusOpts.sameVisibility, "same-visibility", false, "Use same visibility as original message (for replies)")
-
-	// Deprecated flags
-	statusReblogSubcommand.Flags().MarkDeprecated("unset", "please use unboost instead")
-	statusFavouriteSubcommand.Flags().MarkDeprecated("unset", "please use unfavourite instead")
-	statusPinSubcommand.Flags().MarkDeprecated("unset", "please use unpin instead")
 
 	// Flag completion
 	annotation := make(map[string][]string)
@@ -304,19 +295,19 @@ func statusSubcommandRunE(subcmd string, args []string) error {
 	case "delete":
 		err = gClient.DeleteStatus(opt.statusID)
 	case "boost", "unboost":
-		if opt.unset || subcmd == "unboost" {
+		if subcmd == "unboost" {
 			err = gClient.UnreblogStatus(opt.statusID)
 		} else {
 			err = gClient.ReblogStatus(opt.statusID)
 		}
 	case "favourite", "unfavourite":
-		if opt.unset || subcmd == "unfavourite" {
+		if subcmd == "unfavourite" {
 			err = gClient.UnfavouriteStatus(opt.statusID)
 		} else {
 			err = gClient.FavouriteStatus(opt.statusID)
 		}
 	case "pin", "unpin":
-		if opt.unset || subcmd == "unpin" {
+		if subcmd == "unpin" {
 			err = gClient.UnpinStatus(opt.statusID)
 		} else {
 			err = gClient.PinStatus(opt.statusID)
