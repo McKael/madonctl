@@ -7,8 +7,6 @@ Licensed under the MIT license.  Please see the LICENSE file is this directory.
 package madon
 
 import (
-	"strconv"
-
 	"github.com/sendgrid/rest"
 )
 
@@ -24,8 +22,8 @@ func (mc *Client) GetSuggestions(lopt *LimitParams) ([]Account, error) {
 }
 
 // DeleteSuggestion removes the account from the suggestion list
-func (mc *Client) DeleteSuggestion(accountID int64) error {
-	endPoint := "suggestions/" + strconv.FormatInt(accountID, 10)
+func (mc *Client) DeleteSuggestion(accountID ActivityID) error {
+	endPoint := "suggestions/" + accountID
 	method := rest.Delete
 	return mc.apiCall("v1/"+endPoint, method, nil, nil, nil, nil)
 }

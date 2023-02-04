@@ -13,7 +13,6 @@ import (
 	"mime/multipart"
 	"os"
 	"path/filepath"
-	"strconv"
 
 	"github.com/pkg/errors"
 	"github.com/sendgrid/rest"
@@ -106,7 +105,7 @@ func (mc *Client) UploadMediaReader(f io.Reader, name, description, focus string
 
 // UpdateMedia updates the description and focal point of a media
 // One of the description and focus arguments can be nil to not be updated.
-func (mc *Client) UpdateMedia(mediaID int64, description, focus *string) (*Attachment, error) {
+func (mc *Client) UpdateMedia(mediaID ActivityID, description, focus *string) (*Attachment, error) {
 	params := make(apiCallParams)
 	if description != nil {
 		params["description"] = *description
@@ -115,7 +114,7 @@ func (mc *Client) UpdateMedia(mediaID int64, description, focus *string) (*Attac
 		params["focus"] = *focus
 	}
 
-	endPoint := "media/" + strconv.FormatInt(mediaID, 10)
+	endPoint := "media/" + mediaID
 	var attachment Attachment
 	if err := mc.apiCall("v1/"+endPoint, rest.Put, params, nil, nil, &attachment); err != nil {
 		return nil, err

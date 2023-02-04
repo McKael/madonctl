@@ -53,13 +53,13 @@ func parseLink(links []string) (*apiLinks, error) {
 			}
 			lp = new(LimitParams)
 			if since != "" {
-				lp.SinceID, err = strconv.ParseInt(since, 10, 64)
+				lp.SinceID = since
 				if err != nil {
 					return al, err
 				}
 			}
 			if max != "" {
-				lp.MaxID, err = strconv.ParseInt(max, 10, 64)
+				lp.MaxID = max
 				if err != nil {
 					return al, err
 				}
@@ -198,11 +198,11 @@ func (mc *Client) apiCall(endPoint string, method rest.Method, params apiCallPar
 		if limitOptions.Limit > 0 {
 			params["limit"] = strconv.Itoa(limitOptions.Limit)
 		}
-		if limitOptions.SinceID > 0 {
-			params["since_id"] = strconv.FormatInt(limitOptions.SinceID, 10)
+		if limitOptions.SinceID != "" {
+			params["since_id"] = limitOptions.SinceID
 		}
-		if limitOptions.MaxID > 0 {
-			params["max_id"] = strconv.FormatInt(limitOptions.MaxID, 10)
+		if limitOptions.MaxID != "" {
+			params["max_id"] = limitOptions.MaxID
 		}
 	}
 

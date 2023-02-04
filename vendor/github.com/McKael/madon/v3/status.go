@@ -8,7 +8,6 @@ package madon
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/pkg/errors"
 	"github.com/sendgrid/rest"
@@ -17,8 +16,8 @@ import (
 // PostStatusParams contains option fields for the PostStatus command
 type PostStatusParams struct {
 	Text        string
-	InReplyTo   int64
-	MediaIDs    []int64
+	InReplyTo   ActivityID
+	MediaIDs    []ActivityID
 	Sensitive   bool
 	SpoilerText string
 	Visibility  string
@@ -27,12 +26,12 @@ type PostStatusParams struct {
 // updateStatusOptions contains option fields for POST and DELETE API calls
 type updateStatusOptions struct {
 	// The ID is used for most commands
-	ID int64
+	ID ActivityID
 
 	// The following fields are used for posting a new status
 	Status      string
-	InReplyToID int64
-	MediaIDs    []int64
+	InReplyToID ActivityID
+	MediaIDs    []ActivityID
 	Sensitive   bool
 	SpoilerText string
 	Visibility  string // "direct", "private", "unlisted" or "public"
@@ -66,12 +65,12 @@ func (mc *Client) getMultipleStatuses(endPoint string, params apiCallParams, lop
 // The operation 'op' can be empty or "status" (the status itself), "context",
 // "card", "reblogged_by", "favourited_by".
 // The data argument will receive the object(s) returned by the API server.
-func (mc *Client) queryStatusData(statusID int64, op string, data interface{}) error {
-	if statusID < 1 {
+func (mc *Client) queryStatusData(statusID ActivityID, op string, data interface{}) error {
+	if statusID == "" {
 		return ErrInvalidID
 	}
 
-	endPoint := "statuses/" + strconv.FormatInt(statusID, 10)
+	endPoint := "statuses/" + statusID
 
 	if op != "" && op != "status" {
 		switch op {
@@ -113,20 +112,20 @@ func (mc *Client) updateStatusData(op string, opts updateStatusOptions, data int
 		}
 	case "delete":
 		method = rest.Delete
-		if opts.ID < 1 {
+		if opts.ID == "" {
 			return ErrInvalidID
 		}
-		endPoint += "/" + strconv.FormatInt(opts.ID, 10)
+		endPoint += "/" + opts.ID
 	case "reblog", "unreblog", "favourite", "unfavourite":
-		if opts.ID < 1 {
+		if opts.ID == "" {
 			return ErrInvalidID
 		}
-		endPoint += "/" + strconv.FormatInt(opts.ID, 10) + "/" + op
+		endPoint += "/" + opts.ID + "/" + op
 	case "mute", "unmute", "pin", "unpin":
-		if opts.ID < 1 {
+		if opts.ID == "" {
 			return ErrInvalidID
 		}
-		endPoint += "/" + strconv.FormatInt(opts.ID, 10) + "/" + op
+		endPoint += "/" + opts.ID + "/" + op
 	default:
 		return ErrInvalidParameter
 	}
@@ -134,15 +133,15 @@ func (mc *Client) updateStatusData(op string, opts updateStatusOptions, data int
 	// Form items for a new toot
 	if op == "status" {
 		params["status"] = opts.Status
-		if opts.InReplyToID > 0 {
-			params["in_reply_to_id"] = strconv.FormatInt(opts.InReplyToID, 10)
+		if opts.InReplyToID != "" {
+			params["in_reply_to_id"] = opts.InReplyToID
 		}
 		for i, id := range opts.MediaIDs {
-			if id < 1 {
+			if id == "" {
 				return ErrInvalidID
 			}
 			qID := fmt.Sprintf("[%d]media_ids", i)
-			params[qID] = strconv.FormatInt(id, 10)
+			params[qID] = id
 		}
 		if opts.Sensitive {
 			params["sensitive"] = "true"
@@ -161,20 +160,20 @@ func (mc *Client) updateStatusData(op string, opts updateStatusOptions, data int
 // GetStatus returns a status
 // The returned status can be nil if there is an error or if the
 // requested ID does not exist.
-func (mc *Client) GetStatus(statusID int64) (*Status, error) {
+func (mc *Client) GetStatus(statusID ActivityID) (*Status, error) {
 	var status Status
 
 	if err := mc.queryStatusData(statusID, "status", &status); err != nil {
 		return nil, err
 	}
-	if status.ID == 0 {
+	if status.ID == "" {
 		return nil, ErrEntityNotFound
 	}
 	return &status, nil
 }
 
 // GetStatusContext returns a status context
-func (mc *Client) GetStatusContext(statusID int64) (*Context, error) {
+func (mc *Client) GetStatusContext(statusID ActivityID) (*Context, error) {
 	var context Context
 	if err := mc.queryStatusData(statusID, "context", &context); err != nil {
 		return nil, err
@@ -183,7 +182,7 @@ func (mc *Client) GetStatusContext(statusID int64) (*Context, error) {
 }
 
 // GetStatusCard returns a status card
-func (mc *Client) GetStatusCard(statusID int64) (*Card, error) {
+func (mc *Client) GetStatusCard(statusID ActivityID) (*Card, error) {
 	var card Card
 	if err := mc.queryStatusData(statusID, "card", &card); err != nil {
 		return nil, err
@@ -192,13 +191,13 @@ func (mc *Client) GetStatusCard(statusID int64) (*Card, error) {
 }
 
 // GetStatusRebloggedBy returns a list of the accounts who reblogged a status
-func (mc *Client) GetStatusRebloggedBy(statusID int64, lopt *LimitParams) ([]Account, error) {
+func (mc *Client) GetStatusRebloggedBy(statusID ActivityID, lopt *LimitParams) ([]Account, error) {
 	o := &getAccountsOptions{ID: statusID, Limit: lopt}
 	return mc.getMultipleAccountsHelper("reblogged_by", o)
 }
 
 // GetStatusFavouritedBy returns a list of the accounts who favourited a status
-func (mc *Client) GetStatusFavouritedBy(statusID int64, lopt *LimitParams) ([]Account, error) {
+func (mc *Client) GetStatusFavouritedBy(statusID ActivityID, lopt *LimitParams) ([]Account, error) {
 	o := &getAccountsOptions{ID: statusID, Limit: lopt}
 	return mc.getMultipleAccountsHelper("favourited_by", o)
 }
@@ -221,14 +220,14 @@ func (mc *Client) PostStatus(cmdParams PostStatusParams) (*Status, error) {
 	if err != nil {
 		return nil, err
 	}
-	if status.ID == 0 {
+	if status.ID == "" {
 		return nil, ErrEntityNotFound // TODO Change error message
 	}
 	return &status, err
 }
 
 // DeleteStatus deletes a status
-func (mc *Client) DeleteStatus(statusID int64) error {
+func (mc *Client) DeleteStatus(statusID ActivityID) error {
 	var status Status
 	o := updateStatusOptions{ID: statusID}
 	err := mc.updateStatusData("delete", o, &status)
@@ -236,7 +235,7 @@ func (mc *Client) DeleteStatus(statusID int64) error {
 }
 
 // ReblogStatus reblogs a status
-func (mc *Client) ReblogStatus(statusID int64) error {
+func (mc *Client) ReblogStatus(statusID ActivityID) error {
 	var status Status
 	o := updateStatusOptions{ID: statusID}
 	err := mc.updateStatusData("reblog", o, &status)
@@ -244,7 +243,7 @@ func (mc *Client) ReblogStatus(statusID int64) error {
 }
 
 // UnreblogStatus unreblogs a status
-func (mc *Client) UnreblogStatus(statusID int64) error {
+func (mc *Client) UnreblogStatus(statusID ActivityID) error {
 	var status Status
 	o := updateStatusOptions{ID: statusID}
 	err := mc.updateStatusData("unreblog", o, &status)
@@ -252,7 +251,7 @@ func (mc *Client) UnreblogStatus(statusID int64) error {
 }
 
 // FavouriteStatus favourites a status
-func (mc *Client) FavouriteStatus(statusID int64) error {
+func (mc *Client) FavouriteStatus(statusID ActivityID) error {
 	var status Status
 	o := updateStatusOptions{ID: statusID}
 	err := mc.updateStatusData("favourite", o, &status)
@@ -260,7 +259,7 @@ func (mc *Client) FavouriteStatus(statusID int64) error {
 }
 
 // UnfavouriteStatus unfavourites a status
-func (mc *Client) UnfavouriteStatus(statusID int64) error {
+func (mc *Client) UnfavouriteStatus(statusID ActivityID) error {
 	var status Status
 	o := updateStatusOptions{ID: statusID}
 	err := mc.updateStatusData("unfavourite", o, &status)
@@ -268,7 +267,7 @@ func (mc *Client) UnfavouriteStatus(statusID int64) error {
 }
 
 // PinStatus pins a status
-func (mc *Client) PinStatus(statusID int64) error {
+func (mc *Client) PinStatus(statusID ActivityID) error {
 	var status Status
 	o := updateStatusOptions{ID: statusID}
 	err := mc.updateStatusData("pin", o, &status)
@@ -276,7 +275,7 @@ func (mc *Client) PinStatus(statusID int64) error {
 }
 
 // UnpinStatus unpins a status
-func (mc *Client) UnpinStatus(statusID int64) error {
+func (mc *Client) UnpinStatus(statusID ActivityID) error {
 	var status Status
 	o := updateStatusOptions{ID: statusID}
 	err := mc.updateStatusData("unpin", o, &status)
@@ -284,7 +283,7 @@ func (mc *Client) UnpinStatus(statusID int64) error {
 }
 
 // MuteConversation mutes the conversation containing a status
-func (mc *Client) MuteConversation(statusID int64) (*Status, error) {
+func (mc *Client) MuteConversation(statusID ActivityID) (*Status, error) {
 	var status Status
 	o := updateStatusOptions{ID: statusID}
 	err := mc.updateStatusData("mute", o, &status)
@@ -292,7 +291,7 @@ func (mc *Client) MuteConversation(statusID int64) (*Status, error) {
 }
 
 // UnmuteConversation unmutes the conversation containing a status
-func (mc *Client) UnmuteConversation(statusID int64) (*Status, error) {
+func (mc *Client) UnmuteConversation(statusID ActivityID) (*Status, error) {
 	var status Status
 	o := updateStatusOptions{ID: statusID}
 	err := mc.updateStatusData("unmute", o, &status)

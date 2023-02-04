@@ -16,9 +16,9 @@ import (
 )
 
 type registerApp struct {
-	ID           int64  `json:"id,string"`
-	ClientID     string `json:"client_id"`
-	ClientSecret string `json:"client_secret"`
+	ID           ActivityID `json:"id"`
+	ClientID     string     `json:"client_id"`
+	ClientSecret string     `json:"client_secret"`
 }
 
 // buildInstanceURL creates the URL from the instance name or cleans up the

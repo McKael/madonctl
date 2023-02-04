@@ -13,7 +13,6 @@ import (
 	"mime/multipart"
 	"os"
 	"path/filepath"
-	"strconv"
 
 	"github.com/pkg/errors"
 	"github.com/sendgrid/rest"
@@ -22,7 +21,7 @@ import (
 // getAccountsOptions contains option fields for POST and DELETE API calls
 type getAccountsOptions struct {
 	// The ID is used for most commands
-	ID int64
+	ID ActivityID
 
 	// Following can be set to true to limit a search to "following" accounts
 	Following bool
@@ -49,14 +48,13 @@ type UpdateAccountParams struct {
 // The operation 'op' can be "follow", "unfollow", "block", "unblock",
 // "mute", "unmute".
 // The id is optional and depends on the operation.
-func (mc *Client) updateRelationship(op string, id int64, params apiCallParams) (*Relationship, error) {
+func (mc *Client) updateRelationship(op string, id ActivityID, params apiCallParams) (*Relationship, error) {
 	var endPoint string
 	method := rest.Post
-	strID := strconv.FormatInt(id, 10)
 
 	switch op {
 	case "follow", "unfollow", "block", "unblock", "mute", "unmute", "pin", "unpin":
-		endPoint = "accounts/" + strID + "/" + op
+		endPoint = "accounts/" + id + "/" + op
 	default:
 		return nil, ErrInvalidParameter
 	}
@@ -72,20 +70,19 @@ func (mc *Client) updateRelationship(op string, id int64, params apiCallParams) 
 // The operation 'op' can be "account", "verify_credentials",
 // "follow_requests/authorize" or // "follow_requests/reject".
 // The id is optional and depends on the operation.
-func (mc *Client) getSingleAccount(op string, id int64) (*Account, error) {
+func (mc *Client) getSingleAccount(op string, id ActivityID) (*Account, error) {
 	var endPoint string
 	method := rest.Get
-	strID := strconv.FormatInt(id, 10)
 
 	switch op {
 	case "account":
-		endPoint = "accounts/" + strID
+		endPoint = "accounts/" + id
 	case "verify_credentials":
 		endPoint = "accounts/verify_credentials"
 	case "follow_requests/authorize", "follow_requests/reject":
 		// The documentation is incorrect, the endpoint actually
 		// is "follow_requests/:id/{authorize|reject}"
-		endPoint = op[:16] + strID + "/" + op[16:]
+		endPoint = op[:16] + id + "/" + op[16:]
 		method = rest.Post
 	default:
 		return nil, ErrInvalidParameter
@@ -138,10 +135,10 @@ func (mc *Client) getMultipleAccountsHelper(op string, opts *getAccountsOptions)
 
 	switch op {
 	case "followers", "following":
-		if opts == nil || opts.ID < 1 {
+		if opts == nil || opts.ID == "" {
 			return []Account{}, ErrInvalidID
 		}
-		endPoint = "accounts/" + strconv.FormatInt(opts.ID, 10) + "/" + op
+		endPoint = "accounts/" + opts.ID + "/" + op
 	case "follow_requests", "blocks", "mutes":
 		endPoint = op
 	case "search":
@@ -150,10 +147,10 @@ func (mc *Client) getMultipleAccountsHelper(op string, opts *getAccountsOptions)
 		}
 		endPoint = "accounts/" + op
 	case "reblogged_by", "favourited_by":
-		if opts == nil || opts.ID < 1 {
+		if opts == nil || opts.ID == "" {
 			return []Account{}, ErrInvalidID
 		}
-		endPoint = "statuses/" + strconv.FormatInt(opts.ID, 10) + "/" + op
+		endPoint = "statuses/" + opts.ID + "/" + op
 	default:
 		return nil, ErrInvalidParameter
 	}
@@ -173,12 +170,12 @@ func (mc *Client) getMultipleAccountsHelper(op string, opts *getAccountsOptions)
 // GetAccount returns an account entity
 // The returned value can be nil if there is an error or if the
 // requested ID does not exist.
-func (mc *Client) GetAccount(accountID int64) (*Account, error) {
+func (mc *Client) GetAccount(accountID ActivityID) (*Account, error) {
 	account, err := mc.getSingleAccount("account", accountID)
 	if err != nil {
 		return nil, err
 	}
-	if account != nil && account.ID == 0 {
+	if account != nil && account.ID == "" {
 		return nil, ErrEntityNotFound
 	}
 	return account, nil
@@ -186,31 +183,31 @@ func (mc *Client) GetAccount(accountID int64) (*Account, error) {
 
 // GetCurrentAccount returns the current user account
 func (mc *Client) GetCurrentAccount() (*Account, error) {
-	account, err := mc.getSingleAccount("verify_credentials", 0)
+	account, err := mc.getSingleAccount("verify_credentials", "")
 	if err != nil {
 		return nil, err
 	}
-	if account != nil && account.ID == 0 {
+	if account != nil && account.ID == "" {
 		return nil, ErrEntityNotFound
 	}
 	return account, nil
 }
 
 // GetAccountFollowers returns the list of accounts following a given account
-func (mc *Client) GetAccountFollowers(accountID int64, lopt *LimitParams) ([]Account, error) {
+func (mc *Client) GetAccountFollowers(accountID ActivityID, lopt *LimitParams) ([]Account, error) {
 	o := &getAccountsOptions{ID: accountID, Limit: lopt}
 	return mc.getMultipleAccountsHelper("followers", o)
 }
 
 // GetAccountFollowing returns the list of accounts a given account is following
-func (mc *Client) GetAccountFollowing(accountID int64, lopt *LimitParams) ([]Account, error) {
+func (mc *Client) GetAccountFollowing(accountID ActivityID, lopt *LimitParams) ([]Account, error) {
 	o := &getAccountsOptions{ID: accountID, Limit: lopt}
 	return mc.getMultipleAccountsHelper("following", o)
 }
 
 // FollowAccount follows an account
 // 'reblogs' can be used to specify if boots should be displayed or hidden.
-func (mc *Client) FollowAccount(accountID int64, reblogs *bool) (*Relationship, error) {
+func (mc *Client) FollowAccount(accountID ActivityID, reblogs *bool) (*Relationship, error) {
 	var params apiCallParams
 	if reblogs != nil {
 		params = make(apiCallParams)
@@ -231,7 +228,7 @@ func (mc *Client) FollowAccount(accountID int64, reblogs *bool) (*Relationship, 
 }
 
 // UnfollowAccount unfollows an account
-func (mc *Client) UnfollowAccount(accountID int64) (*Relationship, error) {
+func (mc *Client) UnfollowAccount(accountID ActivityID) (*Relationship, error) {
 	rel, err := mc.updateRelationship("unfollow", accountID, nil)
 	if err != nil {
 		return nil, err
@@ -256,14 +253,14 @@ func (mc *Client) FollowRemoteAccount(uri string) (*Account, error) {
 	if err := mc.apiCall("v1/follows", rest.Post, params, nil, nil, &account); err != nil {
 		return nil, err
 	}
-	if account.ID == 0 {
+	if account.ID == "" {
 		return nil, ErrEntityNotFound
 	}
 	return &account, nil
 }
 
 // BlockAccount blocks an account
-func (mc *Client) BlockAccount(accountID int64) (*Relationship, error) {
+func (mc *Client) BlockAccount(accountID ActivityID) (*Relationship, error) {
 	rel, err := mc.updateRelationship("block", accountID, nil)
 	if err != nil {
 		return nil, err
@@ -275,7 +272,7 @@ func (mc *Client) BlockAccount(accountID int64) (*Relationship, error) {
 }
 
 // UnblockAccount unblocks an account
-func (mc *Client) UnblockAccount(accountID int64) (*Relationship, error) {
+func (mc *Client) UnblockAccount(accountID ActivityID) (*Relationship, error) {
 	rel, err := mc.updateRelationship("unblock", accountID, nil)
 	if err != nil {
 		return nil, err
@@ -289,7 +286,7 @@ func (mc *Client) UnblockAccount(accountID int64) (*Relationship, error) {
 // MuteAccount mutes an account
 // Note that with current Mastodon API, muteNotifications defaults to true
 // when it is not provided.
-func (mc *Client) MuteAccount(accountID int64, muteNotifications *bool) (*Relationship, error) {
+func (mc *Client) MuteAccount(accountID ActivityID, muteNotifications *bool) (*Relationship, error) {
 	var params apiCallParams
 
 	if muteNotifications != nil {
@@ -312,7 +309,7 @@ func (mc *Client) MuteAccount(accountID int64, muteNotifications *bool) (*Relati
 }
 
 // UnmuteAccount unmutes an account
-func (mc *Client) UnmuteAccount(accountID int64) (*Relationship, error) {
+func (mc *Client) UnmuteAccount(accountID ActivityID) (*Relationship, error) {
 	rel, err := mc.updateRelationship("unmute", accountID, nil)
 	if err != nil {
 		return nil, err
@@ -352,18 +349,18 @@ func (mc *Client) GetAccountFollowRequests(lopt *LimitParams) ([]Account, error)
 }
 
 // GetAccountRelationships returns a list of relationship entities for the given accounts
-func (mc *Client) GetAccountRelationships(accountIDs []int64) ([]Relationship, error) {
+func (mc *Client) GetAccountRelationships(accountIDs []ActivityID) ([]Relationship, error) {
 	if len(accountIDs) < 1 {
 		return nil, ErrInvalidID
 	}
 
 	params := make(apiCallParams)
 	for i, id := range accountIDs {
-		if id < 1 {
+		if id == "" {
 			return nil, ErrInvalidID
 		}
 		qID := fmt.Sprintf("[%d]id", i)
-		params[qID] = strconv.FormatInt(id, 10)
+		params[qID] = id
 	}
 
 	var rl []Relationship
@@ -381,12 +378,12 @@ func (mc *Client) GetAccountRelationships(accountIDs []int64) ([]Relationship, e
 // has nothing to return.
 // If lopt.Limit is set (and not All), several queries can be made until the
 // limit is reached.
-func (mc *Client) GetAccountStatuses(accountID int64, onlyPinned, onlyMedia, excludeReplies bool, lopt *LimitParams) ([]Status, error) {
-	if accountID < 1 {
+func (mc *Client) GetAccountStatuses(accountID ActivityID, onlyPinned, onlyMedia, excludeReplies bool, lopt *LimitParams) ([]Status, error) {
+	if accountID == "" {
 		return nil, ErrInvalidID
 	}
 
-	endPoint := "accounts/" + strconv.FormatInt(accountID, 10) + "/" + "statuses"
+	endPoint := "accounts/" + accountID + "/" + "statuses"
 	params := make(apiCallParams)
 	if onlyMedia {
 		params["only_media"] = "true"
@@ -402,7 +399,7 @@ func (mc *Client) GetAccountStatuses(accountID int64, onlyPinned, onlyMedia, exc
 }
 
 // FollowRequestAuthorize authorizes or rejects an account follow-request
-func (mc *Client) FollowRequestAuthorize(accountID int64, authorize bool) error {
+func (mc *Client) FollowRequestAuthorize(accountID ActivityID, authorize bool) error {
 	endPoint := "follow_requests/reject"
 	if authorize {
 		endPoint = "follow_requests/authorize"

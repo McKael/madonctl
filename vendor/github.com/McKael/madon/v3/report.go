@@ -8,7 +8,6 @@ package madon
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/sendgrid/rest"
 )
@@ -24,20 +23,20 @@ func (mc *Client) GetReports(lopt *LimitParams) ([]Report, error) {
 }
 
 // ReportUser reports the user account
-func (mc *Client) ReportUser(accountID int64, statusIDs []int64, comment string) (*Report, error) {
-	if accountID < 1 || comment == "" || len(statusIDs) < 1 {
+func (mc *Client) ReportUser(accountID ActivityID, statusIDs []ActivityID, comment string) (*Report, error) {
+	if accountID == "" || comment == "" || len(statusIDs) < 1 {
 		return nil, ErrInvalidParameter
 	}
 
 	params := make(apiCallParams)
-	params["account_id"] = strconv.FormatInt(accountID, 10)
+	params["account_id"] = accountID
 	params["comment"] = comment
 	for i, id := range statusIDs {
-		if id < 1 {
+		if id == "" {
 			return nil, ErrInvalidID
 		}
 		qID := fmt.Sprintf("[%d]status_ids", i)
-		params[qID] = strconv.FormatInt(id, 10)
+		params[qID] = id
 	}
 
 	var report Report

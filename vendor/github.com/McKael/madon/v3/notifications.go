@@ -8,7 +8,6 @@ package madon
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/sendgrid/rest"
 )
@@ -54,30 +53,30 @@ func (mc *Client) GetNotifications(excludeTypes []string, lopt *LimitParams) ([]
 // GetNotification returns a notification
 // The returned notification can be nil if there is an error or if the
 // requested notification does not exist.
-func (mc *Client) GetNotification(notificationID int64) (*Notification, error) {
-	if notificationID < 1 {
+func (mc *Client) GetNotification(notificationID ActivityID) (*Notification, error) {
+	if notificationID == "" {
 		return nil, ErrInvalidID
 	}
 
-	var endPoint = "notifications/" + strconv.FormatInt(notificationID, 10)
+	var endPoint = "notifications/" + notificationID
 	var notification Notification
 	if err := mc.apiCall("v1/"+endPoint, rest.Get, nil, nil, nil, &notification); err != nil {
 		return nil, err
 	}
-	if notification.ID == 0 {
+	if notification.ID == "" {
 		return nil, ErrEntityNotFound
 	}
 	return &notification, nil
 }
 
 // DismissNotification deletes a notification
-func (mc *Client) DismissNotification(notificationID int64) error {
-	if notificationID < 1 {
+func (mc *Client) DismissNotification(notificationID ActivityID) error {
+	if notificationID == "" {
 		return ErrInvalidID
 	}
 
 	endPoint := "notifications/dismiss"
-	params := apiCallParams{"id": strconv.FormatInt(notificationID, 10)}
+	params := apiCallParams{"id": notificationID}
 	err := mc.apiCall("v1/"+endPoint, rest.Post, params, nil, nil, &Notification{})
 	return err
 }

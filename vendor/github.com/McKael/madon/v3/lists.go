@@ -8,18 +8,17 @@ package madon
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/pkg/errors"
 	"github.com/sendgrid/rest"
 )
 
 // GetList returns a List entity
-func (mc *Client) GetList(listID int64) (*List, error) {
-	if listID <= 0 {
+func (mc *Client) GetList(listID ActivityID) (*List, error) {
+	if listID == "" {
 		return nil, errors.New("invalid list ID")
 	}
-	endPoint := "lists/" + strconv.FormatInt(listID, 10)
+	endPoint := "lists/" + listID
 	var list List
 	if err := mc.apiCall("v1/"+endPoint, rest.Get, nil, nil, nil, &list); err != nil {
 		return nil, err
@@ -31,11 +30,11 @@ func (mc *Client) GetList(listID int64) (*List, error) {
 // If accountID is > 0, this will return the lists containing this account.
 // If lopt.All is true, several requests will be made until the API server
 // has nothing to return.
-func (mc *Client) GetLists(accountID int64, lopt *LimitParams) ([]List, error) {
+func (mc *Client) GetLists(accountID ActivityID, lopt *LimitParams) ([]List, error) {
 	endPoint := "lists"
 
-	if accountID > 0 {
-		endPoint = "accounts/" + strconv.FormatInt(accountID, 10) + "/lists"
+	if accountID != "" {
+		endPoint = "accounts/" + accountID + "/lists"
 	}
 
 	var lists []List
@@ -62,12 +61,12 @@ func (mc *Client) GetLists(accountID int64, lopt *LimitParams) ([]List, error) {
 func (mc *Client) CreateList(title string) (*List, error) {
 	params := apiCallParams{"title": title}
 	method := rest.Post
-	return mc.setSingleList(method, 0, params)
+	return mc.setSingleList(method, "", params)
 }
 
 // UpdateList updates an existing List
-func (mc *Client) UpdateList(listID int64, title string) (*List, error) {
-	if listID <= 0 {
+func (mc *Client) UpdateList(listID ActivityID, title string) (*List, error) {
+	if listID == "" {
 		return nil, errors.New("invalid list ID")
 	}
 	params := apiCallParams{"title": title}
@@ -76,8 +75,8 @@ func (mc *Client) UpdateList(listID int64, title string) (*List, error) {
 }
 
 // DeleteList deletes a list
-func (mc *Client) DeleteList(listID int64) error {
-	if listID <= 0 {
+func (mc *Client) DeleteList(listID ActivityID) error {
+	if listID == "" {
 		return errors.New("invalid list ID")
 	}
 	method := rest.Delete
@@ -86,45 +85,45 @@ func (mc *Client) DeleteList(listID int64) error {
 }
 
 // GetListAccounts returns the accounts belonging to a given list
-func (mc *Client) GetListAccounts(listID int64, lopt *LimitParams) ([]Account, error) {
-	endPoint := "lists/" + strconv.FormatInt(listID, 10) + "/accounts"
+func (mc *Client) GetListAccounts(listID ActivityID, lopt *LimitParams) ([]Account, error) {
+	endPoint := "lists/" + listID + "/accounts"
 	return mc.getMultipleAccounts(endPoint, nil, lopt)
 }
 
 // AddListAccounts adds the accounts to a given list
-func (mc *Client) AddListAccounts(listID int64, accountIDs []int64) error {
-	endPoint := "lists/" + strconv.FormatInt(listID, 10) + "/accounts"
+func (mc *Client) AddListAccounts(listID ActivityID, accountIDs []ActivityID) error {
+	endPoint := "lists/" + listID + "/accounts"
 	method := rest.Post
 	params := make(apiCallParams)
 	for i, id := range accountIDs {
-		if id < 1 {
+		if id == "" {
 			return ErrInvalidID
 		}
 		qID := fmt.Sprintf("[%d]account_ids", i)
-		params[qID] = strconv.FormatInt(id, 10)
+		params[qID] = id
 	}
 	return mc.apiCall("v1/"+endPoint, method, params, nil, nil, nil)
 }
 
 // RemoveListAccounts removes the accounts from the given list
-func (mc *Client) RemoveListAccounts(listID int64, accountIDs []int64) error {
-	endPoint := "lists/" + strconv.FormatInt(listID, 10) + "/accounts"
+func (mc *Client) RemoveListAccounts(listID ActivityID, accountIDs []ActivityID) error {
+	endPoint := "lists/" + listID + "/accounts"
 	method := rest.Delete
 	params := make(apiCallParams)
 	for i, id := range accountIDs {
-		if id < 1 {
+		if id == "" {
 			return ErrInvalidID
 		}
 		qID := fmt.Sprintf("[%d]account_ids", i)
-		params[qID] = strconv.FormatInt(id, 10)
+		params[qID] = id
 	}
 	return mc.apiCall("v1/"+endPoint, method, params, nil, nil, nil)
 }
 
-func (mc *Client) setSingleList(method rest.Method, listID int64, params apiCallParams) (*List, error) {
+func (mc *Client) setSingleList(method rest.Method, listID ActivityID, params apiCallParams) (*List, error) {
 	var endPoint string
-	if listID > 0 {
-		endPoint = "lists/" + strconv.FormatInt(listID, 10)
+	if listID != "" {
+		endPoint = "lists/" + listID
 	} else {
 		endPoint = "lists"
 	}

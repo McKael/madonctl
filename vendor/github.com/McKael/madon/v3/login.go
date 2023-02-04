@@ -114,7 +114,8 @@ func (mc *Client) LoginOAuth2(code string, scopes []string) (string, error) {
 	if code == "" {
 		// URL to consent page to ask for permission
 		// for the scopes specified above.
-		return conf.AuthCodeURL("state", oauth2.AccessTypeOffline), nil
+		url := conf.AuthCodeURL("state", oauth2.AccessTypeOffline) + "&client_name=madonctl&redirect_uris=urn:ietf:wg:oauth:2.0:oob"
+		return url, nil
 	}
 
 	// Return token

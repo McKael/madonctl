@@ -22,7 +22,7 @@ func (mc *Client) GetEndorsements(lopt *LimitParams) ([]Account, error) {
 }
 
 // PinAccount adds the account to the endorsement list
-func (mc *Client) PinAccount(accountID int64) (*Relationship, error) {
+func (mc *Client) PinAccount(accountID ActivityID) (*Relationship, error) {
 	rel, err := mc.updateRelationship("pin", accountID, nil)
 	if err != nil {
 		return nil, err
@@ -34,7 +34,7 @@ func (mc *Client) PinAccount(accountID int64) (*Relationship, error) {
 }
 
 // UnpinAccount removes the account from the endorsement list
-func (mc *Client) UnpinAccount(accountID int64) (*Relationship, error) {
+func (mc *Client) UnpinAccount(accountID ActivityID) (*Relationship, error) {
 	rel, err := mc.updateRelationship("unpin", accountID, nil)
 	if err != nil {
 		return nil, err
