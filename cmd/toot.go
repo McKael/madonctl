@@ -29,7 +29,7 @@ func init() {
 	tootAliasCmd.Flags().StringVar(&statusOpts.mediaIDs, "media-ids", "", "Comma-separated list of media IDs")
 	tootAliasCmd.Flags().StringVarP(&statusOpts.mediaFilePath, "file", "f", "", "Media attachment file name")
 	tootAliasCmd.Flags().StringVar(&statusOpts.textFilePath, "text-file", "", "Text file name (message content)")
-	tootAliasCmd.Flags().Int64VarP(&statusOpts.inReplyToID, "in-reply-to", "r", 0, "Status ID to reply to")
+	tootAliasCmd.Flags().StringVarP(&statusOpts.inReplyToID, "in-reply-to", "r", "", "Status ID to reply to")
 	tootAliasCmd.Flags().BoolVar(&statusOpts.stdin, "stdin", false, "Read message content from standard input")
 	tootAliasCmd.Flags().BoolVar(&statusOpts.addMentions, "add-mentions", false, "Add mentions when replying")
 	tootAliasCmd.Flags().BoolVar(&statusOpts.sameVisibility, "same-visibility", false, "Use same visibility as original message (for replies)")
@@ -64,6 +64,8 @@ The default visibility can be set in the configuration file with the option
 		if err := madonInit(true); err != nil {
 			return err
 		}
+		// Update the extra flag to reflect if `in-reply-to` was present or not
+		statusOpts._hasReplyTo = cmd.Flags().Lookup("in-reply-to").Changed
 		return statusSubcommandRunE("post", args)
 	},
 }
@@ -85,7 +87,12 @@ func toot(tootText string) (*madon.Status, error) {
 		return nil, errors.Errorf("invalid visibility argument value '%s'", opt.visibility)
 	}
 
-	if opt.inReplyToID < 0 {
+	// Bit of a fudge but there's no easy way to tell if a string flag
+	// is empty by default or empty by assignment.  Can't use a pointer
+	// and have `nil` be "unset" because Cobra will crash if we send it
+	// a `nil` as the recepient for a flag variable.  Hence using an
+	// extra struct member as a flag to indicate set/unset.
+	if opt._hasReplyTo && opt.inReplyToID == "" {
 		return nil, errors.New("invalid in-reply-to argument value")
 	}
 
@@ -98,7 +105,7 @@ func toot(tootText string) (*madon.Status, error) {
 		return nil, errors.New("toot is empty")
 	}
 
-	if opt.inReplyToID > 0 {
+	if opt.inReplyToID != "" {
 		var initialStatus *madon.Status
 		var preserveVis bool
 		if opt.sameVisibility &&
@@ -143,7 +150,7 @@ func toot(tootText string) (*madon.Status, error) {
 		if err != nil {
 			return nil, errors.Wrap(err, "cannot attach media file")
 		}
-		if fileMediaID > 0 {
+		if fileMediaID != "" {
 			ids = append(ids, fileMediaID)
 		}
 	}

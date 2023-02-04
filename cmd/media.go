@@ -18,7 +18,7 @@ import (
 var mediaFlags *flag.FlagSet
 
 var mediaOpts struct {
-	mediaID     int64
+	mediaID     madon.ActivityID
 	filePath    string
 	description string
 	focus       string
@@ -48,7 +48,7 @@ func init() {
 	RootCmd.AddCommand(mediaCmd)
 
 	mediaCmd.Flags().StringVar(&mediaOpts.filePath, "file", "", "Path of the media file")
-	mediaCmd.Flags().Int64Var(&mediaOpts.mediaID, "update", 0, "Media to update (ID)")
+	mediaCmd.Flags().StringVar(&mediaOpts.mediaID, "update", "", "Media to update (ID)")
 
 	mediaCmd.Flags().StringVar(&mediaOpts.description, "description", "", "Plain text description")
 	mediaCmd.Flags().StringVar(&mediaOpts.focus, "focus", "", "Focal point")
@@ -61,10 +61,10 @@ func mediaRunE(cmd *cobra.Command, args []string) error {
 	opt := mediaOpts
 
 	if opt.filePath == "" {
-		if opt.mediaID < 1 {
+		if opt.mediaID == "" {
 			return errors.New("no media file name provided")
 		}
-	} else if opt.mediaID > 0 {
+	} else if opt.mediaID != "" {
 		return errors.New("cannot use both --file and --update")
 	}
 
@@ -102,13 +102,13 @@ func mediaRunE(cmd *cobra.Command, args []string) error {
 }
 
 // uploadFile uploads a media file and returns the attachment ID
-func uploadFile(filePath string) (int64, error) {
+func uploadFile(filePath string) (madon.ActivityID, error) {
 	attachment, err := gClient.UploadMedia(filePath, "", "")
 	if err != nil {
-		return 0, err
+		return "", err
 	}
 	if attachment == nil {
-		return 0, nil
+		return "", nil
 	}
 	return attachment.ID, nil
 }

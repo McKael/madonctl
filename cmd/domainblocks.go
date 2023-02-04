@@ -17,9 +17,9 @@ import (
 var domainBlocksOpts struct {
 	show, block, unblock bool
 
-	limit          uint  // Limit the results
-	sinceID, maxID int64 // Query boundaries
-	all            bool  // Try to fetch all results
+	limit          uint              // Limit the results
+	sinceID, maxID madon.ActivityID // Query boundaries
+	all            bool              // Try to fetch all results
 }
 
 // timelinesCmd represents the timelines command
@@ -41,8 +41,8 @@ func init() {
 	domainBlocksCmd.Flags().BoolVar(&domainBlocksOpts.unblock, "unblock", false, "Unblock domain")
 
 	domainBlocksCmd.Flags().UintVarP(&domainBlocksOpts.limit, "limit", "l", 0, "Limit number of results")
-	domainBlocksCmd.Flags().Int64Var(&domainBlocksOpts.sinceID, "since-id", 0, "Request IDs greater than a value")
-	domainBlocksCmd.Flags().Int64Var(&domainBlocksOpts.maxID, "max-id", 0, "Request IDs less (or equal) than a value")
+	domainBlocksCmd.Flags().StringVar(&domainBlocksOpts.sinceID, "since-id", "", "Request IDs greater than a value")
+	domainBlocksCmd.Flags().StringVar(&domainBlocksOpts.maxID, "max-id", "", "Request IDs less (or equal) than a value")
 	domainBlocksCmd.Flags().BoolVar(&domainBlocksOpts.all, "all", false, "Fetch all results")
 }
 
@@ -71,17 +71,17 @@ func domainBlocksRunE(cmd *cobra.Command, args []string) error {
 
 	// Set up LimitParams
 	var limOpts *madon.LimitParams
-	if opt.all || opt.limit > 0 || opt.sinceID > 0 || opt.maxID > 0 {
+	if opt.all || opt.limit > 0 || opt.sinceID != "" || opt.maxID != "" {
 		limOpts = new(madon.LimitParams)
 		limOpts.All = opt.all
 	}
 	if opt.limit > 0 {
 		limOpts.Limit = int(opt.limit)
 	}
-	if opt.maxID > 0 {
+	if opt.maxID != "" {
 		limOpts.MaxID = opt.maxID
 	}
-	if opt.sinceID > 0 {
+	if opt.sinceID != "" {
 		limOpts.SinceID = opt.sinceID
 	}
 

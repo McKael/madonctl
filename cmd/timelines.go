@@ -17,7 +17,7 @@ import (
 var timelineOpts struct {
 	local, onlyMedia bool
 	limit, keep      uint
-	sinceID, maxID   int64
+	sinceID, maxID   madon.ActivityID
 }
 
 // timelineCmd represents the timelines command
@@ -47,25 +47,25 @@ func init() {
 	timelineCmd.Flags().BoolVar(&timelineOpts.onlyMedia, "only-media", false, "Only statuses with media attachments")
 	timelineCmd.Flags().UintVarP(&timelineOpts.limit, "limit", "l", 0, "Limit number of API results")
 	timelineCmd.Flags().UintVarP(&timelineOpts.keep, "keep", "k", 0, "Limit number of results")
-	timelineCmd.PersistentFlags().Int64Var(&timelineOpts.sinceID, "since-id", 0, "Request IDs greater than a value")
-	timelineCmd.PersistentFlags().Int64Var(&timelineOpts.maxID, "max-id", 0, "Request IDs less (or equal) than a value")
+	timelineCmd.PersistentFlags().StringVar(&timelineOpts.sinceID, "since-id", "", "Request IDs greater than a value")
+	timelineCmd.PersistentFlags().StringVar(&timelineOpts.maxID, "max-id", "", "Request IDs less (or equal) than a value")
 }
 
 func timelineRunE(cmd *cobra.Command, args []string) error {
 	opt := timelineOpts
 	var limOpts *madon.LimitParams
 
-	if opt.limit > 0 || opt.sinceID > 0 || opt.maxID > 0 {
+	if opt.limit > 0 || opt.sinceID != "" || opt.maxID != "" {
 		limOpts = new(madon.LimitParams)
 	}
 
 	if opt.limit > 0 {
 		limOpts.Limit = int(opt.limit)
 	}
-	if opt.maxID > 0 {
+	if opt.maxID != "" {
 		limOpts.MaxID = opt.maxID
 	}
-	if opt.sinceID > 0 {
+	if opt.sinceID != "" {
 		limOpts.SinceID = opt.sinceID
 	}
 

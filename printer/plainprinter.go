@@ -175,7 +175,7 @@ func (p *PlainPrinter) plainPrintDomainName(d *madon.DomainName, w io.Writer, in
 }
 
 func (p *PlainPrinter) plainPrintAccount(a *madon.Account, w io.Writer, indent string) error {
-	indentedPrint(w, indent, true, false, "Account ID", "%d (%s)", a.ID, a.Username)
+	indentedPrint(w, indent, true, false, "Account ID", "%s (%s)", a.ID, a.Username)
 	indentedPrint(w, indent, false, false, "User ID", "%s", a.Acct)
 	indentedPrint(w, indent, false, false, "Display name", "%s", a.DisplayName)
 	indentedPrint(w, indent, false, false, "Creation date", "%v", a.CreatedAt.Local())
@@ -192,7 +192,7 @@ func (p *PlainPrinter) plainPrintAccount(a *madon.Account, w io.Writer, indent s
 	indentedPrint(w, indent, false, true, "User note", "%s", html2string(a.Note)) // XXX too long?
 	if a.Moved != nil {
 		m := a.Moved
-		indentedPrint(w, indent+p.Indent, true, false, "Moved to account ID", "%d (%s)", m.ID, m.Username)
+		indentedPrint(w, indent+p.Indent, true, false, "Moved to account ID", "%s (%s)", m.ID, m.Username)
 		indentedPrint(w, indent+p.Indent, false, false, "New user ID", "%s", m.Acct)
 		indentedPrint(w, indent+p.Indent, false, false, "New display name", "%s", m.DisplayName)
 	}
@@ -218,7 +218,7 @@ func (p *PlainPrinter) plainPrintAccount(a *madon.Account, w io.Writer, indent s
 }
 
 func (p *PlainPrinter) plainPrintAttachment(a *madon.Attachment, w io.Writer, indent string) error {
-	indentedPrint(w, indent, true, false, "Attachment ID", "%d", a.ID)
+	indentedPrint(w, indent, true, false, "Attachment ID", "%s", a.ID)
 	indentedPrint(w, indent, false, false, "Type", "%s", a.Type)
 	indentedPrint(w, indent, false, false, "Local URL", "%s", a.URL)
 	if a.RemoteURL != nil {
@@ -269,7 +269,7 @@ func (p *PlainPrinter) plainPrintInstance(i *madon.Instance, w io.Writer, indent
 	indentedPrint(w, indent, false, true, "Version", "%s", i.Version)
 	if i.ContactAccount != nil {
 		c := i.ContactAccount
-		indentedPrint(w, indent+p.Indent, true, false, "Contact account ID", "%d (%s)", c.ID, c.Username)
+		indentedPrint(w, indent+p.Indent, true, false, "Contact account ID", "%s (%s)", c.ID, c.Username)
 		indentedPrint(w, indent+p.Indent, false, false, "Contact user ID", "%s", c.Acct)
 		indentedPrint(w, indent+p.Indent, false, false, "Contact display name", "%s", c.DisplayName)
 	}
@@ -282,17 +282,17 @@ func (p *PlainPrinter) plainPrintInstancePeer(i *madon.InstancePeer, w io.Writer
 }
 
 func (p *PlainPrinter) plainPrintList(l *madon.List, w io.Writer, indent string) error {
-	indentedPrint(w, indent, true, false, "List ID", "%d", l.ID)
+	indentedPrint(w, indent, true, false, "List ID", "%s", l.ID)
 	indentedPrint(w, indent, false, false, "Title", "%s", l.Title)
 	return nil
 }
 
 func (p *PlainPrinter) plainPrintNotification(n *madon.Notification, w io.Writer, indent string) error {
-	indentedPrint(w, indent, true, false, "Notification ID", "%d", n.ID)
+	indentedPrint(w, indent, true, false, "Notification ID", "%s", n.ID)
 	indentedPrint(w, indent, false, false, "Type", "%s", n.Type)
 	indentedPrint(w, indent, false, false, "Timestamp", "%v", n.CreatedAt.Local())
 	if n.Account != nil {
-		indentedPrint(w, indent+p.Indent, true, false, "Account", "(%d) @%s - %s",
+		indentedPrint(w, indent+p.Indent, true, false, "Account", "(%s) @%s - %s",
 			n.Account.ID, n.Account.Acct, n.Account.DisplayName)
 	}
 	if n.Status != nil {
@@ -302,7 +302,7 @@ func (p *PlainPrinter) plainPrintNotification(n *madon.Notification, w io.Writer
 }
 
 func (p *PlainPrinter) plainPrintRelationship(r *madon.Relationship, w io.Writer, indent string) error {
-	indentedPrint(w, indent, true, false, "Account ID", "%d", r.ID)
+	indentedPrint(w, indent, true, false, "Account ID", "%s", r.ID)
 	indentedPrint(w, indent, false, false, "Following", "%v", r.Following)
 	//indentedPrint(w, indent, false, false, "Showing reblogs", "%v", r.ShowingReblogs)
 	indentedPrint(w, indent, false, false, "Followed-by", "%v", r.FollowedBy)
@@ -315,7 +315,7 @@ func (p *PlainPrinter) plainPrintRelationship(r *madon.Relationship, w io.Writer
 }
 
 func (p *PlainPrinter) plainPrintReport(r *madon.Report, w io.Writer, indent string) error {
-	indentedPrint(w, indent, true, false, "Report ID", "%d", r.ID)
+	indentedPrint(w, indent, true, false, "Report ID", "%s", r.ID)
 	indentedPrint(w, indent, false, false, "Action taken", "%s", r.ActionTaken)
 	return nil
 }
@@ -342,7 +342,7 @@ func (p *PlainPrinter) plainPrintResults(r *madon.Results, w io.Writer, indent s
 }
 
 func (p *PlainPrinter) plainPrintStatus(s *madon.Status, w io.Writer, indent string) error {
-	indentedPrint(w, indent, true, false, "Status ID", "%d", s.ID)
+	indentedPrint(w, indent, true, false, "Status ID", "%s", s.ID)
 	if s.Account != nil {
 		author := s.Account.Acct
 		if s.Account.DisplayName != "" {
@@ -370,8 +370,8 @@ func (p *PlainPrinter) plainPrintStatus(s *madon.Status, w io.Writer, indent str
 	}
 
 	indentedPrint(w, indent, false, false, "Contents", "%s", html2string(s.Content))
-	if s.InReplyToID != nil && *s.InReplyToID > 0 {
-		indentedPrint(w, indent, false, false, "In-Reply-To", "%d", *s.InReplyToID)
+	if s.InReplyToID != nil && *s.InReplyToID != "" {
+		indentedPrint(w, indent, false, false, "In-Reply-To", "%s", *s.InReplyToID)
 	}
 	if s.Reblogged {
 		indentedPrint(w, indent, false, false, "Reblogged", "%v", s.Reblogged)
@@ -380,7 +380,7 @@ func (p *PlainPrinter) plainPrintStatus(s *madon.Status, w io.Writer, indent str
 	// Display minimum details of attachments
 	//return p.PrintObj(s.MediaAttachments, w, indent+p.Indent)
 	for _, a := range s.MediaAttachments {
-		indentedPrint(w, indent+p.Indent, true, false, "Attachment ID", "%d", a.ID)
+		indentedPrint(w, indent+p.Indent, true, false, "Attachment ID", "%s", a.ID)
 		if a.TextURL != nil && *a.TextURL != "" {
 			indentedPrint(w, indent+p.Indent, true, false, "Text URL", "%s", *a.TextURL)
 		} else if a.URL != "" {

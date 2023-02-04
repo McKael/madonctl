@@ -15,7 +15,7 @@ import (
 )
 
 var suggestionsOpts struct {
-	accountID  int64
+	accountID  madon.ActivityID
 	accountIDs string
 
 	//limit uint
@@ -41,7 +41,7 @@ func init() {
 	suggestionsGetSubcommand.Flags().UintVarP(&suggestionsOpts.keep, "keep", "k", 0, "Limit number of results")
 	//suggestionsGetSubcommand.Flags().BoolVar(&suggestionsOpts.all, "all", false, "Fetch all results")
 
-	suggestionsDeleteSubcommand.Flags().Int64VarP(&suggestionsOpts.accountID, "account-id", "a", 0, "Account ID number")
+	suggestionsDeleteSubcommand.Flags().StringVarP(&suggestionsOpts.accountID, "account-id", "a", "", "Account ID number")
 	suggestionsDeleteSubcommand.Flags().StringVar(&suggestionsOpts.accountIDs, "account-ids", "", "Comma-separated list of account IDs")
 }
 
@@ -116,13 +116,13 @@ func suggestionsGetRunE(cmd *cobra.Command, args []string) error {
 
 func suggestionsDeleteRunE(cmd *cobra.Command, args []string) error {
 	opt := suggestionsOpts
-	var ids []int64
+	var ids []madon.ActivityID
 	var err error
 
-	if opt.accountID < 1 && len(opt.accountIDs) == 0 {
+	if opt.accountID == "" && len(opt.accountIDs) == 0 {
 		return errors.New("missing account IDs")
 	}
-	if opt.accountID > 0 && len(opt.accountIDs) > 0 {
+	if opt.accountID != "" && len(opt.accountIDs) > 0 {
 		return errors.New("incompatible options")
 	}
 
@@ -130,8 +130,8 @@ func suggestionsDeleteRunE(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return errors.New("cannot parse account IDs")
 	}
-	if opt.accountID > 0 { // Allow --account-id
-		ids = []int64{opt.accountID}
+	if opt.accountID != "" { // Allow --account-id
+		ids = []madon.ActivityID{opt.accountID}
 	}
 	if len(ids) < 1 {
 		return errors.New("missing account IDs")

@@ -15,8 +15,8 @@ import (
 )
 
 var listsOpts struct {
-	listID     int64
-	accountID  int64
+	listID     madon.ActivityID
+	accountID  madon.ActivityID
 	accountIDs string
 	title      string
 
@@ -51,20 +51,20 @@ func init() {
 	listsCmd.PersistentFlags().UintVarP(&listsOpts.keep, "keep", "k", 0, "Limit number of results")
 	listsCmd.PersistentFlags().BoolVar(&listsOpts.all, "all", false, "Fetch all results")
 
-	listsCmd.PersistentFlags().Int64VarP(&listsOpts.listID, "list-id", "G", 0, "List ID")
+	listsCmd.PersistentFlags().StringVarP(&listsOpts.listID, "list-id", "G", "", "List ID")
 
-	listsGetSubcommand.Flags().Int64VarP(&listsOpts.accountID, "account-id", "a", 0, "Account ID number")
+	listsGetSubcommand.Flags().StringVarP(&listsOpts.accountID, "account-id", "a", "", "Account ID number")
 	// XXX accountUID?
 
-	listsGetAccountsSubcommand.Flags().Int64VarP(&listsOpts.listID, "list-id", "G", 0, "List ID")
+	listsGetAccountsSubcommand.Flags().StringVarP(&listsOpts.listID, "list-id", "G", "", "List ID")
 
 	listsCreateSubcommand.Flags().StringVar(&listsOpts.title, "title", "", "List title")
 	listsUpdateSubcommand.Flags().StringVar(&listsOpts.title, "title", "", "List title")
 
 	listsAddAccountsSubcommand.Flags().StringVar(&listsOpts.accountIDs, "account-ids", "", "Comma-separated list of account IDs")
-	listsAddAccountsSubcommand.Flags().Int64VarP(&listsOpts.accountID, "account-id", "a", 0, "Account ID number")
+	listsAddAccountsSubcommand.Flags().StringVarP(&listsOpts.accountID, "account-id", "a", "", "Account ID number")
 	listsRemoveAccountsSubcommand.Flags().StringVar(&listsOpts.accountIDs, "account-ids", "", "Comma-separated list of account IDs")
-	listsRemoveAccountsSubcommand.Flags().Int64VarP(&listsOpts.accountID, "account-id", "a", 0, "Account ID number")
+	listsRemoveAccountsSubcommand.Flags().StringVarP(&listsOpts.accountID, "account-id", "a", "", "Account ID number")
 }
 
 var listsSubcommands = []*cobra.Command{
@@ -145,7 +145,7 @@ func listsGetRunE(cmd *cobra.Command, args []string) error {
 	var obj interface{}
 	var err error
 
-	if opt.listID > 0 {
+	if opt.listID != "" {
 		var list *madon.List
 		list, err = gClient.GetList(opt.listID)
 		obj = list
@@ -178,7 +178,7 @@ func listsGetRunE(cmd *cobra.Command, args []string) error {
 func listsGetAccountsRunE(cmd *cobra.Command, args []string) error {
 	opt := listsOpts
 
-	if opt.listID <= 0 {
+	if opt.listID == "" {
 		return errors.New("missing list ID")
 	}
 
@@ -237,12 +237,12 @@ func listsSetDeleteRunE(cmd *cobra.Command, args []string) error {
 
 	switch cmd.Name() {
 	case "create":
-		if opt.listID > 0 {
+		if opt.listID != "" {
 			return errors.New("list ID should not be provided with create")
 		}
 		action = actionCreate
 	case "update":
-		if opt.listID <= 0 {
+		if opt.listID == "" {
 			return errors.New("list ID is required")
 		}
 		action = actionUpdate
@@ -300,19 +300,19 @@ func listsSetDeleteRunE(cmd *cobra.Command, args []string) error {
 func listsAddRemoveAccountsRunE(cmd *cobra.Command, args []string) error {
 	opt := listsOpts
 
-	if opt.listID <= 0 {
+	if opt.listID == "" {
 		return errors.New("missing list ID")
 	}
 
-	var ids []int64
+	var ids []madon.ActivityID
 	var err error
 	ids, err = splitIDs(opt.accountIDs)
 	if err != nil {
 		return errors.New("cannot parse account IDs")
 	}
 
-	if opt.accountID > 0 { // Allow --account-id
-		ids = []int64{opt.accountID}
+	if opt.accountID != "" { // Allow --account-id
+		ids = []madon.ActivityID{opt.accountID}
 	}
 	if len(ids) < 1 {
 		return errors.New("missing account IDs")
