@@ -386,8 +386,8 @@ dmitri.shuralyov.com/gpu/mtl v0.0.0-20190408044501-666a987793e9/go.mod h1:H6x//7
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
 github.com/DataDog/datadog-go v3.2.0+incompatible/go.mod h1:LButxg5PwREeZtORoXG3tL4fMGNddJ+vMq1mwgfaqoQ=
-github.com/McKael/madon/v3 v3.0.0-20230204113802-0bbcd19ce1dd h1:bHPal+NloDpF2fMDVrwyjvr0hfVkYEfWtshsFh9gTpE=
-github.com/McKael/madon/v3 v3.0.0-20230204113802-0bbcd19ce1dd/go.mod h1:YOIiFXnBOHdLar2nOtijwnZPHPtZUXt7gHYCNZdKlVE=
+github.com/McKael/madon/v3 v3.0.0-20230204121256-dc4ad34a990c h1:8qR28Dk5ZyBdjFY8AeGBknDmnkXizXOy4rqUybChYFs=
+github.com/McKael/madon/v3 v3.0.0-20230204121256-dc4ad34a990c/go.mod h1:YOIiFXnBOHdLar2nOtijwnZPHPtZUXt7gHYCNZdKlVE=
 github.com/OneOfOne/xxhash v1.2.2/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAElWljhcU=
 github.com/alecthomas/template v0.0.0-20160405071501-a0175ee3bccc/go.mod h1:LOuyumcjzFXgccqObfd/Ljyb9UuFJ6TxHnclSeseNhc=
 github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751/go.mod h1:LOuyumcjzFXgccqObfd/Ljyb9UuFJ6TxHnclSeseNhc=

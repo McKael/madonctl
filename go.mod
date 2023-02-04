@@ -1,7 +1,7 @@
 module github.com/McKael/madonctl
 
 require (
-	github.com/McKael/madon/v3 v3.0.0-20230204113802-0bbcd19ce1dd
+	github.com/McKael/madon/v3 v3.0.0-20230204121256-dc4ad34a990c
 	github.com/ghodss/yaml v1.0.0
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/kr/text v0.2.0
