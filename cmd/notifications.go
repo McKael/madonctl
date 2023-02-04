@@ -1,4 +1,4 @@
-// Copyright © 2017-2018 Mikael Berthe <mikael@lilotux.net>
+// Copyright © 2017-2023 Mikael Berthe <mikael@lilotux.net>
 //
 // Licensed under the MIT license.
 // Please see the LICENSE file is this directory.
@@ -12,7 +12,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 
-	"github.com/McKael/madon/v2"
+	"github.com/McKael/madon/v3"
 )
 
 var notificationsOpts struct {

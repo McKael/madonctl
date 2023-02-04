@@ -1,4 +1,4 @@
-// Copyright © 2017-2018 Mikael Berthe <mikael@lilotux.net>
+// Copyright © 2017-2023 Mikael Berthe <mikael@lilotux.net>
 //
 // Licensed under the MIT license.
 // Please see the LICENSE file is this directory.
@@ -13,7 +13,7 @@ import (
 	flag "github.com/spf13/pflag"
 	"github.com/spf13/viper"
 
-	"github.com/McKael/madon/v2"
+	"github.com/McKael/madon/v3"
 )
 
 // toot is a kind of alias for status post

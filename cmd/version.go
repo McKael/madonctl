@@ -1,4 +1,4 @@
-// Copyright © 2017-2018 Mikael Berthe <mikael@lilotux.net>
+// Copyright © 2017-2023 Mikael Berthe <mikael@lilotux.net>
 //
 // Licensed under the MIT license.
 // Please see the LICENSE file is this directory.
@@ -10,7 +10,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/McKael/madon/v2"
+	"github.com/McKael/madon/v3"
 	"github.com/McKael/madonctl/printer"
 )
 
@@ -23,7 +23,7 @@ type madonctlVersion struct {
 }
 
 // VERSION of the madonctl application
-var VERSION = "2.4.0-dev"
+var VERSION = "3.0.0-dev"
 
 var versionCmd = &cobra.Command{
 	Use:   "version",

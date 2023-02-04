@@ -3,9 +3,9 @@ module golang.org/x/oauth2
 go 1.17
 
 require (
-	cloud.google.com/go/compute v1.7.0
+	cloud.google.com/go/compute/metadata v0.2.0
 	github.com/google/go-cmp v0.5.8
-	golang.org/x/net v0.0.0-20220624214902-1bab6f366d9e
+	golang.org/x/net v0.5.0
 	google.golang.org/appengine v1.6.7
 )
 

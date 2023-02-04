@@ -1,4 +1,4 @@
-// Copyright © 2018 Mikael Berthe <mikael@lilotux.net>
+// Copyright © 2018-2023 Mikael Berthe <mikael@lilotux.net>
 //
 // Licensed under the MIT license.
 // Please see the LICENSE file is this directory.
@@ -10,7 +10,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/McKael/madon/v2"
+	"github.com/McKael/madon/v3"
 )
 
 var emojiOpts struct {
@@ -20,7 +20,7 @@ var emojiOpts struct {
 	all bool
 }
 
-//emojiCmd represents the emoji command
+// emojiCmd represents the emoji command
 var emojiCmd = &cobra.Command{
 	Use:     "emojis",
 	Aliases: []string{"emoji"},

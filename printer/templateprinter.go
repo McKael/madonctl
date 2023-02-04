@@ -1,4 +1,4 @@
-// Copyright © 2017 Mikael Berthe <mikael@lilotux.net>
+// Copyright © 2017-2023 Mikael Berthe <mikael@lilotux.net>
 //
 // Licensed under the MIT license.
 // Please see the LICENSE file is this directory.
@@ -18,7 +18,7 @@ import (
 	"github.com/kr/text"
 	"github.com/mattn/go-isatty"
 
-	"github.com/McKael/madon/v2"
+	"github.com/McKael/madon/v3"
 	"github.com/McKael/madonctl/printer/colors"
 )
 
