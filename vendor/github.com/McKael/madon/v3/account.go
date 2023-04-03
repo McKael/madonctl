@@ -10,6 +10,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"mime/multipart"
 	"os"
 	"path/filepath"
@@ -499,6 +500,21 @@ func (mc *Client) UpdateAccount(cmdParams UpdateAccountParams) (*Account, error)
 		}
 		formWriter.Write(headerImage)
 	}
+
+	for k, v := range params {
+		fw, err := w.CreateFormField(k)
+		if err != nil {
+			return nil, errors.Wrapf(err, "form field: %s", k)
+		}
+		n, err := io.WriteString(fw, v)
+		if err != nil {
+			return nil, errors.Wrapf(err, "writing field: %s", k)
+		}
+		if n != len(v) {
+			return nil, errors.Wrapf(err, "partial field: %s", k)
+		}
+	}
+
 	w.Close()
 
 	// Prepare the request

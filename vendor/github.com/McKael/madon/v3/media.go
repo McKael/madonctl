@@ -59,8 +59,6 @@ func (mc *Client) UploadMediaReader(f io.Reader, name, description, focus string
 		return nil, errors.Wrap(err, "media upload")
 	}
 
-	w.Close()
-
 	var params apiCallParams
 	if description != "" || focus != "" {
 		params = make(apiCallParams)
@@ -71,6 +69,22 @@ func (mc *Client) UploadMediaReader(f io.Reader, name, description, focus string
 			params["focus"] = focus
 		}
 	}
+
+	for k, v := range params {
+		fw, err := w.CreateFormField(k)
+		if err != nil {
+			return nil, errors.Wrapf(err, "form field: %s", k)
+		}
+		n, err := io.WriteString(fw, v)
+		if err != nil {
+			return nil, errors.Wrapf(err, "writing field: %s", k)
+		}
+		if n != len(v) {
+			return nil, errors.Wrapf(err, "partial field: %s", k)
+		}
+	}
+
+	w.Close()
 
 	req, err := mc.prepareRequest("v1/media", rest.Post, params)
 	if err != nil {

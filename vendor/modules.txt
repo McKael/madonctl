@@ -1,12 +1,14 @@
-# github.com/McKael/madon/v3 v3.0.0-20230204121256-dc4ad34a990c
+# github.com/McKael/madon/v3 v3.0.0-20230403195636-7e8193606782
 github.com/McKael/madon/v3
+# github.com/cpuguy83/go-md2man/v2 v2.0.2
+github.com/cpuguy83/go-md2man/v2/md2man
 # github.com/davecgh/go-spew v1.1.1
 github.com/davecgh/go-spew/spew
 # github.com/fsnotify/fsnotify v1.6.0
 github.com/fsnotify/fsnotify
 # github.com/ghodss/yaml v1.0.0
 github.com/ghodss/yaml
-# github.com/golang/protobuf v1.5.2
+# github.com/golang/protobuf v1.5.3
 github.com/golang/protobuf/proto
 # github.com/gorilla/websocket v1.5.0
 github.com/gorilla/websocket
@@ -41,6 +43,8 @@ github.com/pelletier/go-toml/v2/unstable
 github.com/pkg/errors
 # github.com/pmezard/go-difflib v1.0.0
 github.com/pmezard/go-difflib/difflib
+# github.com/russross/blackfriday/v2 v2.1.0
+github.com/russross/blackfriday/v2
 # github.com/sendgrid/rest v2.6.9+incompatible
 github.com/sendgrid/rest
 # github.com/spf13/afero v1.9.3
@@ -51,6 +55,7 @@ github.com/spf13/afero/mem
 github.com/spf13/cast
 # github.com/spf13/cobra v1.6.1
 github.com/spf13/cobra
+github.com/spf13/cobra/doc
 # github.com/spf13/jwalterweatherman v1.1.0
 github.com/spf13/jwalterweatherman
 # github.com/spf13/pflag v1.0.5
@@ -69,19 +74,18 @@ github.com/spf13/viper/internal/encoding/yaml
 github.com/stretchr/testify/assert
 # github.com/subosito/gotenv v1.4.2
 github.com/subosito/gotenv
-# golang.org/x/net v0.7.0
+# golang.org/x/net v0.8.0
 golang.org/x/net/context
-golang.org/x/net/context/ctxhttp
 golang.org/x/net/html
 golang.org/x/net/html/atom
-# golang.org/x/oauth2 v0.4.0
+# golang.org/x/oauth2 v0.6.0
 golang.org/x/oauth2
 golang.org/x/oauth2/internal
-# golang.org/x/sys v0.5.0
+# golang.org/x/sys v0.6.0
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
 golang.org/x/sys/windows
-# golang.org/x/text v0.7.0
+# golang.org/x/text v0.8.0
 golang.org/x/text/runes
 golang.org/x/text/transform
 golang.org/x/text/unicode/norm
@@ -93,7 +97,7 @@ google.golang.org/appengine/internal/log
 google.golang.org/appengine/internal/remote_api
 google.golang.org/appengine/internal/urlfetch
 google.golang.org/appengine/urlfetch
-# google.golang.org/protobuf v1.28.1
+# google.golang.org/protobuf v1.30.0
 google.golang.org/protobuf/encoding/prototext
 google.golang.org/protobuf/encoding/protowire
 google.golang.org/protobuf/internal/descfmt

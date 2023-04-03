@@ -84,12 +84,13 @@ func parseLink(links []string) (*apiLinks, error) {
 // restAPI actually does the HTTP query
 // It is a copy of rest.API with better handling of parameters with multiple values
 func restAPI(request rest.Request) (*rest.Response, error) {
+	// Our encoded parameters
+	var urlpstr string
+
 	c := &rest.Client{HTTPClient: http.DefaultClient}
 
 	// Build the HTTP request object.
 	if len(request.QueryParams) != 0 {
-		// Add parameters to the URL
-		request.BaseURL += "?"
 		urlp := url.Values{}
 		arrayRe := regexp.MustCompile(`^\[\d+\](.*)$`)
 		for key, value := range request.QueryParams {
@@ -107,8 +108,27 @@ func restAPI(request rest.Request) (*rest.Response, error) {
 			}
 			urlp.Add(key, value)
 		}
-		urlpstr := urlp.Encode()
-		request.BaseURL += urlpstr
+		urlpstr = urlp.Encode()
+	}
+
+	switch request.Method {
+	case "GET":
+		// Add parameters to the URL if we have any.
+		if len(urlpstr) > 0 {
+			request.BaseURL += "?" + urlpstr
+		}
+	default:
+		// Pleroma at least needs the API parameters in the body rather than
+		// the URL for `POST` requests.  Which is fair according to
+		// https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#form-submission-2
+		// which suggests that `GET` requests should have URL parameters
+		// and `POST` requests should have the encoded parameters in the body.
+		//
+		// HOWEVER for file uploads, we've already got a properly encoded body
+		// which means we ignore this step.
+		if len(request.Body) == 0 {
+			request.Body = []byte(urlpstr)
+		}
 	}
 
 	req, err := http.NewRequest(string(request.Method), request.BaseURL, bytes.NewBuffer(request.Body))
@@ -121,7 +141,8 @@ func restAPI(request rest.Request) (*rest.Response, error) {
 	}
 	_, exists := req.Header["Content-Type"]
 	if len(request.Body) > 0 && !exists {
-		req.Header.Set("Content-Type", "application/json")
+		// Make sure we have the correct content type for form submission.
+		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	}
 
 	// Build the HTTP client and make the request.
