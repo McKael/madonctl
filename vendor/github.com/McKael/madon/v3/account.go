@@ -106,15 +106,14 @@ func (mc *Client) getMultipleAccounts(endPoint string, params apiCallParams, lop
 		return nil, err
 	}
 	if lopt != nil { // Fetch more pages to reach our limit
-		var accountSlice []Account
 		for (lopt.All || lopt.Limit > len(accounts)) && links.next != nil {
+			accountSlice := []Account{}
 			newlopt := links.next
 			links = apiLinks{}
 			if err := mc.apiCall("v1/"+endPoint, rest.Get, params, newlopt, &links, &accountSlice); err != nil {
 				return nil, err
 			}
 			accounts = append(accounts, accountSlice...)
-			accountSlice = accountSlice[:0] // Clear struct
 		}
 	}
 	return accounts, nil

@@ -21,15 +21,14 @@ func (mc *Client) GetBlockedDomains(lopt *LimitParams) ([]DomainName, error) {
 		return nil, err
 	}
 	if lopt != nil { // Fetch more pages to reach our limit
-		var domainSlice []DomainName
 		for (lopt.All || lopt.Limit > len(domains)) && links.next != nil {
+			domainSlice := []DomainName{}
 			newlopt := links.next
 			links = apiLinks{}
 			if err := mc.apiCall("v1/"+endPoint, rest.Get, nil, newlopt, &links, &domainSlice); err != nil {
 				return nil, err
 			}
 			domains = append(domains, domainSlice...)
-			domainSlice = domainSlice[:0] // Clear struct
 		}
 	}
 	return domains, nil

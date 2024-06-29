@@ -36,15 +36,14 @@ func (mc *Client) GetNotifications(excludeTypes []string, lopt *LimitParams) ([]
 		return nil, err
 	}
 	if lopt != nil { // Fetch more pages to reach our limit
-		var notifSlice []Notification
 		for (lopt.All || lopt.Limit > len(notifications)) && links.next != nil {
+			notifSlice := []Notification{}
 			newlopt := links.next
 			links = apiLinks{}
 			if err := mc.apiCall("v1/notifications", rest.Get, nil, newlopt, &links, &notifSlice); err != nil {
 				return nil, err
 			}
 			notifications = append(notifications, notifSlice...)
-			notifSlice = notifSlice[:0] // Clear struct
 		}
 	}
 	return notifications, nil

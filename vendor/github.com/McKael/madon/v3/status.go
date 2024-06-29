@@ -47,15 +47,14 @@ func (mc *Client) getMultipleStatuses(endPoint string, params apiCallParams, lop
 		return nil, err
 	}
 	if lopt != nil { // Fetch more pages to reach our limit
-		var statusSlice []Status
 		for (lopt.All || lopt.Limit > len(statuses)) && links.next != nil {
+			statusSlice := []Status{}
 			newlopt := links.next
 			links = apiLinks{}
 			if err := mc.apiCall("v1/"+endPoint, rest.Get, params, newlopt, &links, &statusSlice); err != nil {
 				return nil, err
 			}
 			statuses = append(statuses, statusSlice...)
-			statusSlice = statusSlice[:0] // Clear struct
 		}
 	}
 	return statuses, nil

@@ -33,8 +33,8 @@ func (mc *Client) openStream(streamName, param string) (*websocket.Conn, error) 
 	var tag, list string
 
 	switch streamName {
-	case "user", "public", "public:local", "direct":
-	case "hashtag":
+	case "public", "public:media", "public:local", "public:local:media", "public:remote", "public:remote:media", "user", "user:notification", "direct":
+	case "hashtag", "hashtag:local":
 		if param == "" {
 			return nil, ErrInvalidParameter
 		}
@@ -109,7 +109,7 @@ func (mc *Client) readStream(events chan<- StreamEvent, stopCh <-chan bool, done
 
 		// Decode API object
 		switch msg.Event {
-		case "update":
+		case "update", "status.update":
 			strPayload, ok := msg.Payload.(string)
 			if !ok {
 				e := errors.New("could not decode status: payload isn't a string")

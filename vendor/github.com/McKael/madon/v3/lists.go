@@ -43,15 +43,14 @@ func (mc *Client) GetLists(accountID ActivityID, lopt *LimitParams) ([]List, err
 		return nil, err
 	}
 	if lopt != nil { // Fetch more pages to reach our limit
-		var listSlice []List
 		for (lopt.All || lopt.Limit > len(lists)) && links.next != nil {
+			listSlice := []List{}
 			newlopt := links.next
 			links = apiLinks{}
 			if err := mc.apiCall("v1/"+endPoint, rest.Get, nil, newlopt, &links, &listSlice); err != nil {
 				return nil, err
 			}
 			lists = append(lists, listSlice...)
-			listSlice = listSlice[:0] // Clear struct
 		}
 	}
 	return lists, nil
