@@ -1,4 +1,4 @@
-module github.com/McKael/madonctl
+module github.com/McKael/madonctl/v3
 
 require (
 	github.com/McKael/madon/v3 v3.0.0
