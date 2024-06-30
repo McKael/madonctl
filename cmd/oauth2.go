@@ -11,7 +11,6 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
-	//"github.com/McKael/madonctl/printer"
 )
 
 var oauth2Cmd = &cobra.Command{

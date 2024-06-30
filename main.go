@@ -21,7 +21,7 @@
 package main
 
 import (
-	"github.com/McKael/madonctl/cmd"
+	"github.com/McKael/madonctl/v3/cmd"
 )
 
 func main() {

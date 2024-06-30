@@ -11,7 +11,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/McKael/madon/v3"
-	"github.com/McKael/madonctl/printer"
+	"github.com/McKael/madonctl/v3/printer"
 )
 
 // madonctlVersion contains the version of the madonctl tool
@@ -23,7 +23,7 @@ type madonctlVersion struct {
 }
 
 // VERSION of the madonctl application
-var VERSION = "3.0.1-dev"
+var VERSION = "3.0.2"
 
 var versionCmd = &cobra.Command{
 	Use:   "version",

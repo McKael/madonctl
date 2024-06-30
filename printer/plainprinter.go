@@ -13,7 +13,7 @@ import (
 	"time"
 
 	"github.com/McKael/madon/v3"
-	"github.com/McKael/madonctl/printer/html2text"
+	"github.com/McKael/madonctl/v3/printer/html2text"
 )
 
 // PlainPrinter is the default "plain text" printer

@@ -19,7 +19,7 @@ import (
 	"github.com/mattn/go-isatty"
 
 	"github.com/McKael/madon/v3"
-	"github.com/McKael/madonctl/printer/colors"
+	"github.com/McKael/madonctl/v3/printer/colors"
 )
 
 // disableColors can be set to true to disable the color template function

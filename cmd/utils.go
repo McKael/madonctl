@@ -17,7 +17,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/McKael/madonctl/printer"
+	"github.com/McKael/madonctl/v3/printer"
 )
 
 func checkOutputFormat(cmd *cobra.Command, args []string) error {
