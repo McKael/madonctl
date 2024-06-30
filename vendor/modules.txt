@@ -1,4 +1,4 @@
-# github.com/McKael/madon/v3 v3.0.0-20240629180627-8df05dab5e8f
+# github.com/McKael/madon/v3 v3.0.0
 github.com/McKael/madon/v3
 # github.com/cpuguy83/go-md2man/v2 v2.0.4
 github.com/cpuguy83/go-md2man/v2/md2man

@@ -13,9 +13,9 @@ import (
 
 // LimitParams contains common limit/paging options for the Mastodon REST API
 type LimitParams struct {
-	Limit          int              // Number of items per query
+	Limit          int        // Number of items per query
 	SinceID, MaxID ActivityID // Boundaries
-	All            bool             // Get as many items as possible
+	All            bool       // Get as many items as possible
 }
 
 // apiCallParams is a map with the parameters for an API call
@@ -23,7 +23,7 @@ type apiCallParams map[string]string
 
 const (
 	// MadonVersion contains the version of the Madon library
-	MadonVersion = "3.0.0-dev"
+	MadonVersion = "3.0.0"
 
 	currentAPIPath = "/api"
 

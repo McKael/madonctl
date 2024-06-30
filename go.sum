@@ -1320,8 +1320,8 @@ github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
 github.com/DataDog/datadog-go v3.2.0+incompatible/go.mod h1:LButxg5PwREeZtORoXG3tL4fMGNddJ+vMq1mwgfaqoQ=
 github.com/JohnCGriffin/overflow v0.0.0-20211019200055-46fa312c352c/go.mod h1:X0CRv0ky0k6m906ixxpzmDRLvX58TFUKS2eePweuyxk=
-github.com/McKael/madon/v3 v3.0.0-20240629180627-8df05dab5e8f h1:/4PHFWxISBm36p6ZCmOP40MkSpqWTqdVknAGl+V7F0M=
-github.com/McKael/madon/v3 v3.0.0-20240629180627-8df05dab5e8f/go.mod h1:5wBlXNoDLw/E4FqxsYaOJ1MpAptlw/XRYCuaweoTxlw=
+github.com/McKael/madon/v3 v3.0.0 h1:/nGkdTZbaGZigGwKayZeD1+E+PD9vhz+ruXuqT8f1BA=
+github.com/McKael/madon/v3 v3.0.0/go.mod h1:5wBlXNoDLw/E4FqxsYaOJ1MpAptlw/XRYCuaweoTxlw=
 github.com/OneOfOne/xxhash v1.2.2/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAElWljhcU=
 github.com/ajstarks/deck v0.0.0-20200831202436-30c9fc6549a9/go.mod h1:JynElWSGnm/4RlzPXRlREEwqTHAN3T56Bv2ITsFT3gY=
 github.com/ajstarks/deck/generate v0.0.0-20210309230005-c3f852c02e19/go.mod h1:T13YZdzov6OU0A1+RfKZiZN9ca6VeKdBdyDV+BY97Tk=
