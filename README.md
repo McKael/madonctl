@@ -23,9 +23,13 @@ More pre-built binaries might be available from the [Homepage](https://lilotux.n
 
 madonctl uses Go modules (dependencies have been vendored for convenience).
 
-You can install `madonctl` with the usual Go command:
+You can install the latest `madonctl` release with the usual Go command:
 
-    go install github.com/McKael/madonctl
+    go install github.com/McKael/madonctl/v3@latest
+
+Or if you want the current master branch:
+
+    go install github.com/McKael/madonctl/v3@master
 
 Alternatively:
 
