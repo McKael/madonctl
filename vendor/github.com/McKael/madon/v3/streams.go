@@ -17,9 +17,9 @@ import (
 
 // StreamEvent contains a single event from the streaming API
 type StreamEvent struct {
-	Event string      // Name of the event (error, update, notification or delete)
-	Data  interface{} // Status, Notification or status ID
-	Error error       // Error message from the StreamListener
+	Event string // Name of the event (error, update, notification or delete)
+	Data  any    // Status, Notification or status ID
+	Error error  // Error message from the StreamListener
 }
 
 // openStream opens a stream URL and returns an http.Response
@@ -53,7 +53,7 @@ func (mc *Client) openStream(streamName, param string) (*websocket.Conn, error) 
 	}
 
 	// Build streaming websocket URL
-	u, err := url.Parse("ws" + mc.APIBase[4:] + "/v1/streaming/")
+	u, err := url.Parse("ws" + mc.APIBase[4:] + "/v1/streaming")
 	if err != nil {
 		return nil, errors.Wrap(err, "cannot create Websocket URL")
 	}
@@ -68,7 +68,21 @@ func (mc *Client) openStream(streamName, param string) (*websocket.Conn, error) 
 	}
 	u.RawQuery = urlParams.Encode()
 
-	c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
+	c, resp, err := websocket.DefaultDialer.Dial(u.String(), nil)
+	if err != nil && resp != nil {
+		if resp.StatusCode == 301 && len(resp.Header["Location"]) == 1 {
+			// Try again with the new location
+			u, err = url.Parse(resp.Header.Get("Location"))
+			if err != nil {
+				return nil, errors.Wrap(err, "cannot follow Websocket URL redirect")
+			}
+			// Set the scheme back to a websocket
+			if strings.HasPrefix(u.Scheme, "http") {
+				u.Scheme = "ws" + u.Scheme[4:]
+			}
+			c, _, err = websocket.DefaultDialer.Dial(u.String(), nil)
+		}
+	}
 	return c, err
 }
 
@@ -92,7 +106,7 @@ func (mc *Client) readStream(events chan<- StreamEvent, stopCh <-chan bool, done
 	for {
 		var msg struct {
 			Event   string
-			Payload interface{}
+			Payload any
 		}
 
 		err := c.ReadJSON(&msg)
@@ -105,7 +119,7 @@ func (mc *Client) readStream(events chan<- StreamEvent, stopCh <-chan bool, done
 			break
 		}
 
-		var obj interface{}
+		var obj any
 
 		// Decode API object
 		switch msg.Event {

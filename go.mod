@@ -1,7 +1,7 @@
 module github.com/McKael/madonctl/v3
 
 require (
-	github.com/McKael/madon/v3 v3.0.2
+	github.com/McKael/madon/v3 v3.0.3
 	github.com/ghodss/yaml v1.0.0
 	github.com/kr/text v0.2.0
 	github.com/mattn/go-isatty v0.0.20

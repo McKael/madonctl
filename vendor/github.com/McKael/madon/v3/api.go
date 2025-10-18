@@ -54,15 +54,9 @@ func parseLink(links []string) (*apiLinks, error) {
 			lp = new(LimitParams)
 			if since != "" {
 				lp.SinceID = since
-				if err != nil {
-					return al, err
-				}
 			}
 			if max != "" {
 				lp.MaxID = max
-				if err != nil {
-					return al, err
-				}
 			}
 			if lim != "" {
 				lp.Limit, err = strconv.Atoi(lim)
@@ -207,7 +201,7 @@ func (mc *Client) prepareRequest(target string, method rest.Method, params apiCa
 // apiCall makes a call to the Mastodon API server
 // If links is not nil, the prev/next links from the API response headers
 // will be set (if they exist) in the structure.
-func (mc *Client) apiCall(endPoint string, method rest.Method, params apiCallParams, limitOptions *LimitParams, links *apiLinks, data interface{}) error {
+func (mc *Client) apiCall(endPoint string, method rest.Method, params apiCallParams, limitOptions *LimitParams, links *apiLinks, data any) error {
 	if mc == nil {
 		return errors.New("use of uninitialized madon client")
 	}
@@ -289,5 +283,5 @@ func (act *MastodonDate) UnmarshalJSON(b []byte) error {
 
 // MarshalJSON handles serialization for custom MastodonDate type
 func (act *MastodonDate) MarshalJSON() ([]byte, error) {
-	return []byte(fmt.Sprintf("\"%d\"", act.Unix())), nil
+	return fmt.Appendf(nil, "\"%d\"", act.Unix()), nil
 }
