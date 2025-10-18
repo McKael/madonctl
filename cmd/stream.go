@@ -76,8 +76,7 @@ func streamRunE(cmd *cobra.Command, args []string) error {
 		arg := args[0]
 		switch arg {
 		case "", "user":
-		case "public":
-		case "direct":
+		case "public", "direct":
 			streamName = arg
 		case "local":
 			streamName = "public:local"
